@@ -1,8 +1,16 @@
-
 ---
 layout: base.njk
 title: "DUE — Essays"
 ---
+<section class="hero card">
+  <h2 style="margin-top:0">Publish under pressure.</h2>
+  <p>One topic. Thirty days. Essays go live finished or not. Minor contributions are acknowledged; major ones earn coauthorship. Every essay evolves with semantic versioning.</p>
+  <div class="cta-row">
+    <a class="btn btn-primary" href="{{ site.repoUrl }}/issues/new?template=new-essay.yml">Start a new essay</a>
+    <a class="btn btn-ghost" href="{{ site.repoUrl }}/issues/new?template=suggest-change.yml">Suggest a change</a>
+  </div>
+</section>
+
 <h2>Published Essays</h2>
 {% for post in collections.publishedEssays %}
   <div class="card">
