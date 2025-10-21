@@ -20,8 +20,9 @@
     </header>
     {{ content | safe }}
     <footer>
-      Built with Eleventy. Content © {{ (new Date()).getFullYear() }}.
+      Built with Eleventy.
     </footer>
   </main>
+  <script type="module" src="{{ site.baseUrl }}assets/countdown.js"></script>
 </body>
 </html>
