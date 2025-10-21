@@ -23,5 +23,8 @@
       Built with Eleventy. Content © {{ (new Date()).getFullYear() }}.
     </footer>
   </main>
+  {% if includeCountdown %}
+  <script type="module" src="{{ site.baseUrl }}assets/countdown.js"></script>
+  {% endif %}
 </body>
 </html>
