@@ -1,0 +1,34 @@
+name: Suggest a Change
+description: Propose edits to an existing essay (minor or major).
+title: "[Change] <essay-slug>: <short-summary>"
+labels: ["suggestion"]
+body:
+  - type: input
+    id: target
+    attributes:
+      label: Target file or URL
+      placeholder: site/essays/published/<slug>.md or PR link
+    validations:
+      required: true
+  - type: dropdown
+    id: intent
+    attributes:
+      label: Intent
+      description: Select how to credit the change on merge.
+      options:
+        - minor (patch bump; Acknowledgments)
+        - major (major bump; Coauthor)
+      default: 0
+  - type: textarea
+    id: changes
+    attributes:
+      label: Proposed changes
+      placeholder: Describe edits; include excerpts if helpful.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context (optional)
+      placeholder: Rationale, sources, examples, or related issues.
+

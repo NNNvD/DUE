@@ -1,0 +1,26 @@
+{
+  "name": "due-starter-eleventy",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "eleventy",
+    "start": "eleventy --serve",
+    "check:words": "node scripts/checkWordRange.js",
+    "autopublish": "node scripts/autopublish.js",
+    "bump": "node scripts/bumpVersionAndCredit.js"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.13",
+    "fs-extra": "^11.2.0",
+    "glob": "^11.0.0",
+    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.0",
+    "remark-parse": "^11.0.0",
+    "strip-markdown": "^6.0.0",
+    "unified": "^11.0.5",
+    "fast-glob": "^3.3.3"
+  }
+}

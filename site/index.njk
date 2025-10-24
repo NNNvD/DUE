@@ -1,0 +1,84 @@
+---
+layout: base.njk
+title: "DUE — Essays"
+---
+<section class="hero card">
+  <h2 style="margin-top:0">Publish under pressure.</h2>
+  <p>One topic. Thirty days. Essays go live finished or not. Minor contributions are acknowledged; major ones earn coauthorship. Every essay evolves with semantic versioning.</p>
+  <div class="cta-row">
+    <a class="btn btn-primary" href="{{ site.repoUrl }}/issues/new?template=new-essay.yml">Start a new essay</a>
+    <a class="btn btn-ghost" href="{{ site.repoUrl }}/issues/new?template=suggest-change.yml">Suggest a change</a>
+  </div>
+</section>
+
+{% set drafts = collections.draftEssays %}
+<h2>In Progress</h2>
+{% if drafts.length %}
+  {% set active = drafts[0] %}
+  <div class="card in-progress" data-deadline="{{ active.data.deadline_at }}">
+    <h3>Currently writing: {{ active.data.title }}</h3>
+    <div class="meta">
+      {% if active.data.word_range %}<span class="badge">{{ active.data.word_range }} words</span>{% endif %}
+      {% if active.data.started_at %}<span>Started: {{ active.data.started_at | date("yyyy-LL-dd") }}</span>{% endif %}
+      {% if active.data.deadline_at %}<span>Publishes: {{ active.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
+    </div>
+    <p class="countdown">
+      <span data-countdown>
+        {% if active.data.deadline_at %}
+          Publishes at {{ active.data.deadline_at | date("yyyy-LL-dd") }}
+        {% else %}
+          Deadline not yet scheduled.
+        {% endif %}
+      </span>
+    </p>
+    {% if active.data.topic %}<p><strong>Topic:</strong> {{ active.data.topic }}</p>{% endif %}
+  </div>
+  {% if drafts.length > 1 %}
+    <div class="card">
+      <h4>Also drafting</h4>
+      <ul class="draft-list">
+        {% for draft in drafts %}
+          {% if not loop.first %}
+          <li>
+            <strong>{{ draft.data.title }}</strong>
+            {% if draft.data.deadline_at %} — publishes {{ draft.data.deadline_at | date("yyyy-LL-dd") }}{% endif %}
+          </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+{% else %}
+  <div class="card">
+    <p>No drafts in progress. Start a new essay to begin writing.</p>
+  </div>
+{% endif %}
+
+<h2>Published Essays</h2>
+{% for post in collections.publishedEssays %}
+  <div class="card">
+    <h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
+      <div class="meta">
+        <span class="badge">v{{ post.data.version }}</span>
+        <span class="badge">{{ post.data.word_range }} words</span>
+        <span class="badge">
+          {% if post.data.initial_status == "complete" %}
+            Published completed
+          {% else %}
+            Published unfinished
+          {% endif %}
+        </span>
+        {% if post.data.published_at %}<span>Published: {{ post.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+      </div>
+    {% if post.data.release_notes and post.data.release_notes.length %}
+      <p><strong>Latest:</strong> {{ post.data.release_notes[0] }}</p>
+    {% endif %}
+  </div>
+{% else %}
+  <p>No essays published yet.</p>
+{% endfor %}
+
+<hr>
+
+<h2>About</h2>
+<p><strong>DUE — Deadline for Unfinished Essays</strong> publishes short essays under a 30‑day deadline. Finished or not, they go live. Minor contributions are acknowledged; major contributions earn coauthorship. Essays evolve using semantic versioning.</p>
