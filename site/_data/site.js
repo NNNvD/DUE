@@ -24,5 +24,13 @@ module.exports = {
   ...DEFAULTS,
   baseUrl: computeBaseUrl(),
   repoUrl: computeRepoUrl(),
+  giscus: {
+    // Optional. Set these via repository secrets/env to enable.
+    repo: process.env.GISCUS_REPO || "",
+    repoId: process.env.GISCUS_REPO_ID || "",
+    category: process.env.GISCUS_CATEGORY || "",
+    categoryId: process.env.GISCUS_CATEGORY_ID || "",
+    mapping: process.env.GISCUS_MAPPING || "pathname",
+    theme: process.env.GISCUS_THEME || "light",
+  },
 };
-

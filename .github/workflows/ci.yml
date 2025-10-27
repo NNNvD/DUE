@@ -24,5 +24,8 @@ jobs:
       - name: Word range check
         run: npm run check:words
 
+      - name: One active draft per author
+        run: node scripts/checkActiveDrafts.js
+
       - name: Build
         run: npm run build

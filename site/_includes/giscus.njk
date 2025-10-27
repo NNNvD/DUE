@@ -1,0 +1,21 @@
+{% if site.giscus and site.giscus.repo %}
+<section class="card">
+  <h3>Discussion</h3>
+  <script src="https://giscus.app/client.js"
+    data-repo="{{ site.giscus.repo }}"
+    {% if site.giscus.repoId %}data-repo-id="{{ site.giscus.repoId }}"{% endif %}
+    {% if site.giscus.category %}data-category="{{ site.giscus.category }}"{% endif %}
+    {% if site.giscus.categoryId %}data-category-id="{{ site.giscus.categoryId }}"{% endif %}
+    data-mapping="{{ site.giscus.mapping or 'pathname' }}"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="{{ site.giscus.theme or 'light' }}"
+    crossorigin="anonymous"
+    async>
+  </script>
+  <noscript>Enable JavaScript to view the discussion.</noscript>
+</section>
+{% endif %}
+

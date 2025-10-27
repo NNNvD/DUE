@@ -1,0 +1,66 @@
+name: Version bump on merge
+
+on:
+  pull_request_target:
+    types: [closed]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  bump:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Get PR info
+        id: info
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100
+            });
+            const labels = pr.labels.map(l => ({ name: l.name }));
+            const changed = files.map(f => f.filename).join("\n");
+            core.setOutput('labels', JSON.stringify(labels));
+            core.setOutput('user', pr.user.login);
+            core.setOutput('changed', changed);
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm install --no-audit --no-fund
+
+      - name: Run version bump and credit
+        run: node scripts/bumpVersionAndCredit.js
+        env:
+          PR_LABELS: ${{ steps.info.outputs.labels }}
+          PR_USER: ${{ steps.info.outputs.user }}
+          CHANGED_FILES: ${{ steps.info.outputs.changed }}
+
+      - name: Commit and push changes
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore: version bump and credit after PR #${{ github.event.pull_request.number }}"
+            git push
+          else
+            echo "No changes to commit."
+          fi
+

@@ -7,6 +7,7 @@ const glob = require("glob");
 
 const draftsDir = "site/essays/drafts";
 const pubDir = "site/essays/published";
+const { writeSnapshot } = require("./lib/snapshot");
 
 function publishFile(fp) {
   const raw = fs.readFileSync(fp, "utf8");
@@ -25,6 +26,13 @@ function publishFile(fp) {
   fs.writeFileSync(dest, out, "utf8");
   fs.removeSync(fp);
   console.log(`Published: ${path.basename(fp)} → v${d.version}`);
+
+  try {
+    const snap = writeSnapshot(dest, d, doc.content);
+    console.log(`Snapshot written: ${snap}`);
+  } catch (e) {
+    console.warn("Snapshot failed:", e.message);
+  }
 }
 
 glob.sync(`${draftsDir}/**/*.md`).forEach(fp => {

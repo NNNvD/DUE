@@ -37,6 +37,10 @@ module.exports = function(eleventyConfig) {
       });
   });
 
+  eleventyConfig.addCollection("snapshots", (collectionApi) => {
+    return collectionApi.getFilteredByGlob("site/essays/snapshots/**/*.md");
+  });
+
   // Allow custom domain via site/CNAME passthrough (optional)
   try {
     eleventyConfig.addPassthroughCopy("CNAME");

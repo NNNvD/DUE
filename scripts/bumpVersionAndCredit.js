@@ -1,6 +1,7 @@
 
 const fs = require("fs");
 const matter = require("gray-matter");
+const { writeSnapshot } = require("./lib/snapshot");
 
 const labels = (process.env.PR_LABELS ? JSON.parse(process.env.PR_LABELS) : []).map(l => l.name);
 const user = process.env.PR_USER || "contributor";
@@ -47,4 +48,11 @@ for (const fp of changed) {
   const out = matter.stringify(doc.content, d);
   fs.writeFileSync(fp, out, "utf8");
   console.log(`Updated ${fp} → version ${newVersion}`);
+
+  try {
+    const snap = writeSnapshot(fp, d, doc.content);
+    console.log(`Snapshot written: ${snap}`);
+  } catch (e) {
+    console.warn("Snapshot failed:", e.message);
+  }
 }

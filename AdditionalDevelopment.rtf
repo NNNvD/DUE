@@ -1,0 +1,1205 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Bold;\f1\froman\fcharset0 Times-Roman;\f2\fmodern\fcharset0 Courier;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red109\green109\blue109;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c50196\c50196\c50196;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{circle\}}{\leveltext\leveltemplateid2\'01\uc0\u9702 ;}{\levelnumbers;}\fi-360\li1440\lin1440 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid101\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid2}
+{\list\listtemplateid3\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid201\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid3}
+{\list\listtemplateid4\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid301\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid4}
+{\list\listtemplateid5\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid401\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid5}
+{\list\listtemplateid6\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid501\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid6}
+{\list\listtemplateid7\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid601\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid7}
+{\list\listtemplateid8\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid701\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid8}
+{\list\listtemplateid9\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid801\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid9}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}{\listoverride\listid3\listoverridecount0\ls3}{\listoverride\listid4\listoverridecount0\ls4}{\listoverride\listid5\listoverridecount0\ls5}{\listoverride\listid6\listoverridecount0\ls6}{\listoverride\listid7\listoverridecount0\ls7}{\listoverride\listid8\listoverridecount0\ls8}{\listoverride\listid9\listoverridecount0\ls9}}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sa321\partightenfactor0
+
+\f0\b\fs48 \cf0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 DUE Platform \'97 Piggyback Implementation Spec\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\fs24 \cf0 Target:
+\f1\b0  OpenAI Codex agent\uc0\u8232 
+\f0\b Goal:
+\f1\b0  Implement DUE with GitHub Pages + Eleventy + GitHub Actions (no custom backend).\uc0\u8232 
+\f0\b Constraints:
+\f1\b0  Enforce 30-day auto-publish, word-range gates, semantic versioning, and contributor crediting.\uc0\u8232 
+\f0\b Exclude:
+\f1\b0  \'93All-in-one publisher alternatives.\'94\
+\pard\pardeftab720\partightenfactor0
+\cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 1) Summary of Requirements\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa240\partightenfactor0
+\ls1\ilvl0
+\f1\b0\fs24 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Authors propose a topic and pick a word range: 
+\f0\b 250\'96500
+\f1\b0 , 
+\f0\b 500\'961000
+\f1\b0 , 
+\f0\b 1000\'961500
+\f1\b0 .\
+\ls1\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 One active essay per author; 
+\f0\b auto-publish at 30 days
+\f1\b0  from 
+\f2\fs26 started_at
+\f1\fs24 .\
+\ls1\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 On first publish: 
+\f2\fs26 version = 1.0
+\f1\fs24  if 
+\f2\fs26 initial_status: complete
+\f1\fs24 , else 
+\f2\fs26 0.1
+\f1\fs24 .\
+\ls1\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Accepted PRs labeled:\
+\pard\tx940\tx1440\pardeftab720\li1440\fi-1440\sa240\partightenfactor0
+\ls1\ilvl1
+\f2\fs26 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u9702 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 minor
+\f1\fs24  \uc0\u8594  patch bump + 
+\f0\b Acknowledgments
+\f1\b0  credit.\
+\ls1\ilvl1
+\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u9702 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 major
+\f1\fs24  \uc0\u8594  major bump + 
+\f0\b Coauthor
+\f1\b0  credit.\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa240\partightenfactor0
+\ls1\ilvl0\cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Every bump writes a 
+\f0\b snapshot
+\f1\b0  at 
+\f2\fs26 /essays/snapshots/<slug>/vX.Y.md
+\f1\fs24 .\
+\ls1\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Public site lists essays, shows versions, credits, release notes, and discussion thread per essay.\
+\pard\pardeftab720\partightenfactor0
+\cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 2) Recommended Stack\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa240\partightenfactor0
+\ls2\ilvl0
+\fs24 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Hosting & CI:
+\f1\b0  GitHub Pages + GitHub Actions (deploy, cron-like schedules).\
+\ls2\ilvl0
+\f0\b \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Site generator:
+\f1\b0  Eleventy (11ty).\
+\ls2\ilvl0
+\f0\b \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Feedback:
+\f1\b0  giscus (GitHub Discussions embedded in the site).\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b \cf0 Optional (\'93swappable\'94)
+\f1\b0 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa240\partightenfactor0
+\ls3\ilvl0
+\f0\b \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Cron/hosting alternatives:
+\f1\b0  Cloudflare Pages+Workers, Vercel cron, Netlify Scheduled Functions.\
+\ls3\ilvl0
+\f0\b \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Auth for non-GitHub contributors:
+\f1\b0  Supabase or Firebase via a small form-to-PR function.\
+\ls3\ilvl0
+\f0\b \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Git-based CMS:
+\f1\b0  Decap CMS (editor UI that writes to the repo).\
+\ls3\ilvl0
+\f0\b \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Archiving:
+\f1\b0  Zenodo or OSF to mint DOIs for snapshots/anthologies.\
+\pard\pardeftab720\partightenfactor0
+\cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 3) Repository Structure\
+\pard\pardeftab720\partightenfactor0
+
+\f2\b0\fs26 \cf0 /\
+  .eleventy.js\
+  package.json\
+  README.md\
+  CONTRIBUTING.md\
+\
+  /site\
+    /_includes\
+      base.njk\
+      essay.njk\
+      snapshot.njk\
+    /_data\
+      site.json\
+    /assets\
+      style.css\
+    /essays\
+      essays.json\
+      /drafts\
+        _template.md\
+        <slug>.md\
+      /published\
+        <slug>.md\
+      /snapshots\
+        <slug>/\
+          vX.Y.md\
+\
+  /scripts\
+    autopublish.js\
+    checkWordRange.js\
+    bumpVersionAndCredit.js\
+\
+  /.github\
+    /workflows\
+      deploy-pages.yml\
+      autopublish.yml\
+      word-range-check.yml\
+      version-bump.yml\
+      require-change-label.yml\
+      issue-to-draft.yml\
+    /ISSUE_TEMPLATE\
+      new-essay.yml\
+      suggest-change.yml\
+      config.yml\
+    PULL_REQUEST_TEMPLATE.md\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs24 \cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 4) Dependencies\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\fs24 \cf0 package.json
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 \{\
+  "name": "due-starter-eleventy",\
+  "version": "0.1.0",\
+  "private": true,\
+  "scripts": \{\
+    "build": "eleventy",\
+    "start": "eleventy --serve",\
+    "check:words": "node scripts/checkWordRange.js",\
+    "autopublish": "node scripts/autopublish.js",\
+    "bump": "node scripts/bumpVersionAndCredit.js"\
+  \},\
+  "devDependencies": \{\
+    "@11ty/eleventy": "^3.0.0"\
+  \},\
+  "dependencies": \{\
+    "dayjs": "^1.11.13",\
+    "fs-extra": "^11.2.0",\
+    "glob": "^11.0.0",\
+    "gray-matter": "^4.0.3",\
+    "js-yaml": "^4.1.0",\
+    "remark-parse": "^11.0.0",\
+    "strip-markdown": "^6.0.0",\
+    "unified": "^11.0.5"\
+  \}\
+\}\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs24 \cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 5) Eleventy Config\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\fs24 \cf0 .eleventy.js
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 module.exports = function(eleventyConfig) \{\
+  eleventyConfig.addPassthroughCopy(\{ "site/assets": "assets" \});\
+\
+  eleventyConfig.addCollection("publishedEssays", function(collectionApi) \{\
+    return collectionApi.getFilteredByGlob("site/essays/published/**/*.md").sort((a, b) => \{\
+      const ad = new Date(a.data.published_at || a.data.deadline_at || 0);\
+      const bd = new Date(b.data.published_at || b.data.deadline_at || 0);\
+      return bd - ad; // newest first\
+    \});\
+  \});\
+\
+  eleventyConfig.addCollection("snapshots", function(collectionApi) \{\
+    return collectionApi.getFilteredByGlob("site/essays/snapshots/**/*.md").sort((a, b) => \{\
+      const av = parseFloat(a.data.version || 0);\
+      const bv = parseFloat(b.data.version || 0);\
+      return bv - av;\
+    \});\
+  \});\
+\
+  return \{\
+    dir: \{ input: "site", includes: "_includes", data: "_data", output: "_site" \},\
+    markdownTemplateEngine: "njk",\
+    htmlTemplateEngine: "njk",\
+    templateFormats: [ "njk", "md" ]\
+  \};\
+\};\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs24 \cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 6) Site Data & Styles\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\fs24 \cf0 site/_data/site.json
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 \{\
+  "title": "DUE \'97 Deadline for Unfinished Essays",\
+  "tagline": "Write. Publish. Evolve.",\
+  "baseUrl": "/",\
+  "repoUrl": "https://github.com/your-username/your-repo" // UPDATE after pushing\
+\}\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 site/assets/style.css
+\f1\b0  (basic styles; extend as needed)\
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 :root\{--bg:#fff;--ink:#111827;--muted:#6b7280;--accent:#0ea5e9;--card:#f9fafb;--border:#e5e7eb;\}\
+html,body\{margin:0;padding:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto\}\
+main\{max-width:860px;margin:3rem auto;padding:0 1rem\}\
+a\{color:var(--accent);text-decoration:none\} a:hover\{text-decoration:underline\}\
+header\{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem\}\
+.card\{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem 1.25rem;margin:1rem 0\}\
+.meta\{display:flex;gap:.75rem;flex-wrap:wrap;color:var(--muted);font-size:.9rem\}\
+.badge\{border:1px solid var(--border);border-radius:999px;padding:.15rem .6rem;font-size:.8rem;background:#fff\}\
+.hero\{display:block\}\
+.cta-row\{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.5rem\}\
+.btn\{display:inline-block;border:1px solid var(--border);border-radius:10px;padding:.5rem .9rem;text-decoration:none\}\
+.btn-primary\{background:var(--ink);color:#fff;border-color:var(--ink)\}\
+.btn-ghost\{background:#fff;color:var(--ink)\}\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs24 \cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 7) Templates\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\fs24 \cf0 site/_includes/base.njk
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 <!doctype html>\
+<html lang="en">\
+<head>\
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">\
+  <title>\{\{ title or site.title \}\}</title>\
+  <link rel="stylesheet" href="\{\{ site.baseUrl \}\}assets/style.css">\
+</head>\
+<body>\
+  <main>\
+    <header>\
+      <div class="brand">\
+        <h1><a href="\{\{ site.baseUrl \}\}">\{\{ site.title \}\}</a></h1>\
+        <small>\{\{ site.tagline \}\}</small>\
+      </div>\
+      <nav><a href="\{\{ site.baseUrl \}\}">Home</a></nav>\
+    </header>\
+    \{\{ content | safe \}\}\
+\
+    \{# giscus injection (optional, see section 12) #\}\
+\
+    <footer>Built with Eleventy. Content \'a9 \{\{ (new Date()).getFullYear() \}\}.</footer>\
+  </main>\
+</body>\
+</html>\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 site/_includes/essay.njk
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 ---\
+layout: base.njk\
+---\
+<article class="card">\
+  <h1>\{\{ title \}\}</h1>\
+  <div class="meta">\
+    <span class="badge">Version \{\{ version \}\}</span>\
+    \{% if initial_status == "complete" %\}\
+      <span class="badge">Published completed</span>\
+    \{% else %\}\
+      <span class="badge">Published unfinished</span>\
+    \{% endif %\}\
+    <span class="badge">\{\{ word_range \}\} words</span>\
+    \{% if author %\}<span>By <strong>@\{\{ author \}\}</strong></span>\{% endif %\}\
+    \{% if coauthors and coauthors.length %\}<span>with \{% for a in coauthors %\}@\{\{a\}\}\{% if not loop.last %\}, \{% endif %\}\{% endfor %\}</span>\{% endif %\}\
+    \{% if published_at %\}<span>Published: \{\{ published_at | date("yyyy-LL-dd") \}\}</span>\{% endif %\}\
+  </div>\
+  <div class="content">\{\{ content | safe \}\}</div>\
+</article>\
+\
+<section class="card">\
+  <h3>Release notes</h3>\
+  \{% if release_notes and release_notes.length %\}\
+    <ul>\{% for note in release_notes %\}<li>\{\{ note \}\}</li>\{% endfor %\}</ul>\
+  \{% else %\}<p>No release notes yet.</p>\{% endif %\}\
+</section>\
+\
+<section class="card">\
+  <h3>Acknowledgments</h3>\
+  \{% if acknowledgments and acknowledgments.length %\}\
+    <ul>\{% for ack in acknowledgments %\}<li>@\{\{ ack.user \}\} \'97 \{\{ ack.note \}\} (since v\{\{ ack.since_version \}\})</li>\{% endfor %\}</ul>\
+  \{% else %\}<p>Contribute a minor improvement to be credited here.</p>\{% endif %\}\
+</section>\
+\
+<section class="card">\
+  <h3>Version history</h3>\
+  \{% set currentSlug = page.fileSlug %\}\
+  \{% set history = collections.snapshots %\}\
+  \{% set any = false %\}\
+  <ul>\
+  \{% for snap in history %\}\
+    \{% if snap.data.origin_slug == currentSlug %\}\
+      \{% set any = true %\}\
+      <li><a href="\{\{ snap.url \}\}">v\{\{ snap.data.version \}\}</a>\
+      \{% if snap.data.release_notes and snap.data.release_notes.length %\} \'97 \{\{ snap.data.release_notes[0] \}\}\{% endif %\}</li>\
+    \{% endif %\}\
+  \{% endfor %\}\
+  </ul>\
+  \{% if not any %\}<p>No snapshots yet.</p>\{% endif %\}\
+</section>\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 site/_includes/snapshot.njk
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 ---\
+layout: base.njk\
+---\
+<article class="card">\
+  <h1>\{\{ title \}\}</h1>\
+  <div class="meta">\
+    <span class="badge">Snapshot v\{\{ version \}\}</span>\
+    <span class="badge">\{\{ word_range \}\} words</span>\
+    \{% if author %\}<span>By <strong>@\{\{ author \}\}</strong></span>\{% endif %\}\
+    \{% if coauthors and coauthors.length %\}<span>with \{% for a in coauthors %\}@\{\{a\}\}\{% if not loop.last %\}, \{% endif %\}\{% endfor %\}</span>\{% endif %\}\
+  </div>\
+  <div class="content">\{\{ content | safe \}\}</div>\
+</article>\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 site/index.njk
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 ---\
+layout: base.njk\
+title: "DUE \'97 Essays"\
+---\
+<section class="hero card">\
+  <h2 style="margin-top:0">Publish under pressure.</h2>\
+  <p>One topic. Thirty days. Essays go live finished or not. Minor contributions are acknowledged; major ones earn coauthorship. Every essay evolves with semantic versioning.</p>\
+  <div class="cta-row">\
+    <a class="btn btn-primary" href="\{\{ site.repoUrl \}\}/issues/new?template=new-essay.yml">Start a new essay</a>\
+    <a class="btn btn-ghost" href="\{\{ site.repoUrl \}\}/issues/new?template=suggest-change.yml">Suggest a change</a>\
+  </div>\
+</section>\
+\
+<h2>Published Essays</h2>\
+\{% for post in collections.publishedEssays %\}\
+  <div class="card">\
+    <h3><a href="\{\{ post.url \}\}">\{\{ post.data.title \}\}</a></h3>\
+    <div class="meta">\
+      <span class="badge">v\{\{ post.data.version \}\}</span>\
+      <span class="badge">\{\{ post.data.word_range \}\} words</span>\
+      <span class="badge">\{\{ post.data.initial_status == "complete" ? "Published completed" : "Published unfinished" \}\}</span>\
+      \{% if post.data.published_at %\}<span>Published: \{\{ post.data.published_at | date("yyyy-LL-dd") \}\}</span>\{% endif %\}\
+    </div>\
+    \{% if post.data.release_notes and post.data.release_notes.length %\}\
+      <p><strong>Latest:</strong> \{\{ post.data.release_notes[0] \}\}</p>\
+    \{% endif %\}\
+  </div>\
+\{% else %\}\
+  <p>No essays published yet.</p>\
+\{% endfor %\}\
+\
+<hr>\
+<h2>About</h2>\
+<p><strong>DUE \'97 Deadline for Unfinished Essays</strong> publishes short essays under a 30-day deadline. Finished or not, they go live. Minor contributions are acknowledged; major contributions earn coauthorship. Essays evolve using semantic versioning.</p>\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 site/essays/essays.json
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 \{ "layout": "essay.njk", "tags": ["essay"] \}\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 site/essays/drafts/_template.md
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 ---\
+title: "Your Essay Title"\
+topic: "Your topic"\
+author: yourhandle\
+coauthors: []\
+acknowledgments: []\
+status: draft\
+started_at: 2025-01-01\
+deadline_at: 2025-01-31\
+initial_status: unfinished\
+version: 0.1\
+word_range: "500-1000"\
+release_notes: []\
+---\
+Start writing here\'85\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs24 \cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 8) Content Model (Front Matter)\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f1\b0\fs24 \cf0 Required keys:\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa240\partightenfactor0
+\ls4\ilvl0
+\f2\fs26 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 title
+\f1\fs24 , 
+\f2\fs26 topic
+\f1\fs24 , 
+\f2\fs26 author
+\f1\fs24 \
+\ls4\ilvl0
+\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 status: draft|published
+\f1\fs24 \
+\ls4\ilvl0
+\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 started_at
+\f1\fs24 , 
+\f2\fs26 deadline_at
+\f1\fs24  (ISO YYYY-MM-DD)\
+\ls4\ilvl0
+\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 initial_status: complete|unfinished
+\f1\fs24  (for the first publish version rule)\
+\ls4\ilvl0
+\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 version
+\f1\fs24  (numeric string like 
+\f2\fs26 1.0
+\f1\fs24 /
+\f2\fs26 0.1
+\f1\fs24 )\
+\ls4\ilvl0
+\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 word_range: "250-500"|"500-1000"|"1000-1500"
+\f1\fs24 \
+\ls4\ilvl0
+\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 release_notes: []
+\f1\fs24 \
+\ls4\ilvl0
+\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 coauthors: []
+\f1\fs24 , 
+\f2\fs26 acknowledgments: []
+\f1\fs24 \
+\pard\pardeftab720\partightenfactor0
+\cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 9) Automation Scripts\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\fs24 \cf0 scripts/autopublish.js
+\f1\b0  (auto-move overdue drafts \uc0\u8594  published)\
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 const fs = require("fs-extra");\
+const path = require("path");\
+const matter = require("gray-matter");\
+const dayjs = require("dayjs");\
+const glob = require("glob");\
+\
+const draftsDir = "site/essays/drafts";\
+const pubDir = "site/essays/published";\
+\
+function publishFile(fp) \{\
+  const raw = fs.readFileSync(fp, "utf8");\
+  const doc = matter(raw);\
+  const d = doc.data;\
+\
+  d.status = "published";\
+  d.version = d.initial_status === "complete" ? 1.0 : 0.1;\
+  d.published_at = dayjs().format("YYYY-MM-DD");\
+  d.release_notes = Array.isArray(d.release_notes) ? d.release_notes : [];\
+  d.release_notes.unshift(`Auto-published at deadline ($\{dayjs().toISOString()\}).`);\
+\
+  const out = matter.stringify(doc.content, d);\
+  const dest = path.join(pubDir, path.basename(fp));\
+  fs.ensureDirSync(pubDir);\
+  fs.writeFileSync(dest, out, "utf8");\
+  fs.removeSync(fp);\
+  console.log(`Published: $\{path.basename(fp)\} \uc0\u8594  v$\{d.version\}`);\
+\}\
+\
+glob.sync(`$\{draftsDir\}/**/*.md`).forEach(fp => \{\
+  const raw = fs.readFileSync(fp, "utf8");\
+  const doc = matter(raw);\
+  const d = doc.data;\
+  if (!d.deadline_at) return;\
+  if (dayjs().isAfter(dayjs(d.deadline_at))) publishFile(fp);\
+\});\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 scripts/checkWordRange.js
+\f1\b0  (CI gate)\
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 const fs = require("fs");\
+const matter = require("gray-matter");\
+const \{ unified \} = require("unified");\
+const parse = require("remark-parse");\
+const strip = require("strip-markdown");\
+const path = require("path");\
+\
+function wordCount(md) \{\
+  const text = String(unified().use(parse).use(strip).processSync(md));\
+  return text.trim().split(/\\s+/).filter(Boolean).length;\
+\}\
+function bounds(range) \{\
+  const [lo, hi] = (range || "250-500").split("-").map(Number);\
+  const grace = Math.ceil(0.02 * hi);\
+  return [lo, hi + grace];\
+\}\
+function scan(dir) \{\
+  if (!fs.existsSync(dir)) return [];\
+  return fs.readdirSync(dir).filter(f => f.endsWith(".md")).map(f => path.join(dir, f));\
+\}\
+\
+const files = [ ...scan("site/essays/drafts"), ...scan("site/essays/published") ];\
+let errors = [];\
+for (const fp of files) \{\
+  const raw = fs.readFileSync(fp, "utf8");\
+  const doc = matter(raw);\
+  const wc = wordCount(doc.content);\
+  const [lo, hi] = bounds(doc.data.word_range);\
+  if (wc < lo || wc > hi) errors.push(`$\{fp\}: $\{wc\} words (expected $\{lo\}\'96$\{hi\})`);\
+\}\
+if (errors.length) \{ console.error("Word range check failed:\\n" + errors.join("\\n")); process.exit(1); \}\
+console.log("Word ranges OK");\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 scripts/bumpVersionAndCredit.js
+\f1\b0  (version bump + credits + snapshot)\
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 const fs = require("fs");\
+const pathLib = require("path");\
+const matter = require("gray-matter");\
+\
+const labels = (process.env.PR_LABELS ? JSON.parse(process.env.PR_LABELS) : []).map(l => l.name);\
+const user = process.env.PR_USER || "contributor";\
+const intent = labels.includes("major") ? "major" : (labels.includes("minor") ? "minor" : null);\
+\
+const changed = (process.env.CHANGED_FILES || "")\
+  .split(/\\r?\\n/).map(s => s.trim()).filter(Boolean)\
+  .filter(fp => fp.startsWith("site/essays/published/") && fp.endsWith(".md"));\
+\
+if (!intent || changed.length === 0) \{ console.log("No intent label or no changed published essays; exiting."); process.exit(0); \}\
+\
+function bump(v, isMajor) \{\
+  v = String(v); if (!/^\\d+\\.\\d+$/.test(v)) v = "0.1";\
+  let [maj, pat] = v.split(".").map(Number);\
+  return isMajor ? `$\{maj + 1\}.0` : `$\{maj\}.$\{(pat || 0) + 1\}`;\
+\}\
+\
+for (const fp of changed) \{\
+  const raw = fs.readFileSync(fp, "utf8");\
+  const doc = matter(raw); const d = doc.data;\
+\
+  const newVersion = bump(d.version, intent === "major");\
+  const note = `Contribution by @$\{user\} ($\{intent\}).`;\
+  d.version = newVersion;\
+  d.release_notes = [note, ...(d.release_notes || [])];\
+\
+  if (intent === "major") d.coauthors = Array.from(new Set([...(d.coauthors || []), user]));\
+  else d.acknowledgments = [...(d.acknowledgments || []), \{ user, note: "Minor contribution", since_version: newVersion \}];\
+\
+  fs.writeFileSync(fp, matter.stringify(doc.content, d), "utf8");\
+\
+  // snapshot\
+  const slug = pathLib.basename(fp, ".md");\
+  const snapDir = pathLib.join("site","essays","snapshots", slug);\
+  fs.mkdirSync(snapDir, \{ recursive: true \});\
+  const snapFront = Object.assign(\{\}, d, \{\
+    layout: "snapshot.njk",\
+    origin_slug: slug,\
+    permalink: `/essays/published/$\{slug\}/v$\{newVersion\}/`\
+  \});\
+  const snapMd = matter.stringify(doc.content, snapFront);\
+  const snapPath = pathLib.join(snapDir, `v$\{newVersion\}.md`);\
+  fs.writeFileSync(snapPath, snapMd, "utf8");\
+  console.log(`Updated $\{fp\} \uc0\u8594  version $\{newVersion\} (snapshot written)`);\
+\}\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs24 \cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 10) GitHub Workflows\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\fs24 \cf0 .github/workflows/deploy-pages.yml
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 name: Build and deploy Pages\
+on:\
+  push:\
+    branches: [ "main" ]\
+  workflow_dispatch:\
+permissions:\
+  contents: read\
+  pages: write\
+  id-token: write\
+concurrency:\
+  group: "pages"\
+  cancel-in-progress: true\
+jobs:\
+  build:\
+    runs-on: ubuntu-latest\
+    steps:\
+      - uses: actions/checkout@v4\
+      - uses: actions/setup-node@v4\
+        with: \{ node-version: 20 \}\
+      - run: npm ci || npm i\
+      - run: npm run build\
+      - uses: actions/upload-pages-artifact@v3\
+        with: \{ path: "_site" \}\
+  deploy:\
+    needs: build\
+    runs-on: ubuntu-latest\
+    environment:\
+      name: github-pages\
+      url: $\{\{ steps.deployment.outputs.page_url \}\}\
+    steps:\
+      - id: deployment\
+        uses: actions/deploy-pages@v4\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 .github/workflows/autopublish.yml
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 name: Auto-publish overdue essays\
+on:\
+  schedule:\
+    - cron: "0 * * * *"  # hourly\
+  workflow_dispatch:\
+jobs:\
+  autopublish:\
+    runs-on: ubuntu-latest\
+    steps:\
+      - uses: actions/checkout@v4\
+      - uses: actions/setup-node@v4\
+        with: \{ node-version: 20 \}\
+      - run: npm ci || npm i\
+      - run: npm run autopublish\
+      - name: Commit changes\
+        run: |\
+          if [ -n "$(git status --porcelain)" ]; then\
+            git config user.name "github-actions[bot]"\
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"\
+            git add -A\
+            git commit -m "Auto-publish overdue essays"\
+            git push\
+          else\
+            echo "No changes to commit."\
+          fi\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 .github/workflows/word-range-check.yml
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 name: Enforce word ranges\
+on:\
+  pull_request:\
+    types: [opened, synchronize, reopened, ready_for_review]\
+jobs:\
+  check:\
+    runs-on: ubuntu-latest\
+    steps:\
+      - uses: actions/checkout@v4\
+      - uses: actions/setup-node@v4\
+        with: \{ node-version: 20 \}\
+      - run: npm ci || npm i\
+      - run: npm run check:words\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 .github/workflows/version-bump.yml
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 name: Version bump on merged PR\
+on:\
+  pull_request:\
+    types: [closed]\
+jobs:\
+  bump:\
+    if: github.event.pull_request.merged == true\
+    runs-on: ubuntu-latest\
+    steps:\
+      - uses: actions/checkout@v4\
+        with:\
+          ref: $\{\{ github.event.pull_request.merge_commit_sha \}\}\
+      - uses: actions/setup-node@v4\
+        with: \{ node-version: 20 \}\
+      - run: npm ci || npm i\
+      - name: Collect changed files\
+        run: |\
+          echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV\
+          git show --name-only --pretty="" $\{\{ github.event.pull_request.merge_commit_sha \}\} | grep '^site/essays/published/.*\\.md$' || true >> $GITHUB_ENV\
+          echo "EOF" >> $GITHUB_ENV\
+      - env:\
+          PR_LABELS: $\{\{ toJson(github.event.pull_request.labels) \}\}\
+          PR_USER: $\{\{ github.event.pull_request.user.login \}\}\
+          CHANGED_FILES: $\{\{ env.CHANGED_FILES \}\}\
+        run: node scripts/bumpVersionAndCredit.js\
+      - name: Commit bumps\
+        run: |\
+          if [ -n "$(git status --porcelain)" ]; then\
+            git config user.name "github-actions[bot]"\
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"\
+            git add -A\
+            git commit -m "Version bump + credits for merged PR"\
+            git push\
+          else\
+            echo "No version changes to commit."\
+          fi\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 .github/workflows/require-change-label.yml
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 name: Require label for essay changes\
+on:\
+  pull_request:\
+    types: [opened, synchronize, labeled, unlabeled, reopened, ready_for_review]\
+jobs:\
+  require-label:\
+    runs-on: ubuntu-latest\
+    steps:\
+      - uses: actions/checkout@v4\
+      - name: Check labels on changes to published essays\
+        uses: actions/github-script@v7\
+        with:\
+          script: |\
+            const labels = (context.payload.pull_request.labels || []).map(l => l.name);\
+            const files = await github.paginate(github.rest.pulls.listFiles, \{\
+              owner: context.repo.owner,\
+              repo: context.repo.repo,\
+              pull_number: context.payload.pull_request.number,\
+              per_page: 100\
+            \});\
+            const touchesPublished = files.some(f => f.filename.startsWith('site/essays/published/') && f.filename.endsWith('.md'));\
+            if (!touchesPublished) return;\
+            const ok = labels.includes('minor') || labels.includes('major');\
+            if (!ok) core.setFailed('PR modifies published essays but lacks required label: "minor" or "major".');\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 .github/workflows/issue-to-draft.yml
+\f1\b0  (creates a draft file from \'93Start a new essay\'94 issue)\
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 name: Issue \uc0\u8594  Draft PR\
+on:\
+  issues:\
+    types: [opened, edited, labeled]\
+permissions:\
+  contents: write\
+  issues: read\
+  pull-requests: write\
+jobs:\
+  create-draft:\
+    if: contains(github.event.issue.labels.*.name, 'new-essay')\
+    runs-on: ubuntu-latest\
+    steps:\
+      - uses: actions/checkout@v4\
+      - uses: actions/setup-node@v4\
+        with: \{ node-version: 20 \}\
+      - run: npm i dayjs fs-extra\
+      - name: Generate draft from issue\
+        env:\
+          ISSUE_TITLE: $\{\{ github.event.issue.title \}\}\
+          ISSUE_BODY: $\{\{ github.event.issue.body \}\}\
+          ISSUE_USER: $\{\{ github.event.issue.user.login \}\}\
+        run: |\
+          node - <<'NODE'\
+          const fs = require('fs-extra');\
+          const dayjs = require('dayjs');\
+          const slugify = s => s.toLowerCase().normalize('NFKD').replace(/[^\\w\\s-]/g,'').trim().replace(/\\s+/g,'-').replace(/-+/g,'-');\
+\
+          const title = process.env.ISSUE_TITLE.replace(/^\\[Essay\\]\\s*/,'').trim() || 'Untitled';\
+          const body = process.env.ISSUE_BODY || '';\
+          const pick = (label) => \{ const rx = new RegExp(`$\{label\}\\\\s*:\\\\s*([^\\\\n]+)`, 'i'); const m = body.match(rx); return m ? m[1].trim() : null; \};\
+\
+          const topic = pick('Topic') || 'Untitled topic';\
+          const wordRange = pick('Word range') || '500-1000';\
+          const initialStatus = (pick('Initial status')||'unfinished').toLowerCase().includes('complete') ? 'complete' : 'unfinished';\
+          const startedAt = pick('Started at') || dayjs().format('YYYY-MM-DD');\
+          const deadlineAt = pick('Deadline at') || dayjs(startedAt).add(30,'day').format('YYYY-MM-DD');\
+\
+          const slug = slugify(title);\
+          const path = `site/essays/drafts/$\{slug\}.md`;\
+          const fm = `---\\n`+\
+          `title: "$\{title\}"\\n`+\
+          `topic: "$\{topic\}"\\n`+\
+          `author: $\{process.env.ISSUE_USER\}\\n`+\
+          `coauthors: []\\n`+\
+          `acknowledgments: []\\n`+\
+          `status: draft\\n`+\
+          `started_at: $\{startedAt\}\\n`+\
+          `deadline_at: $\{deadlineAt\}\\n`+\
+          `initial_status: $\{initialStatus\}\\n`+\
+          `version: 0.1\\n`+\
+          `word_range: "$\{wordRange\}"\\n`+\
+          `release_notes: []\\n`+\
+          `---\\n\\nStart writing here\'85\\n`;\
+\
+          fs.ensureFileSync(path);\
+          fs.writeFileSync(path, fm, 'utf8');\
+          fs.writeFileSync('___draft_path.txt', path);\
+          NODE\
+      - name: Create branch, commit, push, PR\
+        run: |\
+          BRANCH="essay/$(date +%s)"\
+          git checkout -b "$BRANCH"\
+          git add -A\
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "chore: init draft from issue"\
+          git push -u origin "$BRANCH"\
+      - uses: actions/github-script@v7\
+        with:\
+          script: |\
+            const fs = require('fs');\
+            const path = fs.readFileSync('___draft_path.txt','utf8').trim();\
+            const title = `Init draft: $\{context.payload.issue.title.replace(/^\\[Essay\\]\\s*/,'')\}`;\
+            const body = `Generated from issue #$\{context.payload.issue.number\}.\\n- File: \\`$\{path\}\\`\\n- Please fill content and adjust front matter if needed.`;\
+            await github.rest.pulls.create(\{\
+              owner: context.repo.owner, repo: context.repo.repo,\
+              head: context.ref.split('/').pop(), base: 'main',\
+              title, body, draft: false\
+            \});\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs24 \cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 11) Issue & PR Templates\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\fs24 \cf0 .github/ISSUE_TEMPLATE/new-essay.yml
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 name: Start a new essay\
+description: Propose a topic and initialize a 30-day draft with a chosen word range.\
+title: "[Essay] \{title here\}"\
+labels: ["new-essay"]\
+body:\
+  - type: input\
+    id: title\
+    attributes: \{ label: Essay title, placeholder: "On Deadlines and Honesty" \}\
+    validations: \{ required: true \}\
+  - type: textarea\
+    id: topic\
+    attributes: \{ label: Topic / one-sentence premise, placeholder: "The role of time pressure..." \}\
+    validations: \{ required: true \}\
+  - type: dropdown\
+    id: word_range\
+    attributes: \{ label: Word range, options: ["250-500","500-1000","1000-1500"] \}\
+    validations: \{ required: true \}\
+  - type: dropdown\
+    id: initial_status\
+    attributes: \{ label: Initial status (for first publish versioning), options: ["unfinished","complete"] \}\
+    validations: \{ required: true \}\
+  - type: input\
+    id: started_at\
+    attributes: \{ label: Started at (YYYY-MM-DD), placeholder: "2025-10-21" \}\
+    validations: \{ required: true \}\
+  - type: input\
+    id: deadline_at\
+    attributes: \{ label: Deadline at (YYYY-MM-DD, started_at + 30 days), placeholder: "2025-11-20" \}\
+    validations: \{ required: true \}\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 .github/ISSUE_TEMPLATE/suggest-change.yml
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 name: Suggest a change to an essay\
+description: Propose a minor (acknowledgment) or major (coauthor) contribution.\
+title: "[Suggest] \{short description\}"\
+labels: ["suggestion"]\
+body:\
+  - type: input\
+    id: essay_path\
+    attributes:\
+      label: Essay file path\
+      placeholder: site/essays/published/your-essay.md\
+    validations: \{ required: true \}\
+  - type: dropdown\
+    id: intent\
+    attributes:\
+      label: Contribution intent\
+      options: ["minor","major"]\
+    validations: \{ required: true \}\
+  - type: textarea\
+    id: rationale\
+    attributes:\
+      label: Rationale\
+      placeholder: "This adds an example that clarifies..."\
+    validations: \{ required: true \}\
+  - type: textarea\
+    id: proposed_changes\
+    attributes:\
+      label: Proposed changes (Markdown or diff)\
+      placeholder: "## New paragraph..."\
+    validations: \{ required: true \}\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 .github/ISSUE_TEMPLATE/config.yml
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 blank_issues_enabled: false\
+contact_links:\
+  - name: Questions or ideas\
+    url: https://github.com/your-username/your-repo/discussions\
+    about: Start a Discussion to brainstorm features or ask questions.\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b\fs24 \cf0 .github/PULL_REQUEST_TEMPLATE.md
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 ## Summary\
+Describe the changes in this PR.\
+\
+## Related issue or essay path\
+(eg. site/essays/published/<slug>.md)\
+\
+## Intent (choose one)\
+- [ ] minor \'97 grammatical fixes, phrasing, examples, references (Acknowledgments; patch bump)\
+- [ ] major \'97 new sections, structural or argument changes (Coauthor; major bump)\
+\
+> Apply the matching label (**minor** or **major**) to this PR before merging.\
+\
+## Release note\
+What should appear in the essay\'92s release notes?\
+\
+## Checklist\
+- [ ] Word count within selected range (`npm run check:words` passes)\
+- [ ] Content is mine / properly credited\
+- [ ] I accept DUE\'92s Contributor Guidelines (crediting & versioning)\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs24 \cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 12) giscus (Discussions) Integration\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\fs24 \cf0 Steps
+\f1\b0 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa240\partightenfactor0
+\ls5\ilvl0\cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	1	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Enable 
+\f0\b Discussions
+\f1\b0  in the repo, create a 
+\f0\b category
+\f1\b0  (e.g., \'93Comments\'94).\
+\ls5\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	2	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Get 
+\f2\fs26 data-repo
+\f1\fs24 , 
+\f2\fs26 data-repo-id
+\f1\fs24 , 
+\f2\fs26 data-category
+\f1\fs24 , 
+\f2\fs26 data-category-id
+\f1\fs24  from giscus.dev config.\
+\ls5\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	3	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Add this to 
+\f0\b site/_includes/base.njk
+\f1\b0  just before the closing 
+\f2\fs26 </main>
+\f1\fs24 , but only on essay pages:\
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf0 \{% if page.url and page.url.startsWith('/essays/published/') %\}\
+<section class="card" id="comments">\
+  <h3>Discussion</h3>\
+  <script src="https://giscus.app/client.js"\
+          data-repo="your-username/your-repo"\
+          data-repo-id="REPO_ID"\
+          data-category="Comments"\
+          data-category-id="CATEGORY_ID"\
+          data-mapping="pathname"\
+          data-strict="1"\
+          data-reactions-enabled="1"\
+          data-emit-metadata="0"\
+          data-input-position="bottom"\
+          data-theme="light"\
+          data-lang="en"\
+          crossorigin="anonymous"\
+          async>\
+  </script>\
+  <noscript>Enable JavaScript to view comments.</noscript>\
+</section>\
+\{% endif %\}\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs24 \cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 13) Optional Integrations (brief)\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa240\partightenfactor0
+\ls6\ilvl0
+\fs24 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Cron/hosting alternatives:
+\f1\b0  If you migrate from Pages, wire auto-publish to Cloudflare Workers Cron / Vercel Cron / Netlify Scheduled Functions.\
+\ls6\ilvl0
+\f0\b \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Auth + Form submissions:
+\f1\b0  Use Supabase/Firebase auth with a serverless function that transforms form submissions into GitHub Issues/PRs.\
+\ls6\ilvl0
+\f0\b \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Decap CMS:
+\f1\b0  Add a 
+\f2\fs26 /admin/
+\f1\fs24  route; configure to commit directly to 
+\f2\fs26 site/essays/*
+\f1\fs24 . Keep Actions intact.\
+\pard\pardeftab720\partightenfactor0
+\cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 14) Archiving & Citations\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa240\partightenfactor0
+\ls7\ilvl0
+\f1\b0\fs24 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Periodically deposit 
+\f0\b snapshot folders
+\f1\b0  (or yearly \'93anthologies\'94) to 
+\f0\b Zenodo
+\f1\b0  or 
+\f0\b OSF
+\f1\b0  to mint stable DOIs.\
+\ls7\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Include DOI badges/links in the site and release notes if desired.\
+\pard\pardeftab720\partightenfactor0
+\cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 15) Post-Setup Tasks (Manual)\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa240\partightenfactor0
+\ls8\ilvl0
+\f1\b0\fs24 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Create repo labels: 
+\f2\fs26 minor
+\f1\fs24 , 
+\f2\fs26 major
+\f1\fs24 , 
+\f2\fs26 new-essay
+\f1\fs24 , 
+\f2\fs26 suggestion
+\f1\fs24 .\
+\ls8\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 In 
+\f0\b Settings \uc0\u8594  Pages
+\f1\b0 , set 
+\f0\b Build and deployment
+\f1\b0  = 
+\f0\b GitHub Actions
+\f1\b0 .\
+\ls8\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 In 
+\f0\b Settings \uc0\u8594  Discussions
+\f1\b0 , enable Discussions; record giscus IDs.\
+\ls8\ilvl0\kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Update 
+\f2\fs26 site/_data/site.json
+\f1\fs24  \uc0\u8594  
+\f2\fs26 repoUrl
+\f1\fs24  with your actual repo URL.\
+\pard\pardeftab720\partightenfactor0
+\cf3 \strokec3 \
+\pard\pardeftab720\sa298\partightenfactor0
+
+\f0\b\fs36 \cf0 \strokec2 16) Acceptance Tests\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa240\partightenfactor0
+\ls9\ilvl0
+\fs24 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Timer:
+\f1\b0  Create a draft with 
+\f2\fs26 deadline_at
+\f1\fs24  in the past \uc0\u8594  Action moves it to 
+\f2\fs26 published/
+\f1\fs24 , assigns v1.0 or v0.1 correctly, adds release note.\
+\ls9\ilvl0
+\f0\b \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Word ranges:
+\f1\b0  PR outside the selected range fails 
+\f2\fs26 word-range-check
+\f1\fs24 .\
+\ls9\ilvl0
+\f0\b \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Credits & bumps:
+\f1\b0  Merge PR to a published essay with 
+\f2\fs26 minor
+\f1\fs24  \uc0\u8594  patch bump + new Acknowledgment; with 
+\f2\fs26 major
+\f1\fs24  \uc0\u8594  major bump + Coauthor. Snapshot file written at 
+\f2\fs26 snapshots/<slug>/vX.Y.md
+\f1\fs24 .\
+\ls9\ilvl0
+\f0\b \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Version history UI:
+\f1\b0  Published essay page lists snapshots; links open the snapshot page.\
+\ls9\ilvl0
+\f0\b \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Label enforcement:
+\f1\b0  PR that touches 
+\f2\fs26 site/essays/published/*.md
+\f1\fs24  without 
+\f2\fs26 minor|major
+\f1\fs24  label fails CI.\
+\ls9\ilvl0
+\f0\b \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Issue \uc0\u8594  Draft:
+\f1\b0  Opening an issue with label 
+\f2\fs26 new-essay
+\f1\fs24  generates a draft file and a PR.\
+\pard\pardeftab720\partightenfactor0
+\cf3 \strokec3 \
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\b \cf0 \strokec2 End of implementation spec.
+\f1\b0 \
+}
