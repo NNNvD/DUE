@@ -16,19 +16,20 @@ module.exports = function(eleventyConfig) {
     return date.toISOString();
   });
   eleventyConfig.addCollection("publishedEssays", (collectionApi) => {
-    return collectionApi
-      .getFilteredByGlob("site/essays/**/*.md")
+    const entries = collectionApi
+      .getFilteredByTag("essay")
       .filter((item) => item.data.status === "published")
       .sort((a, b) => {
         const aDate = a.data.published_at ? new Date(a.data.published_at) : new Date(0);
         const bDate = b.data.published_at ? new Date(b.data.published_at) : new Date(0);
         return bDate - aDate;
       });
+    return entries;
   });
 
   eleventyConfig.addCollection("draftEssays", (collectionApi) => {
     return collectionApi
-      .getFilteredByGlob("site/essays/**/*.md")
+      .getFilteredByTag("essay")
       .filter((item) => item.data.status === "draft")
       .sort((a, b) => {
         const aDeadline = a.data.deadline_at ? new Date(a.data.deadline_at) : new Date(8640000000000000);
@@ -39,6 +40,26 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addCollection("snapshots", (collectionApi) => {
     return collectionApi.getFilteredByGlob("site/essays/snapshots/**/*.md");
+  });
+
+  eleventyConfig.addFilter("snapshotsForSlug", (snapshots = [], slug) => {
+    if (!slug || slug.startsWith("_")) return [];
+    return snapshots
+      .filter((item) => item.data && item.data.origin_slug === slug)
+      .sort((a, b) => {
+        const getDate = (entry) => {
+          if (entry.data && entry.data.published_at) {
+            const parsed = new Date(entry.data.published_at);
+            if (!Number.isNaN(parsed.getTime())) {
+              return parsed.getTime();
+            }
+          }
+          const fallback = entry.date instanceof Date ? entry.date : new Date(0);
+          return fallback.getTime();
+        };
+
+        return getDate(b) - getDate(a);
+      });
   });
 
   // Allow custom domain via site/CNAME passthrough (optional)

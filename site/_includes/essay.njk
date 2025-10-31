@@ -51,23 +51,35 @@ layout: base.njk
 <section class="card">
   <h3>Version history</h3>
   {% set currentSlug = page.fileSlug %}
-  {% set history = collections.snapshots %}
-  {% set hasAny = false %}
-  <ul>
-  {% for snap in history %}
-    {% if snap.data.origin_slug == currentSlug %}
-      {% set hasAny = true %}
-      <li>
-        <a href="{{ snap.url }}">v{{ snap.data.version }}</a>
+  {% set snapshots = collections.snapshots | snapshotsForSlug(currentSlug) %}
+  {% set hasSnapshots = snapshots | length %}
+  {% if hasSnapshots %}
+    <ul class="history-list">
+      {% for snap in snapshots %}
+        {% set note = null %}
         {% if snap.data.release_notes and snap.data.release_notes.length %}
-          — {{ snap.data.release_notes[0] }}
+          {% set note = snap.data.release_notes[0] %}
         {% endif %}
-      </li>
-    {% endif %}
-  {% endfor %}
-  </ul>
-  {% if not hasAny %}
+        {% set historyDate = snap.data.published_at or null %}
+        <li>
+          <div class="history-line">
+            <a class="history-version" href="{{ snap.url | url }}">v{{ snap.data.version }}</a>
+            {% if historyDate %}
+              <span class="history-date">{{ historyDate | date("yyyy-LL-dd") }}</span>
+            {% endif %}
+          </div>
+          {% if note %}
+            <p class="history-note">{{ note }}</p>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
     <p>No snapshots yet.</p>
+  {% endif %}
+  {% if currentSlug and currentSlug[0] != '_' %}
+    {% set historyPath = '/essays/published/' ~ currentSlug ~ '/history/' %}
+    <p class="history-linkout"><a href="{{ historyPath | url }}">Browse full history →</a></p>
   {% endif %}
 </section>
 
