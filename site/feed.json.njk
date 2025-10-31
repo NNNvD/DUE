@@ -1,0 +1,33 @@
+---
+permalink: feed.json
+layout: null
+eleventyExcludeFromCollections: true
+---
+{% set posts = collections.publishedEssays or [] %}
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": {{ site.title | dump }},
+  "home_page_url": {{ site.siteUrl | dump }},
+  "feed_url": {{ '/feed.json' | url | absoluteUrl(site.siteUrl) | dump }},
+  "description": {{ site.tagline | dump }},
+  "items": [
+    {% for post in posts %}
+      {% set releaseNote = "" %}
+      {% if post.data.release_notes and post.data.release_notes.length %}
+        {% set releaseNote = post.data.release_notes[0] %}
+      {% endif %}
+      {% set contentText = "Version " ~ (post.data.version or "") %}
+      {% if releaseNote %}{% set contentText = contentText ~ " — " ~ releaseNote %}{% endif %}
+      {
+        "id": {{ post.url | url | absoluteUrl(site.siteUrl) | dump }},
+        "url": {{ post.url | url | absoluteUrl(site.siteUrl) | dump }},
+        "title": {{ post.data.title | dump }},
+        "date_published": {{ post.data.published_at | dump }},
+        "authors": [
+          {% if post.data.author %}{"name": "@{{ post.data.author }}"}{% endif %}
+        ],
+        "content_text": {{ contentText | dump }}
+      }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
