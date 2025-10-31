@@ -51,22 +51,19 @@ layout: base.njk
 <section class="card">
   <h3>Version history</h3>
   {% set currentSlug = page.fileSlug %}
-  {% set history = collections.snapshots %}
-  {% set hasAny = false %}
-  <ul>
-  {% for snap in history %}
-    {% if snap.data.origin_slug == currentSlug %}
-      {% set hasAny = true %}
+  {% set history = collections.snapshots | snapshotsFor(currentSlug) %}
+  {% if history.length %}
+    <ul>
+    {% for snap in history %}
       <li>
         <a href="{{ snap.url }}">v{{ snap.data.version }}</a>
         {% if snap.data.release_notes and snap.data.release_notes.length %}
           — {{ snap.data.release_notes[0] }}
         {% endif %}
       </li>
-    {% endif %}
-  {% endfor %}
-  </ul>
-  {% if not hasAny %}
+    {% endfor %}
+    </ul>
+  {% else %}
     <p>No snapshots yet.</p>
   {% endif %}
 </section>
