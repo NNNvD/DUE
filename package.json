@@ -7,7 +7,9 @@
     "start": "eleventy --serve",
     "check:words": "node scripts/checkWordRange.js",
     "autopublish": "node scripts/autopublish.js",
-    "bump": "node scripts/bumpVersionAndCredit.js"
+    "bump": "node scripts/bumpVersionAndCredit.js",
+    "validate:feeds": "node scripts/validateFeeds.js",
+    "verify:feeds": "npm run build && npm run validate:feeds"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0"
