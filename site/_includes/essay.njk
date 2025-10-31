@@ -58,7 +58,7 @@ layout: base.njk
     {% if snap.data.origin_slug == currentSlug %}
       {% set hasAny = true %}
       <li>
-        <a href="{{ snap.url }}">v{{ snap.data.version }}</a>
+        <a href="{{ snap.url | url }}">v{{ snap.data.version }}</a>
         {% if snap.data.release_notes and snap.data.release_notes.length %}
           — {{ snap.data.release_notes[0] }}
         {% endif %}

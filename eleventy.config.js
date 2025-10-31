@@ -48,13 +48,6 @@ module.exports = function(eleventyConfig) {
     // no-op if file not present
   }
 
-  // Compute base path for GitHub Pages (auto-detect)
-  const repo = process.env.GITHUB_REPOSITORY || ""; // e.g., owner/repo
-  const repoName = (repo.split("/")[1] || "").trim();
-  const isUserSite = /\.github\.io$/i.test(repoName);
-  const computedBase = repoName ? (isUserSite ? "/" : `/${repoName}/`) : "/";
-  const baseUrl = process.env.BASE_URL || computedBase;
-
   return {
     dir: {
       input: "site",
@@ -63,6 +56,6 @@ module.exports = function(eleventyConfig) {
       output: "_site"
     },
     // Ensure 11ty-generated URLs respect the Pages base path
-    pathPrefix: baseUrl
+    pathPrefix: "/DUE/"
   };
 };
