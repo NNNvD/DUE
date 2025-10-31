@@ -71,4 +71,6 @@ layout: base.njk
   {% endif %}
 </section>
 
-{% include "giscus.njk" %}
+{% if status == "published" %}
+  {% include "giscus.njk" %}
+{% endif %}
