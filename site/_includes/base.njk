@@ -34,18 +34,18 @@
   <main>
     <header>
       <div class="brand">
-        <h1><a href="{{ site.baseUrl }}">{{ site.title }}</a></h1>
+        <h1><a href="{{ "/" | url }}">{{ site.title }}</a></h1>
         <small>{{ site.tagline }}</small>
       </div>
       <nav>
-        <a href="{{ site.baseUrl }}">Home</a>
+        <a href="{{ "/" | url }}">Home</a>
       </nav>
     </header>
     {{ content | safe }}
     <footer>
-      Built with Eleventy.
+      Built with Eleventy. Content &copy; {{ site.currentYear }}.
     </footer>
   </main>
-  <script type="module" src="{{ site.baseUrl }}assets/countdown.js"></script>
+  <script type="module" src="{{ "/assets/countdown.js" | url }}"></script>
 </body>
 </html>

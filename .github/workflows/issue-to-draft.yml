@@ -1,0 +1,130 @@
+name: Issue → Draft PR
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+
+permissions:
+  contents: write
+  issues: read
+  pull-requests: write
+
+jobs:
+  create-draft:
+    if: contains(github.event.issue.labels.*.name, 'new-essay')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install dayjs fs-extra
+      - name: Generate draft from issue
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_USER: ${{ github.event.issue.user.login }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs-extra');
+          const path = require('path');
+          const dayjs = require('dayjs');
+
+          const rawTitle = (process.env.ISSUE_TITLE || '').replace(/^\[Essay\]\s*/i, '').trim();
+          const title = rawTitle || 'Untitled essay';
+          const body = process.env.ISSUE_BODY || '';
+          const author = process.env.ISSUE_USER || 'unknown';
+
+          const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+          const pick = (heading) => {
+            const pattern = new RegExp(`###\\s+${escapeRegExp(heading)}\\s+([\\s\\S]*?)(?=\\n###|$)`, 'i');
+            const match = body.match(pattern);
+            return match ? match[1].trim() : '';
+          };
+
+          const topic = pick('Topic / one-sentence premise') || 'Untitled topic';
+          const wordRange = pick('Word range').split('\n')[0].trim() || '500-1000';
+          const initialStatusRaw = pick('Initial status') || 'unfinished';
+          const initialStatus = /complete/i.test(initialStatusRaw) ? 'complete' : 'unfinished';
+          const startedAt = pick('Started at') || dayjs().format('YYYY-MM-DD');
+          const deadlineAt = pick('Deadline at') || dayjs(startedAt).add(30, 'day').format('YYYY-MM-DD');
+
+          const slugify = (value) => {
+            return value
+              .toLowerCase()
+              .normalize('NFKD')
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/(^-|-$)/g, '');
+          };
+
+          const baseSlug = slugify(title) || `essay-${dayjs().format('YYYYMMDDHHmmss')}`;
+          const draftsDir = path.join('site', 'essays', 'drafts');
+          fs.ensureDirSync(draftsDir);
+
+          let slug = baseSlug;
+          let suffix = 1;
+          while (fs.existsSync(path.join(draftsDir, `${slug}.md`))) {
+            slug = `${baseSlug}-${suffix++}`;
+          }
+
+          const dest = path.join(draftsDir, `${slug}.md`);
+          const frontMatter = `---\n` +
+            `title: "${title.replace(/"/g, '\\"')}"\n` +
+            `topic: "${topic.replace(/"/g, '\\"')}"\n` +
+            `author: ${author}\n` +
+            `coauthors: []\n` +
+            `acknowledgments: []\n` +
+            `status: draft\n` +
+            `started_at: ${startedAt}\n` +
+            `deadline_at: ${deadlineAt}\n` +
+            `initial_status: ${initialStatus}\n` +
+            `version: 0.1\n` +
+            `word_range: "${wordRange}"\n` +
+            `release_notes: []\n` +
+            `---\n\n`;
+
+          fs.writeFileSync(dest, frontMatter, 'utf8');
+          fs.writeFileSync('___draft_path.txt', dest, 'utf8');
+          NODE
+      - name: Create branch, commit, and push
+        id: push
+        run: |
+          if [[ -z "$(git status --porcelain)" ]]; then
+            echo "No changes to commit."
+            echo "branch=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          BRANCH="essay/issue-${{ github.event.issue.number }}"
+          git checkout -b "$BRANCH"
+          git add -A
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "chore: init draft from issue #${{ github.event.issue.number }}"
+          git push -u origin "$BRANCH"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+      - name: Open pull request
+        if: steps.push.outputs.branch != ''
+        uses: actions/github-script@v7
+        env:
+          BRANCH: ${{ steps.push.outputs.branch }}
+        with:
+          script: |
+            const fs = require('fs');
+            const path = fs.readFileSync('___draft_path.txt', 'utf8').trim();
+            const cleanedTitle = (context.payload.issue.title || '').replace(/^\[Essay\]\s*/i, '').trim();
+            const prTitle = cleanedTitle ? `Init draft: ${cleanedTitle}` : `Init draft for issue #${context.payload.issue.number}`;
+            const prBody = [
+              `Generated from issue #${context.payload.issue.number}.`,
+              '',
+              `- File: \`${path}\``,
+              '',
+              'Please fill content and adjust front matter if needed.'
+            ].join('\n');
+            await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: process.env.BRANCH,
+              base: 'main',
+              title: prTitle,
+              body: prBody,
+              draft: false,
+            });
