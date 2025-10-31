@@ -3,19 +3,40 @@
 layout: base.njk
 ---
 <article class="card">
-  <h1>{{ title }}</h1>
-  <div class="meta">
-    <span class="badge">Version {{ version }}</span>
-    {% if initial_status == "complete" %}
-      <span class="badge">Published completed</span>
-    {% else %}
-      <span class="badge">Published unfinished</span>
-    {% endif %}
-    <span class="badge">{{ word_range }} words</span>
-    {% if author %}<span>By <strong>@{{ author }}</strong></span>{% endif %}
-    {% if coauthors and coauthors.length %}<span>with {% for a in coauthors %}@{{a}}{% if not loop.last %}, {% endif %}{% endfor %}</span>{% endif %}
-    {% if published_at %}<span>Published: {{ published_at | date("yyyy-LL-dd") }}</span>{% endif %}
-  </div>
+  {% set meta = {
+    version: version,
+    initial_status: initial_status,
+    word_range: word_range,
+    published_at: published_at,
+    author: author,
+    coauthors: coauthors,
+    acknowledgments: acknowledgments
+  } | essayMeta %}
+  <header class="essay-header">
+    <h1 class="essay-title">{{ title }}</h1>
+    <div class="essay-header__row">
+      {% if meta.badges.length %}
+        <div class="essay-badges" aria-label="Publication details">
+          {% for badge in meta.badges %}
+            <span class="badge badge--tone-{{ badge.tone }} badge--{{ badge.key }}"{% if badge.tooltip %} title="{{ badge.tooltip }}"{% endif %}>{{ badge.label }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% if meta.author or meta.coauthors.length or meta.acknowledgments.length %}
+        <div class="essay-contributors" aria-label="Contributors">
+          {% if meta.author %}
+            <span class="badge badge--tone-{{ meta.author.tone }} badge--author" title="{{ meta.author.tooltip }}">@{{ meta.author.handle }}</span>
+          {% endif %}
+          {% for person in meta.coauthors %}
+            <span class="badge badge--tone-{{ person.tone }} badge--coauthor"{% if person.tooltip %} title="{{ person.tooltip }}"{% endif %}>@{{ person.handle }}</span>
+          {% endfor %}
+          {% for ack in meta.acknowledgments %}
+            <span class="badge badge--tone-{{ ack.tone }} badge--ack"{% if ack.tooltip %} title="{{ ack.tooltip }}"{% endif %}>@{{ ack.handle }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </header>
   <div class="content">
     {{ content | safe }}
   </div>
@@ -36,10 +57,14 @@ layout: base.njk
 
 <section class="card">
   <h3>Acknowledgments</h3>
-  {% if acknowledgments and acknowledgments.length %}
+  {% if meta.acknowledgments and meta.acknowledgments.length %}
     <ul>
-      {% for ack in acknowledgments %}
-        <li>@{{ ack.user }} — {{ ack.note }} (since v{{ ack.since_version }})</li>
+      {% for ack in meta.acknowledgments %}
+        <li>
+          @{{ ack.handle }}
+          {% if ack.note %}— {{ ack.note }}{% endif %}
+          {% if ack.since_version %}<span class="ack-since">(since v{{ ack.since_version }})</span>{% endif %}
+        </li>
       {% endfor %}
     </ul>
   {% else %}
