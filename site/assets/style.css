@@ -33,3 +33,6 @@ hr{border:none;border-top:1px solid var(--border);margin:2rem 0}
 .btn-ghost{background:#fff;color:var(--ink)}
 .draft-list{list-style:none;padding-left:1rem;margin:0}
 .draft-list li{margin:.35rem 0}
+.draft-card header{margin-bottom:.75rem}
+.draft-card .meta{margin-top:.5rem}
+.deadline-badge{background:var(--ink);color:#fff;border-color:var(--ink)}
