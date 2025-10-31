@@ -5,6 +5,8 @@ const DEFAULTS = {
   tagline: "Write. Publish. Evolve.",
 };
 
+const currentYear = new Date().getFullYear();
+
 function ensureTrailingSlash(value) {
   if (!value) return "/";
   return value.endsWith("/") ? value : `${value}/`;
@@ -54,6 +56,7 @@ module.exports = {
   pathPrefix,
   siteUrl: computeSiteUrl(pathPrefix),
   repoUrl: computeRepoUrl(),
+  currentYear,
   giscus: {
     // Optional. Set these via repository secrets/env to enable.
     repo: process.env.GISCUS_REPO || "",
