@@ -21,6 +21,12 @@ function computeSiteUrl(pathPrefix) {
   const explicit = process.env.SITE_URL;
   if (explicit) return ensureTrailingSlash(explicit);
 
+function ensureTrailingSlash(url) {
+  if (!url) return "/";
+  return url.endsWith("/") ? url : `${url}/`;
+}
+
+function computeBaseUrl() {
   const repo = process.env.GITHUB_REPOSITORY || ""; // owner/repo
   const [owner, name] = repo.split("/");
   if (!owner || !name) {
@@ -43,20 +49,14 @@ function computeRepoUrl() {
   return baseConfig.repoUrl || "https://github.com/your-username/your-repo";
 }
 
-function resolveGiscusConfig() {
-  const defaults = baseConfig.giscus || {};
-  return {
-    ...defaults,
-    repo: process.env.GISCUS_REPO || defaults.repo,
-    repoId: process.env.GISCUS_REPO_ID || defaults.repoId,
-    category: process.env.GISCUS_CATEGORY || defaults.category,
-    categoryId: process.env.GISCUS_CATEGORY_ID || defaults.categoryId,
-    mapping: process.env.GISCUS_MAPPING || defaults.mapping,
-    theme: process.env.GISCUS_THEME || defaults.theme,
-  };
+function computeSiteUrl(baseUrl) {
+  const envSite = process.env.SITE_URL || process.env.URL;
+  if (envSite) return ensureTrailingSlash(envSite);
+  const base = ensureTrailingSlash(baseUrl || "/");
+  const origin = process.env.SITE_ORIGIN || "http://localhost:8080";
+  const normalizedOrigin = origin.replace(/\/$/, "");
+  return `${normalizedOrigin}${base}`;
 }
-
-const pathPrefix = computePathPrefix();
 
 module.exports = {
   ...DEFAULTS,
@@ -64,7 +64,13 @@ module.exports = {
   pathPrefix,
   siteUrl: computeSiteUrl(pathPrefix),
   repoUrl: computeRepoUrl(),
-  currentYear,
+  get siteUrl() {
+    // Lazy compute to ensure baseUrl is initialized first
+    if (!this._siteUrl) {
+      this._siteUrl = computeSiteUrl(this.baseUrl);
+    }
+    return this._siteUrl;
+  },
   giscus: {
     // Optional. Set these via repository secrets/env to enable.
     repo: process.env.GISCUS_REPO || "",
