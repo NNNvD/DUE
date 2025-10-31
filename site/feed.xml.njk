@@ -1,0 +1,31 @@
+---
+permalink: feed.xml
+layout: null
+eleventyExcludeFromCollections: true
+---
+{% set posts = collections.publishedEssays or [] %}
+{% set latest = posts | first %}
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>{{ site.title }}</title>
+    <link>{{ site.siteUrl }}</link>
+    <description>{{ site.tagline }}</description>
+    <lastBuildDate>{{ (latest and latest.data.published_at) | rssDate }}</lastBuildDate>
+    <generator>Eleventy</generator>
+    {% for post in posts %}
+      {% set releaseNote = "" %}
+      {% if post.data.release_notes and post.data.release_notes.length %}
+        {% set releaseNote = post.data.release_notes[0] %}
+      {% endif %}
+      <item>
+        <title>{{ post.data.title }}</title>
+        <link>{{ post.url | url | absoluteUrl(site.siteUrl) }}</link>
+        <guid isPermaLink="true">{{ post.url | url | absoluteUrl(site.siteUrl) }}</guid>
+        <pubDate>{{ post.data.published_at | rssDate }}</pubDate>
+        {% if releaseNote %}<description>{{ releaseNote | escape }}</description>{% endif %}
+        {% if post.data.author %}<dc:creator>@{{ post.data.author }}</dc:creator>{% endif %}
+      </item>
+    {% endfor %}
+  </channel>
+</rss>

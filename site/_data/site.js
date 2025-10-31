@@ -1,16 +1,44 @@
+const DEFAULT_PATH_PREFIX = "/DUE/";
+
 const DEFAULTS = {
   title: "DUE — Deadline for Unfinished Essays",
   tagline: "Write. Publish. Evolve.",
 };
 
-function computeBaseUrl() {
+const currentYear = new Date().getFullYear();
+
+function ensureTrailingSlash(value) {
+  if (!value) return "/";
+  return value.endsWith("/") ? value : `${value}/`;
+}
+
+function computePathPrefix() {
+  const explicit = process.env.BASE_URL;
+  if (explicit) {
+    return ensureTrailingSlash(explicit);
+  }
+
+  const isProduction = process.env.ELEVENTY_ENV === "production";
+  return ensureTrailingSlash(isProduction ? DEFAULT_PATH_PREFIX : "/");
+}
+
+function computeSiteUrl(pathPrefix) {
+  const explicit = process.env.SITE_URL;
+  if (explicit) return ensureTrailingSlash(explicit);
+
   const repo = process.env.GITHUB_REPOSITORY || ""; // owner/repo
-  const name = (repo.split("/")[1] || "").trim();
+  const [owner, name] = repo.split("/");
+  if (!owner || !name) {
+    return ensureTrailingSlash(`http://localhost:8080${pathPrefix}`);
+  }
+
   const isUserSite = /\.github\.io$/i.test(name);
-  const envBase = process.env.BASE_URL; // allow manual override
-  if (envBase) return envBase.endsWith("/") ? envBase : envBase + "/";
-  if (!name) return "/";
-  return isUserSite ? "/" : `/${name}/`;
+  const host = `${owner}.github.io`;
+  if (isUserSite) {
+    return ensureTrailingSlash(`https://${name}`);
+  }
+
+  return ensureTrailingSlash(`https://${host}${pathPrefix}`);
 }
 
 function computeRepoUrl() {
@@ -20,10 +48,15 @@ function computeRepoUrl() {
   return "https://github.com/your-username/your-repo";
 }
 
+const pathPrefix = computePathPrefix();
+
 module.exports = {
   ...DEFAULTS,
-  baseUrl: computeBaseUrl(),
+  baseUrl: pathPrefix,
+  pathPrefix,
+  siteUrl: computeSiteUrl(pathPrefix),
   repoUrl: computeRepoUrl(),
+  currentYear,
   giscus: {
     // Optional. Set these via repository secrets/env to enable.
     repo: process.env.GISCUS_REPO || "",
