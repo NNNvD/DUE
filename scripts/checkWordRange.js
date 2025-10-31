@@ -1,4 +1,3 @@
-
 const fs = require("fs");
 const matter = require("gray-matter");
 const { unified } = require("unified");
@@ -6,8 +5,29 @@ const parse = require("remark-parse");
 const strip = require("strip-markdown");
 const path = require("path");
 
+const parsePlugin = parse.default || parse;
+const stripPlugin = strip.default || strip;
+
+function asPlainText(markdown) {
+  const processor = unified().use(parsePlugin).use(stripPlugin);
+  const tree = processor.parse(markdown);
+  const stripped = processor.runSync(tree);
+  const pieces = [];
+
+  (function collect(node) {
+    if (typeof node.value === "string") {
+      pieces.push(node.value);
+    }
+    if (Array.isArray(node.children)) {
+      node.children.forEach(collect);
+    }
+  })(stripped);
+
+  return pieces.join(" ");
+}
+
 function wordCount(md) {
-  const text = String(unified().use(parse).use(strip).processSync(md));
+  const text = asPlainText(md);
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 

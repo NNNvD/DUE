@@ -16,6 +16,8 @@ function resolvePathPrefix() {
 }
 
 module.exports = function(eleventyConfig) {
+  eleventyConfig.addPassthroughCopy({ "site/assets": "assets" });
+
   eleventyConfig.addFilter("date", (value, format = "yyyy-LL-dd") => {
     if (!value) return "";
     const date = new Date(value);
