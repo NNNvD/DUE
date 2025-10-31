@@ -88,8 +88,6 @@ module.exports = function(eleventyConfig) {
     // no-op if file not present
   }
 
-  const pathPrefix = resolvePathPrefix();
-
   return {
     dir: {
       input: "site",
@@ -98,6 +96,6 @@ module.exports = function(eleventyConfig) {
       output: "_site"
     },
     // Ensure 11ty-generated URLs respect the Pages base path
-    pathPrefix
+    pathPrefix: "/DUE/"
   };
 };
