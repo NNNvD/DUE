@@ -3,6 +3,11 @@ const DEFAULTS = {
   tagline: "Write. Publish. Evolve.",
 };
 
+function ensureTrailingSlash(url) {
+  if (!url) return "/";
+  return url.endsWith("/") ? url : `${url}/`;
+}
+
 function computeBaseUrl() {
   const repo = process.env.GITHUB_REPOSITORY || ""; // owner/repo
   const name = (repo.split("/")[1] || "").trim();
@@ -20,10 +25,26 @@ function computeRepoUrl() {
   return "https://github.com/your-username/your-repo";
 }
 
+function computeSiteUrl(baseUrl) {
+  const envSite = process.env.SITE_URL || process.env.URL;
+  if (envSite) return ensureTrailingSlash(envSite);
+  const base = ensureTrailingSlash(baseUrl || "/");
+  const origin = process.env.SITE_ORIGIN || "http://localhost:8080";
+  const normalizedOrigin = origin.replace(/\/$/, "");
+  return `${normalizedOrigin}${base}`;
+}
+
 module.exports = {
   ...DEFAULTS,
   baseUrl: computeBaseUrl(),
   repoUrl: computeRepoUrl(),
+  get siteUrl() {
+    // Lazy compute to ensure baseUrl is initialized first
+    if (!this._siteUrl) {
+      this._siteUrl = computeSiteUrl(this.baseUrl);
+    }
+    return this._siteUrl;
+  },
   giscus: {
     // Optional. Set these via repository secrets/env to enable.
     repo: process.env.GISCUS_REPO || "",
