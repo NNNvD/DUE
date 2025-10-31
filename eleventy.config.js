@@ -16,7 +16,15 @@ function resolvePathPrefix() {
 }
 
 module.exports = function(eleventyConfig) {
-  eleventyConfig.addPassthroughCopy({ "site/assets": "assets" });
+  const parseVersion = (value) => {
+    const parts = String(value || "0.0").split(".");
+    const major = parseInt(parts[0], 10);
+    const minor = parseInt(parts[1] || "0", 10);
+    return {
+      major: Number.isFinite(major) ? major : 0,
+      minor: Number.isFinite(minor) ? minor : 0
+    };
+  };
 
   eleventyConfig.addFilter("date", (value, format = "yyyy-LL-dd") => {
     if (!value) return "";
@@ -62,7 +70,28 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addCollection("snapshots", (collectionApi) => {
-    return collectionApi.getFilteredByGlob("site/essays/snapshots/**/*.md");
+    return collectionApi
+      .getFilteredByGlob("site/essays/snapshots/**/*.md")
+      .sort((a, b) => {
+        const slugA = a.data.origin_slug || "";
+        const slugB = b.data.origin_slug || "";
+        const slugCompare = slugA.localeCompare(slugB);
+        if (slugCompare !== 0) return slugCompare;
+
+        const aVersion = parseVersion(a.data.version);
+        const bVersion = parseVersion(b.data.version);
+
+        if (bVersion.major !== aVersion.major) {
+          return bVersion.major - aVersion.major;
+        }
+
+        return bVersion.minor - aVersion.minor;
+      });
+  });
+
+  eleventyConfig.addFilter("snapshotsFor", (snapshots, slug) => {
+    if (!Array.isArray(snapshots)) return [];
+    return snapshots.filter((snap) => snap.data.origin_slug === slug);
   });
 
   eleventyConfig.addFilter("snapshotsForSlug", (snapshots = [], slug) => {
