@@ -1,4 +1,23 @@
+const DEFAULT_PATH_PREFIX = "/DUE/";
+
+function ensureTrailingSlash(value) {
+  if (!value) return "/";
+  return value.endsWith("/") ? value : `${value}/`;
+}
+
+function resolvePathPrefix() {
+  const explicit = process.env.BASE_URL;
+  if (explicit) {
+    return ensureTrailingSlash(explicit);
+  }
+
+  const isProduction = process.env.ELEVENTY_ENV === "production";
+  return ensureTrailingSlash(isProduction ? DEFAULT_PATH_PREFIX : "/");
+}
+
 module.exports = function(eleventyConfig) {
+  eleventyConfig.addPassthroughCopy({ "site/assets": "assets" });
+
   eleventyConfig.addFilter("date", (value, format = "yyyy-LL-dd") => {
     if (!value) return "";
     const date = new Date(value);
@@ -15,6 +34,10 @@ module.exports = function(eleventyConfig) {
 
     return date.toISOString();
   });
+  const isTemplateEntry = (item) => {
+    return item && typeof item.inputPath === "string" && item.inputPath.includes("_template");
+  };
+
   eleventyConfig.addCollection("publishedEssays", (collectionApi) => {
     const entries = collectionApi
       .getFilteredByTag("essay")
@@ -69,13 +92,6 @@ module.exports = function(eleventyConfig) {
     // no-op if file not present
   }
 
-  // Compute base path for GitHub Pages (auto-detect)
-  const repo = process.env.GITHUB_REPOSITORY || ""; // e.g., owner/repo
-  const repoName = (repo.split("/")[1] || "").trim();
-  const isUserSite = /\.github\.io$/i.test(repoName);
-  const computedBase = repoName ? (isUserSite ? "/" : `/${repoName}/`) : "/";
-  const baseUrl = process.env.BASE_URL || computedBase;
-
   return {
     dir: {
       input: "site",
@@ -84,6 +100,6 @@ module.exports = function(eleventyConfig) {
       output: "_site"
     },
     // Ensure 11ty-generated URLs respect the Pages base path
-    pathPrefix: baseUrl
+    pathPrefix: "/DUE/"
   };
 };
