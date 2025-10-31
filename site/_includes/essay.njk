@@ -4,18 +4,61 @@ layout: base.njk
 ---
 <article class="card">
   <h1>{{ title }}</h1>
-  <div class="meta">
-    <span class="badge">Version {{ version }}</span>
-    {% if initial_status == "complete" %}
-      <span class="badge">Published completed</span>
-    {% else %}
-      <span class="badge">Published unfinished</span>
+  {% set isPublished = status == "published" %}
+  <div class="meta essay-meta">
+    {% if version %}<span class="badge badge-version">v{{ version }}</span>{% endif %}
+    {% if isPublished %}
+      <span class="badge badge-status">
+        {% if initial_status == "complete" %}
+          Published completed
+        {% else %}
+          Published unfinished
+        {% endif %}
+      </span>
     {% endif %}
-    <span class="badge">{{ word_range }} words</span>
-    {% if author %}<span>By <strong>@{{ author }}</strong></span>{% endif %}
-    {% if coauthors and coauthors.length %}<span>with {% for a in coauthors %}@{{a}}{% if not loop.last %}, {% endif %}{% endfor %}</span>{% endif %}
-    {% if published_at %}<span>Published: {{ published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+    {% if word_range %}<span class="badge badge-words">{{ word_range }} words</span>{% endif %}
   </div>
+
+  <dl class="essay-facts">
+    {% if published_at %}
+      <div class="essay-fact">
+        <dt>Published</dt>
+        <dd><time datetime="{{ published_at }}">{{ published_at | date("yyyy-LL-dd") }}</time></dd>
+      </div>
+    {% endif %}
+    {% if author %}
+      <div class="essay-fact">
+        <dt>Author</dt>
+        <dd><strong>@{{ author }}</strong></dd>
+      </div>
+    {% endif %}
+    {% if coauthors and coauthors.length %}
+      <div class="essay-fact">
+        <dt>Coauthors</dt>
+        <dd class="essay-coauthors">
+          {% for entry in coauthors %}
+            {% set handle = entry.user or entry %}
+            {% set sinceVersion = entry.since_version or entry.sinceVersion %}
+            <span class="chip"{% if sinceVersion %} title="Coauthor since v{{ sinceVersion }}"{% endif %}>@{{ handle }}</span>{% if not loop.last %}<span aria-hidden="true" class="chip-separator">,</span>{% endif %}
+          {% endfor %}
+        </dd>
+      </div>
+    {% endif %}
+    {% if topic %}
+      <div class="essay-fact">
+        <dt>Topic</dt>
+        <dd>{{ topic }}</dd>
+      </div>
+    {% endif %}
+  </dl>
+
+  {% if isPublished %}
+    <div class="suggest-change">
+      <a class="btn btn-ghost" href="{{ site.repoUrl }}/issues/new?template=suggest-change.yml&essay_path={{ page.inputPath | urlencode }}">
+        Suggest a change
+      </a>
+    </div>
+  {% endif %}
   <div class="content">
     {{ content | safe }}
   </div>
@@ -51,24 +94,38 @@ layout: base.njk
 <section class="card">
   <h3>Version history</h3>
   {% set currentSlug = page.fileSlug %}
-  {% set history = collections.snapshots %}
-  {% set hasAny = false %}
-  <ul>
-  {% for snap in history %}
-    {% if snap.data.origin_slug == currentSlug %}
-      {% set hasAny = true %}
-      <li>
-        <a href="{{ snap.url }}">v{{ snap.data.version }}</a>
+  {% set snapshots = collections.snapshots | snapshotsForSlug(currentSlug) %}
+  {% set hasSnapshots = snapshots | length %}
+  {% if hasSnapshots %}
+    <ul class="history-list">
+      {% for snap in snapshots %}
+        {% set note = null %}
         {% if snap.data.release_notes and snap.data.release_notes.length %}
-          — {{ snap.data.release_notes[0] }}
+          {% set note = snap.data.release_notes[0] %}
         {% endif %}
-      </li>
-    {% endif %}
-  {% endfor %}
-  </ul>
-  {% if not hasAny %}
+        {% set historyDate = snap.data.published_at or null %}
+        <li>
+          <div class="history-line">
+            <a class="history-version" href="{{ snap.url | url }}">v{{ snap.data.version }}</a>
+            {% if historyDate %}
+              <span class="history-date">{{ historyDate | date("yyyy-LL-dd") }}</span>
+            {% endif %}
+          </div>
+          {% if note %}
+            <p class="history-note">{{ note }}</p>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
     <p>No snapshots yet.</p>
+  {% endif %}
+  {% if currentSlug and currentSlug[0] != '_' %}
+    {% set historyPath = '/essays/published/' ~ currentSlug ~ '/history/' %}
+    <p class="history-linkout"><a href="{{ historyPath | url }}">Browse full history →</a></p>
   {% endif %}
 </section>
 
-{% include "giscus.njk" %}
+{% if status == "published" %}
+  {% include "giscus.njk" %}
+{% endif %}
