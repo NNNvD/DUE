@@ -38,7 +38,8 @@
         <small>{{ site.tagline }}</small>
       </div>
       <nav>
-        <a href="{{ "/" | url }}">Home</a>
+        <a href="{{ site.baseUrl }}">Home</a>
+        <a href="{{ site.baseUrl }}drafts/">Drafts</a>
       </nav>
     </header>
     {{ content | safe }}
