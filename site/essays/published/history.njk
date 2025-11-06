@@ -1,0 +1,59 @@
+---
+pagination:
+  data: collections.publishedEssays
+  size: 1
+  alias: essay
+layout: base.njk
+---
+{% set essaySlug = essay.fileSlug %}
+{% if not essaySlug and essay.data and essay.data.page %}
+  {% set essaySlug = essay.data.page.fileSlug %}
+{% endif %}
+{% set essayUrl = essay.url %}
+{% if not essayUrl and essaySlug %}
+  {% set essayUrl = '/essays/published/' ~ essaySlug ~ '/' %}
+{% endif %}
+{% set snapshots = collections.snapshots | snapshotsForSlug(essaySlug) %}
+{% set hasSnapshots = snapshots | length %}
+<article class="card">
+  <h1>Version history for “{{ essay.data.title }}”</h1>
+  <div class="meta">
+    <span class="badge">Latest v{{ essay.data.version }}</span>
+    {% if essay.data.published_at %}
+      <span>Published {{ essay.data.published_at | date("yyyy-LL-dd") }}</span>
+    {% endif %}
+  </div>
+  {% if essayUrl %}
+    <p>
+      <a href="{{ essayUrl | url }}">← Back to essay</a>
+    </p>
+  {% endif %}
+</article>
+
+<section class="card">
+  <h3>Snapshots</h3>
+  {% if hasSnapshots %}
+    <ul class="history-list">
+      {% for snap in snapshots %}
+        {% set note = null %}
+        {% if snap.data.release_notes and snap.data.release_notes.length %}
+          {% set note = snap.data.release_notes[0] %}
+        {% endif %}
+        {% set historyDate = snap.data.published_at or null %}
+        <li>
+          <div class="history-line">
+            <a class="history-version" href="{{ snap.url | url }}">v{{ snap.data.version }}</a>
+            {% if historyDate %}
+              <span class="history-date">{{ historyDate | date("yyyy-LL-dd") }}</span>
+            {% endif %}
+          </div>
+          {% if note %}
+            <p class="history-note">{{ note }}</p>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No snapshots published for this essay yet.</p>
+  {% endif %}
+</section>

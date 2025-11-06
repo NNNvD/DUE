@@ -4,9 +4,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ title or site.title }}</title>
-  {% if canonical_url %}
-  <link rel="canonical" href="{{ canonical_url }}">
+  {% set metaTitle = ogTitle or title or site.title %}
+  <title>{{ metaTitle }}</title>
+  {% if canonical %}
+  <link rel="canonical" href="{{ canonical }}">
+  <meta property="og:url" content="{{ canonical }}">
+  {% endif %}
+  {% if description %}
+  <meta name="description" content="{{ description }}">
+  <meta property="og:description" content="{{ description }}">
+  {% endif %}
+  <meta property="og:title" content="{{ metaTitle }}">
+  <meta property="og:type" content="{{ ogType or 'website' }}">
+  <meta property="og:site_name" content="{{ site.title }}">
+  {% if socialImage %}
+  <meta property="og:image" content="{{ socialImage }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{{ socialImage }}">
+  {% else %}
+  <meta name="twitter:card" content="summary">
+  {% endif %}
+  <meta name="twitter:title" content="{{ metaTitle }}">
+  {% if description %}
+  <meta name="twitter:description" content="{{ description }}">
   {% endif %}
   <link rel="stylesheet" href="{{ site.baseUrl }}assets/style.css">
 </head>
@@ -14,18 +34,19 @@
   <main>
     <header>
       <div class="brand">
-        <h1><a href="{{ site.baseUrl }}">{{ site.title }}</a></h1>
+        <h1><a href="{{ "/" | url }}">{{ site.title }}</a></h1>
         <small>{{ site.tagline }}</small>
       </div>
       <nav>
         <a href="{{ site.baseUrl }}">Home</a>
+        <a href="{{ site.baseUrl }}drafts/">Drafts</a>
       </nav>
     </header>
     {{ content | safe }}
     <footer>
-      Built with Eleventy.
+      Built with Eleventy. Content &copy; {{ site.currentYear }}.
     </footer>
   </main>
-  <script type="module" src="{{ site.baseUrl }}assets/countdown.js"></script>
+  <script type="module" src="{{ "/assets/countdown.js" | url }}"></script>
 </body>
 </html>
