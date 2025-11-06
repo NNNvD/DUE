@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Front matter schema check
+        run: npm run check:frontmatter
+
       - name: Word range check
         run: npm run check:words
 
