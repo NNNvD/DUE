@@ -34,6 +34,7 @@ deadline_at: YYYY-MM-DD
 deadline_at_time: HH:MM      # optional. Defaults to 00:00 UTC if omitted.
 initial_status: unfinished   # complete|unfinished (for first publish)
 version: 0.1                 # 1.0 if complete at first publish else 0.1
+canonical_url: https://example.com/essays/title   # optional absolute canonical link
 published_at: YYYY-MM-DD     # set automatically on publish
 word_range: "500-1000"       # 250-500|500-1000|1000-1500
 release_notes:

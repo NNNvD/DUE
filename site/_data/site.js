@@ -31,6 +31,12 @@ function ensureTrailingSlash(value) {
   return value.endsWith("/") ? value : `${value}/`;
 }
 
+function computeCanonicalBase() {
+  const canonical = process.env.CANONICAL_BASE || process.env.CANONICAL_URL || "";
+  if (!canonical) return "";
+  return canonical.endsWith("/") ? canonical.slice(0, -1) : canonical;
+}
+
 function computeBaseUrl() {
   const repo = process.env.GITHUB_REPOSITORY || ""; // owner/repo
   const [owner, name] = repo.split("/");
@@ -73,9 +79,8 @@ function computeSiteUrl() {
 
 module.exports = {
   ...DEFAULTS,
-  baseUrl: pathPrefix,
-  pathPrefix,
-  siteUrl: computeSiteUrl(pathPrefix),
+  baseUrl: computeBaseUrl(),
+  canonicalBase: computeCanonicalBase(),
   repoUrl: computeRepoUrl(),
   get siteUrl() {
     // Lazy compute to ensure baseUrl is initialized first
