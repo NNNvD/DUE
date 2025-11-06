@@ -53,6 +53,7 @@ Markdown content here...
 3. Set **Build and deployment** to **GitHub Actions**. The provided workflow will deploy automatically on push to `main`.
 
 ## Contributing flow (recommended)
+- Read the [Contribute guide](./site/contribute.njk) (rendered at <code>/contribute/</code>) for a quick overview of the process.
 - **Start a new essay**: copy `site/essays/drafts/_template.md` (or any draft), set `started_at`, `deadline_at = started_at + 30d`, choose `word_range`, write.
 - **Mark complete**: set `initial_status: complete` if you intend first publish to be 1.0.
 - **Suggestions**: contributors open PRs against the essay file:
