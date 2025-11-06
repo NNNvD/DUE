@@ -23,6 +23,11 @@ jobs:
 
       - name: Unit tests
         run: npm test
+      - name: Validate release notes
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/checkReleaseNotes.js
 
       - name: Word range check
         run: npm run check:words

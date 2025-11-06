@@ -1,0 +1,48 @@
+---
+layout: base.njk
+title: "Draft Schedule"
+---
+{% set drafts = collections.draftEssays %}
+
+<section class="card">
+  <h2 style="margin-top:0">Draft queue</h2>
+  <p>All drafts are listed in deadline order so contributors can see what publishes next.</p>
+</section>
+
+{% if drafts.length %}
+  {% for draft in drafts %}
+    <article class="card draft-card" data-deadline="{{ draft.data.deadline_at }}">
+      <header>
+        <h3>{{ draft.data.title }}</h3>
+        <div class="meta">
+          {% if draft.data.deadline_at %}
+            <span
+              class="badge deadline-badge"
+              data-deadline-badge="{{ draft.data.deadline_at }}"
+              data-deadline-label="{{ draft.data.deadline_at | date('yyyy-LL-dd') }}"
+              title="Publishes {{ draft.data.deadline_at | date('yyyy-LL-dd') }}"
+            >{{ draft.data.deadline_at | date('yyyy-LL-dd') }}</span>
+          {% else %}
+            <span class="badge">Deadline pending</span>
+          {% endif %}
+          {% if draft.data.word_range %}<span class="badge">{{ draft.data.word_range }} words</span>{% endif %}
+          {% if draft.data.started_at %}<span>Started {{ draft.data.started_at | date("yyyy-LL-dd") }}</span>{% endif %}
+        </div>
+      </header>
+      {% if draft.data.topic %}<p><strong>Topic:</strong> {{ draft.data.topic }}</p>{% endif %}
+      <p class="countdown">
+        <span data-countdown>
+          {% if draft.data.deadline_at %}
+            Publishes at {{ draft.data.deadline_at | date('yyyy-LL-dd') }}
+          {% else %}
+            Deadline not yet scheduled.
+          {% endif %}
+        </span>
+      </p>
+    </article>
+  {% endfor %}
+{% else %}
+  <div class="card">
+    <p>No drafts in progress. Start a new essay to begin writing.</p>
+  </div>
+{% endif %}
