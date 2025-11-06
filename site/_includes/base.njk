@@ -42,6 +42,35 @@
         <a href="{{ site.baseUrl }}drafts/">Drafts</a>
       </nav>
     </header>
+    {% set breadcrumbEnabled = breadcrumb is not defined or breadcrumb %}
+    {% set pathStem = page.filePathStem or '' %}
+    {% set stemParts = pathStem | split('/') %}
+    {% set lastSegment = '' %}
+    {% for part in stemParts %}
+      {% if part and part != 'index' %}
+        {% set lastSegment = part %}
+      {% endif %}
+    {% endfor %}
+    {% set hasBreadcrumbs = lastSegment != '' %}
+    {% if breadcrumbEnabled and hasBreadcrumbs %}
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="{{ site.baseUrl }}">Home</a></li>
+          {% set accumulated = '' %}
+          {% for part in stemParts %}
+            {% if part and part != 'index' %}
+              {% set accumulated = accumulated + '/' + part %}
+              {% set label = part | replace('-', ' ') | replace('_', ' ') | capitalize %}
+              {% if part != lastSegment %}
+                <li><a href="{{ (accumulated + '/') | url }}">{{ label }}</a></li>
+              {% else %}
+                <li aria-current="page">{{ label }}</li>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </ol>
+      </nav>
+    {% endif %}
     {{ content | safe }}
     <footer>
       Built with Eleventy. Content &copy; {{ site.currentYear }}.
