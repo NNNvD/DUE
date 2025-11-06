@@ -1,0 +1,58 @@
+:root {
+  --font-ui: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --font-essay: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Georgia", serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --line-height-ui: 1.6;
+  --line-height-essay: 1.72;
+
+  --space-2xs: 0.35rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  --space-page-inline: var(--space-md);
+  --space-card-padding-block: var(--space-md);
+  --space-card-padding-inline: 1.25rem;
+}
+
+[data-typography="sans"],
+.typography-sans {
+  --font-essay: var(--font-ui);
+  --line-height-essay: var(--line-height-ui);
+}
+
+[data-typography="slab"],
+.typography-slab {
+  --font-essay: "Roboto Slab", "Rockwell", "Georgia", serif;
+}
+
+[data-spacing="cozy"],
+.spacing-cozy {
+  --space-2xs: 0.25rem;
+  --space-xs: 0.4rem;
+  --space-sm: 0.6rem;
+  --space-md: 0.85rem;
+  --space-lg: 1.25rem;
+  --space-xl: 1.6rem;
+  --space-2xl: 2.25rem;
+  --space-page-inline: 0.85rem;
+  --space-card-padding-block: 0.85rem;
+  --space-card-padding-inline: 1.1rem;
+}
+
+[data-spacing="roomy"],
+.spacing-roomy {
+  --space-2xs: 0.4rem;
+  --space-xs: 0.65rem;
+  --space-sm: 0.95rem;
+  --space-md: 1.2rem;
+  --space-lg: 1.8rem;
+  --space-xl: 2.6rem;
+  --space-2xl: 3.5rem;
+  --space-page-inline: 1.35rem;
+  --space-card-padding-block: 1.35rem;
+  --space-card-padding-inline: 1.75rem;
+}
