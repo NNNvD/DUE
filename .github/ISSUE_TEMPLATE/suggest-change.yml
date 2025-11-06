@@ -15,8 +15,9 @@ body:
     attributes:
       label: Contribution intent
       options:
-        - minor
-        - major
+        - minor (patch bump; Acknowledgments)
+        - major (major bump; Coauthor)
+      default: 0
     validations:
       required: true
   - type: textarea

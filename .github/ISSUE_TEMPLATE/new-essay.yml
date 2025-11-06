@@ -13,8 +13,15 @@ body:
   - type: textarea
     id: topic
     attributes:
-      label: Topic / one-sentence premise
-      placeholder: "The role of time pressure..."
+      label: Topic
+      placeholder: e.g., The role of time pressure in clarity
+    validations:
+      required: true
+  - type: input
+    id: author
+    attributes:
+      label: Author (GitHub handle)
+      placeholder: yourhandle
     validations:
       required: true
   - type: dropdown
@@ -25,6 +32,7 @@ body:
         - 250-500
         - 500-1000
         - 1000-1500
+      default: 500-1000
     validations:
       required: true
   - type: dropdown
@@ -39,14 +47,20 @@ body:
   - type: input
     id: started_at
     attributes:
-      label: Started at (YYYY-MM-DD)
-      placeholder: "2025-10-21"
+      label: Start date (YYYY-MM-DD)
+      description: Required to track drafting cadence.
     validations:
       required: true
   - type: input
     id: deadline_at
     attributes:
-      label: Deadline at (YYYY-MM-DD, started_at + 30 days)
-      placeholder: "2025-11-20"
+      label: Deadline date (YYYY-MM-DD)
+      description: Typically 30 days after start
     validations:
       required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes (optional)
+      placeholder: Any initial thoughts or links.
+
