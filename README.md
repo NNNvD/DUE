@@ -20,6 +20,9 @@ npm run start        # dev server at http://localhost:8080
 ```
 Your site content is in `site/`. Published essays render at `/essays/published/...`
 
+## Project board
+- **Live board**: [https://github.com/your-username/your-repo/projects/1](https://github.com/your-username/your-repo/projects/1)
+- **Column + issue breakdown**: see [`docs/project-board.md`](docs/project-board.md) for the current priority assignments (`P0`, `P1`, `P2`, `Done`).
 ## Create a new draft
 
 Use the interactive helper to scaffold front matter for a draft:
