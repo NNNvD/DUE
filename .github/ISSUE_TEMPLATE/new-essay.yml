@@ -1,20 +1,22 @@
-name: New Essay
-description: Start a new essay draft with title, topic, and deadline.
-title: "[Essay] <proposed-title>"
-labels: ["essay", "draft"]
+name: Start a new essay
+description: Propose a topic and initialize a 30-day draft with a chosen word range.
+title: "[Essay] title here"
+labels: ["new-essay"]
 body:
   - type: input
     id: title
     attributes:
-      label: Title
-      placeholder: e.g., On Deadlines and Honesty
+      label: Essay title
+      placeholder: "On Deadlines and Honesty"
     validations:
       required: true
-  - type: input
+  - type: textarea
     id: topic
     attributes:
       label: Topic
       placeholder: e.g., The role of time pressure in clarity
+    validations:
+      required: true
   - type: input
     id: author
     attributes:
@@ -31,15 +33,31 @@ body:
         - 500-1000
         - 1000-1500
       default: 500-1000
+    validations:
+      required: true
+  - type: dropdown
+    id: initial_status
+    attributes:
+      label: Initial status (for first publish versioning)
+      options:
+        - unfinished
+        - complete
+    validations:
+      required: true
   - type: input
     id: started_at
     attributes:
       label: Start date (YYYY-MM-DD)
+      description: Required to track drafting cadence.
+    validations:
+      required: true
   - type: input
     id: deadline_at
     attributes:
       label: Deadline date (YYYY-MM-DD)
       description: Typically 30 days after start
+    validations:
+      required: true
   - type: textarea
     id: notes
     attributes:
