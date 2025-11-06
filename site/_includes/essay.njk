@@ -42,6 +42,13 @@ layout: base.njk
   </div>
 </article>
 
+{% if page.inputPath and "essays/published/" in page.inputPath %}
+  {% set ctaRelativePath = page.inputPath | replace("./", "") %}
+  {% set ctaIssueTitle = ("Suggest change: " ~ ctaRelativePath) | urlencode %}
+  {% set ctaIssueUrl = site.repoUrl ~ "/issues/new?template=suggest-change.yml&title=" ~ ctaIssueTitle %}
+  {% include "cta-suggest-change.njk" %}
+{% endif %}
+
 <section class="card">
   <h3>Release notes</h3>
   {% if release_notes and release_notes.length %}
