@@ -1,0 +1,227 @@
+name: New essay draft automation
+
+on:
+  issues:
+    types:
+      - labeled
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  scaffold:
+    if: github.event.label.name == 'new-essay'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scaffold draft and PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            if (!issue) {
+              core.info('No issue payload found.');
+              return;
+            }
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const defaultBranch = context.payload.repository.default_branch;
+
+            const parseIssueForm = body => {
+              const data = {};
+              if (!body) return data;
+              const regex = /###\s+([^\n]+)\s+([\s\S]*?)(?=\n###\s+|$)/g;
+              let match;
+              while ((match = regex.exec(body)) !== null) {
+                const key = match[1].trim();
+                const value = match[2].trim();
+                if (value && value !== '_No response_') {
+                  data[key] = value.trim();
+                }
+              }
+              return data;
+            };
+
+            const fields = parseIssueForm(issue.body || '');
+            const getField = (key, fallback = '') => {
+              if (fields[key]) return fields[key];
+              return fallback;
+            };
+
+            const stripEssayPrefix = title => title.replace(/^\[Essay\]\s*/i, '').trim();
+            const requestedTitle = getField('Title', stripEssayPrefix(issue.title));
+            const topic = getField('Topic', '');
+            const authorHandle = getField('Author (GitHub handle)', issue.user?.login || '');
+            const wordRange = getField('Word range', '500-1000');
+            const startInput = getField('Start date (YYYY-MM-DD)', '');
+            const deadlineInput = getField('Deadline date (YYYY-MM-DD)', '');
+            const notes = getField('Notes (optional)', '').trim();
+
+            const toDate = value => {
+              if (!value) return null;
+              const parsed = new Date(value);
+              return Number.isNaN(parsed.getTime()) ? null : parsed;
+            };
+
+            const formatDate = date => {
+              const iso = date.toISOString();
+              return iso.slice(0, 10);
+            };
+
+            const addDays = (date, days) => {
+              const copy = new Date(date.getTime());
+              copy.setUTCDate(copy.getUTCDate() + days);
+              return copy;
+            };
+
+            const startDate = toDate(startInput) || new Date();
+            let deadlineDate = toDate(deadlineInput);
+            if (!deadlineDate) {
+              deadlineDate = addDays(startDate, 30);
+            }
+
+            const startedAt = formatDate(startDate);
+            const deadlineAt = formatDate(deadlineDate);
+
+            const slugify = value => value
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/(^-|-$)+/g, '')
+              .slice(0, 64);
+
+            const baseSlug = slugify(requestedTitle) || `essay-${issue.number}`;
+            let slugCandidate = baseSlug;
+            let suffix = 1;
+            while (true) {
+              try {
+                await github.rest.repos.getContent({
+                  owner,
+                  repo,
+                  path: `site/essays/drafts/${slugCandidate}.md`
+                });
+                slugCandidate = `${baseSlug}-${suffix++}`;
+              } catch (error) {
+                if (error.status === 404) {
+                  break;
+                }
+                throw error;
+              }
+            }
+            const slug = slugCandidate;
+            const filePath = `site/essays/drafts/${slug}.md`;
+
+            const branchBase = `essay/${slug}`;
+            let branchName = branchBase;
+            suffix = 1;
+            while (true) {
+              try {
+                await github.rest.git.getRef({
+                  owner,
+                  repo,
+                  ref: `heads/${branchName}`
+                });
+                branchName = `${branchBase}-${suffix++}`;
+              } catch (error) {
+                if (error.status === 404) {
+                  break;
+                }
+                throw error;
+              }
+            }
+
+            const baseRef = await github.rest.git.getRef({
+              owner,
+              repo,
+              ref: `heads/${defaultBranch}`
+            });
+            const baseSha = baseRef.data.object.sha;
+
+            await github.rest.git.createRef({
+              owner,
+              repo,
+              ref: `refs/heads/${branchName}`,
+              sha: baseSha
+            });
+
+            const yamlEscape = value => value.replace(/"/g, '\\"');
+            const frontMatter = `---\n` +
+              `title: "${yamlEscape(requestedTitle)}"\n` +
+              `topic: "${yamlEscape(topic)}"\n` +
+              `author: "${yamlEscape(authorHandle)}"\n` +
+              `coauthors: []\n` +
+              `acknowledgments: []\n` +
+              `status: draft\n` +
+              `started_at: ${startedAt}\n` +
+              `deadline_at: ${deadlineAt}\n` +
+              `initial_status: unfinished\n` +
+              `version: 0.1\n` +
+              `word_range: "${yamlEscape(wordRange)}"\n` +
+              `release_notes: []\n` +
+              `source_issue: "${issue.html_url}"\n` +
+              `---\n`;
+
+            const noteSection = notes ? `${notes}\n\n` : '';
+            const bodyContent = `${noteSection}> Draft scaffolded from ${issue.html_url} on ${new Date().toISOString()}\n`;
+            const fileContents = frontMatter + '\n' + bodyContent;
+
+            await github.rest.repos.createOrUpdateFileContents({
+              owner,
+              repo,
+              path: filePath,
+              message: `Add draft for ${requestedTitle}`,
+              content: Buffer.from(fileContents, 'utf8').toString('base64'),
+              branch: branchName
+            });
+
+            const prTitle = `Add draft for ${requestedTitle}`;
+            const prBodyLines = [
+              `## Summary`,
+              `- Add draft essay at \`${filePath}\`.`,
+              `- Generated from [issue #${issue.number}](${issue.html_url}).`,
+              ``,
+              `## Details`,
+              `- Title: ${requestedTitle}`,
+              `- Topic: ${topic || 'n/a'}`,
+              `- Word range: ${wordRange}`,
+              `- Started at: ${startedAt}`,
+              `- Deadline at: ${deadlineAt}`,
+              ``,
+              `> Notes`,
+              `${notes ? notes : '_No additional notes provided._'}`
+            ];
+
+            const pr = await github.rest.pulls.create({
+              owner,
+              repo,
+              title: prTitle,
+              head: branchName,
+              base: defaultBranch,
+              body: prBodyLines.join('\n'),
+              draft: true,
+              maintainer_can_modify: true
+            });
+
+            const assignee = issue.user?.login;
+            if (assignee) {
+              try {
+                await github.rest.issues.addAssignees({
+                  owner,
+                  repo,
+                  issue_number: pr.data.number,
+                  assignees: [assignee]
+                });
+              } catch (error) {
+                core.warning(`Failed to assign PR: ${error.message}`);
+              }
+            }
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: issue.number,
+              body: `Opened draft PR #${pr.data.number} for this request.`
+            });
+
+            core.setOutput('pr_number', pr.data.number);
