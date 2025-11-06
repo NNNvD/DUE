@@ -1,0 +1,4 @@
+# Require a maintainer review for any changes to published essays.
+# GitHub will request a review from the listed owner whenever a PR touches the path.
+
+site/essays/published/** @noahvandongen

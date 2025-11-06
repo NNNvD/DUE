@@ -2,6 +2,8 @@
 title: Your Essay Title
 topic: Your topic
 author: yourhandle
+eleventyExcludeFromCollections: true
+permalink: false
 coauthors: []
 acknowledgments: []
 status: published
