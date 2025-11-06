@@ -2,6 +2,7 @@
 const fs = require("fs");
 const matter = require("gray-matter");
 const { writeSnapshot } = require("./lib/snapshot");
+const { normalizeCoauthors, normalizeAcknowledgments } = require("./lib/creditUtils");
 
 const labels = (process.env.PR_LABELS ? JSON.parse(process.env.PR_LABELS) : []).map(l => l.name);
 const user = process.env.PR_USER || "contributor";
@@ -102,7 +103,22 @@ for (const fp of changed) {
     }
   } else {
     const ack = { user, note: "Minor contribution", since_version: newVersion };
-    d.acknowledgments = [...(d.acknowledgments || []), ack];
+    d.acknowledgments = normalizeAcknowledgments([...(d.acknowledgments || []), ack]);
+  }
+
+  // Always normalize in case existing data already contained duplicates.
+  const normalizedCoauthors = normalizeCoauthors(d.coauthors || []);
+  if (normalizedCoauthors.length > 0) {
+    d.coauthors = normalizedCoauthors;
+  } else {
+    delete d.coauthors;
+  }
+
+  const normalizedAcknowledgments = normalizeAcknowledgments(d.acknowledgments || []);
+  if (normalizedAcknowledgments.length > 0) {
+    d.acknowledgments = normalizedAcknowledgments;
+  } else {
+    delete d.acknowledgments;
   }
 
   const out = matter.stringify(doc.content, d);
