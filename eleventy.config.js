@@ -144,6 +144,31 @@ function computeEssayMeta(data = {}) {
   return meta;
 }
 
+function filterEssayTemplates(collection = []) {
+  if (!Array.isArray(collection)) {
+    return [];
+  }
+
+  return collection.filter((item) => {
+    if (!item || typeof item !== "object") {
+      return false;
+    }
+
+    const inputPath = item.inputPath || "";
+    const fileSlug = item.fileSlug || "";
+
+    if (fileSlug.startsWith("_")) {
+      return false;
+    }
+
+    if (inputPath.includes("/_templates/")) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
 module.exports = function(eleventyConfig) {
   const parseVersion = (value) => {
     const parts = String(value || "0.0").split(".");
@@ -177,12 +202,12 @@ module.exports = function(eleventyConfig) {
     return filterEssayTemplates(
       collectionApi
         .getFilteredByGlob("site/essays/**/*.md")
-      .filter((item) => item.data.status === "draft")
-      .sort((a, b) => {
-        const aDeadline = a.data.deadline_at ? new Date(a.data.deadline_at) : new Date(8640000000000000);
-        const bDeadline = b.data.deadline_at ? new Date(b.data.deadline_at) : new Date(8640000000000000);
-        return aDeadline - bDeadline;
-      })
+        .filter((item) => item.data.status === "draft")
+        .sort((a, b) => {
+          const aDeadline = a.data.deadline_at ? new Date(a.data.deadline_at) : new Date(8640000000000000);
+          const bDeadline = b.data.deadline_at ? new Date(b.data.deadline_at) : new Date(8640000000000000);
+          return aDeadline - bDeadline;
+        })
     );
   });
 

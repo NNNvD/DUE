@@ -1,101 +1,149 @@
 const baseConfig = require("./site.json");
 
-const currentYear = new Date().getFullYear();
+const DEFAULT_ORIGIN = "http://localhost:8080";
+const DEFAULT_REPO_URL = "https://github.com/your-username/your-repo";
+
+function ensureLeadingSlash(value) {
+  if (!value) return "/";
+  return value.startsWith("/") ? value : `/${value}`;
+}
 
 function ensureTrailingSlash(value) {
   if (!value) return "/";
   return value.endsWith("/") ? value : `${value}/`;
+}
+
+function stripTrailingSlash(value) {
+  if (!value) return "";
+  return value.replace(/\/+$/u, "");
+}
+
+function normalizePathPrefix(value) {
+  if (!value) return "/";
+
+  const trimmed = value.trim();
+  if (!trimmed) return "/";
+
+  try {
+    const parsed = new URL(trimmed);
+    const pathname = parsed.pathname || "/";
+    return normalizePathPrefix(pathname);
+  } catch (error) {
+    // Ignore parse failures and treat the value as a path fragment.
+  }
+
+  const withLeading = ensureLeadingSlash(trimmed);
+  const withoutTrailing = withLeading.replace(/\/+$/u, "");
+  return withoutTrailing ? `${withoutTrailing}/` : "/";
 }
 
 function computePathPrefix() {
-  const explicit = process.env.BASE_URL;
+  const explicit = process.env.PATH_PREFIX || process.env.BASE_URL;
   if (explicit) {
-    return ensureTrailingSlash(explicit);
+    return normalizePathPrefix(explicit);
   }
 
-  const isProduction = process.env.ELEVENTY_ENV === "production";
-  return ensureTrailingSlash(isProduction ? DEFAULT_PATH_PREFIX : "/");
-}
+  if (baseConfig.baseUrl) {
+    return normalizePathPrefix(baseConfig.baseUrl);
+  }
 
-function computeSiteUrl(pathPrefix) {
-  const explicit = process.env.SITE_URL;
-  if (explicit) return ensureTrailingSlash(explicit);
+  const repo = process.env.GITHUB_REPOSITORY || "";
+  const [, name = ""] = repo.split("/");
+  if (name && !/\.github\.io$/iu.test(name)) {
+    return normalizePathPrefix(name);
+  }
 
-function ensureTrailingSlash(url) {
-  if (!url) return "/";
-  return url.endsWith("/") ? url : `${url}/`;
-}
-
-function ensureTrailingSlash(value) {
-  if (!value) return "/";
-  return value.endsWith("/") ? value : `${value}/`;
+  return "/";
 }
 
 function computeCanonicalBase() {
-  const canonical = process.env.CANONICAL_BASE || process.env.CANONICAL_URL || "";
-  if (!canonical) return "";
-  return canonical.endsWith("/") ? canonical.slice(0, -1) : canonical;
-}
+  const candidate =
+    process.env.CANONICAL_BASE ||
+    process.env.CANONICAL_URL ||
+    baseConfig.canonicalBase ||
+    "";
 
-function computeBaseUrl() {
-  const repo = process.env.GITHUB_REPOSITORY || ""; // owner/repo
-  const [owner, name] = repo.split("/");
-  if (!owner || !name) {
-    return ensureTrailingSlash(`http://localhost:8080${pathPrefix}`);
+  if (!candidate) return "";
+
+  const trimmed = candidate.trim();
+  if (!trimmed) return "";
+
+  try {
+    const parsed = new URL(trimmed);
+    const pathname = stripTrailingSlash(parsed.pathname || "/");
+    const suffix = pathname && pathname !== "/" ? pathname : "";
+    return `${parsed.origin}${suffix}`;
+  } catch (error) {
+    return stripTrailingSlash(trimmed);
   }
-
-  const isUserSite = /\.github\.io$/i.test(name);
-  const host = `${owner}.github.io`;
-  if (isUserSite) {
-    return ensureTrailingSlash(`https://${name}`);
-  }
-
-  return ensureTrailingSlash(`https://${host}${pathPrefix}`);
 }
 
 function computeRepoUrl() {
-  const repo = process.env.GITHUB_REPOSITORY; // owner/repo
-  const server = process.env.GITHUB_SERVER_URL || "https://github.com";
-  if (repo) return `${server}/${repo}`;
-  return baseConfig.repoUrl || "https://github.com/your-username/your-repo";
+  const repo = process.env.GITHUB_REPOSITORY;
+  if (repo) {
+    const server = (process.env.GITHUB_SERVER_URL || "https://github.com").replace(/\/+$/u, "");
+    return `${server}/${repo}`;
+  }
+
+  if (baseConfig.repoUrl) {
+    return baseConfig.repoUrl;
+  }
+
+  return DEFAULT_REPO_URL;
 }
 
-function computeSiteUrl(baseUrl) {
-  const envSite = process.env.SITE_URL || process.env.URL;
-  if (envSite) return ensureTrailingSlash(envSite);
-  const base = ensureTrailingSlash(baseUrl || "/");
-  const origin = process.env.SITE_ORIGIN || "http://localhost:8080";
-  const normalizedOrigin = origin.replace(/\/$/, "");
-  return `${normalizedOrigin}${base}`;
+function computeSiteUrl(pathPrefix) {
+  const explicit = process.env.SITE_URL || process.env.URL || baseConfig.siteUrl;
+  const suffix = pathPrefix === "/" ? "/" : pathPrefix;
+
+  if (explicit) {
+    const trimmed = explicit.trim();
+    if (!trimmed) {
+      return ensureTrailingSlash(`${DEFAULT_ORIGIN}${suffix}`);
+    }
+
+    try {
+      const parsed = new URL(trimmed);
+      const pathname = stripTrailingSlash(parsed.pathname || "/");
+      const basePath = pathname && pathname !== "/" ? `${pathname}` : "";
+      return ensureTrailingSlash(`${parsed.origin}${basePath}${suffix === "/" ? "" : suffix}`);
+    } catch (error) {
+      const withoutTrailing = stripTrailingSlash(trimmed);
+      return ensureTrailingSlash(`${withoutTrailing}${suffix === "/" ? "" : suffix}`);
+    }
+  }
+
+  const origin = (process.env.SITE_ORIGIN || baseConfig.siteOrigin || DEFAULT_ORIGIN).trim();
+  const normalizedOrigin = stripTrailingSlash(origin) || DEFAULT_ORIGIN;
+  return ensureTrailingSlash(`${normalizedOrigin}${suffix === "/" ? "" : suffix}`);
 }
 
-function computeSiteUrl() {
-  const envSite = process.env.SITE_URL || "";
-  if (envSite) return ensureTrailingSlash(envSite);
-  const base = computeBaseUrl();
-  if (/^https?:\/\//i.test(base)) return ensureTrailingSlash(base);
-  return "https://example.com/";
+function resolveGiscusConfig() {
+  const defaults = baseConfig.giscus || {};
+  return {
+    repo: process.env.GISCUS_REPO || defaults.repo || "",
+    repoId: process.env.GISCUS_REPO_ID || defaults.repoId || "",
+    category: process.env.GISCUS_CATEGORY || defaults.category || "",
+    categoryId: process.env.GISCUS_CATEGORY_ID || defaults.categoryId || "",
+    mapping: process.env.GISCUS_MAPPING || defaults.mapping || "pathname",
+    theme: process.env.GISCUS_THEME || defaults.theme || "light",
+  };
 }
 
-module.exports = {
-  ...DEFAULTS,
-  baseUrl: computeBaseUrl(),
+const pathPrefix = computePathPrefix();
+
+const siteData = {
+  ...baseConfig,
+  baseUrl: pathPrefix,
   canonicalBase: computeCanonicalBase(),
   repoUrl: computeRepoUrl(),
   get siteUrl() {
-    // Lazy compute to ensure baseUrl is initialized first
     if (!this._siteUrl) {
-      this._siteUrl = computeSiteUrl(this.baseUrl);
+      this._siteUrl = computeSiteUrl(pathPrefix);
     }
     return this._siteUrl;
   },
-  giscus: {
-    // Optional. Set these via repository secrets/env to enable.
-    repo: process.env.GISCUS_REPO || "",
-    repoId: process.env.GISCUS_REPO_ID || "",
-    category: process.env.GISCUS_CATEGORY || "",
-    categoryId: process.env.GISCUS_CATEGORY_ID || "",
-    mapping: process.env.GISCUS_MAPPING || "pathname",
-    theme: process.env.GISCUS_THEME || "light",
-  },
+  giscus: resolveGiscusConfig(),
 };
+
+module.exports = siteData;
