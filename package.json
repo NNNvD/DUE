@@ -7,7 +7,8 @@
     "start": "eleventy --serve",
     "check:words": "node scripts/checkWordRange.js",
     "autopublish": "node scripts/autopublish.js",
-    "bump": "node scripts/bumpVersionAndCredit.js"
+    "bump": "node scripts/bumpVersionAndCredit.js",
+    "lint:md": "npx --yes @igorshubovych/markdownlint-cli@0.41.0 \"**/*.md\" --config .markdownlint.json --ignore-path .markdownlintignore"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0"
