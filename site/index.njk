@@ -57,7 +57,7 @@ title: "DUE — Essays"
 <h2>Published Essays</h2>
 {% for post in collections.publishedEssays %}
   <div class="card">
-    <h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
+    <h3><a href="{{ post.url | url }}">{{ post.data.title }}</a></h3>
       <div class="meta">
         <span class="badge">v{{ post.data.version }}</span>
         <span class="badge">{{ post.data.word_range }} words</span>
