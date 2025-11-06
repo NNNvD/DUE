@@ -26,6 +26,11 @@ function ensureTrailingSlash(url) {
   return url.endsWith("/") ? url : `${url}/`;
 }
 
+function ensureTrailingSlash(value) {
+  if (!value) return "/";
+  return value.endsWith("/") ? value : `${value}/`;
+}
+
 function computeBaseUrl() {
   const repo = process.env.GITHUB_REPOSITORY || ""; // owner/repo
   const [owner, name] = repo.split("/");
@@ -56,6 +61,14 @@ function computeSiteUrl(baseUrl) {
   const origin = process.env.SITE_ORIGIN || "http://localhost:8080";
   const normalizedOrigin = origin.replace(/\/$/, "");
   return `${normalizedOrigin}${base}`;
+}
+
+function computeSiteUrl() {
+  const envSite = process.env.SITE_URL || "";
+  if (envSite) return ensureTrailingSlash(envSite);
+  const base = computeBaseUrl();
+  if (/^https?:\/\//i.test(base)) return ensureTrailingSlash(base);
+  return "https://example.com/";
 }
 
 module.exports = {
