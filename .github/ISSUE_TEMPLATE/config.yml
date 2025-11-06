@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions or ideas
+    url: https://github.com/your-username/your-repo/discussions
+    about: Start a Discussion to brainstorm features or ask questions.
