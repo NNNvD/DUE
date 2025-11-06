@@ -3,6 +3,12 @@ const DEFAULTS = {
   tagline: "Write. Publish. Evolve.",
 };
 
+function computeCanonicalBase() {
+  const canonical = process.env.CANONICAL_BASE || process.env.CANONICAL_URL || "";
+  if (!canonical) return "";
+  return canonical.endsWith("/") ? canonical.slice(0, -1) : canonical;
+}
+
 function computeBaseUrl() {
   const repo = process.env.GITHUB_REPOSITORY || ""; // owner/repo
   const name = (repo.split("/")[1] || "").trim();
@@ -23,6 +29,7 @@ function computeRepoUrl() {
 module.exports = {
   ...DEFAULTS,
   baseUrl: computeBaseUrl(),
+  canonicalBase: computeCanonicalBase(),
   repoUrl: computeRepoUrl(),
   giscus: {
     // Optional. Set these via repository secrets/env to enable.
