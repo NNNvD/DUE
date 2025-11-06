@@ -5,16 +5,11 @@ const { unified } = require("unified");
 const parse = require("remark-parse");
 const strip = require("strip-markdown");
 const path = require("path");
+const { rangeBoundsWithGrace } = require("./lib/wordRange");
 
 function wordCount(md) {
   const text = String(unified().use(parse).use(strip).processSync(md));
   return text.trim().split(/\s+/).filter(Boolean).length;
-}
-
-function bounds(range) {
-  const [lo, hi] = (range || "250-500").split("-").map(Number);
-  const grace = Math.ceil(0.02 * hi);
-  return [lo, hi + grace];
 }
 
 function scan(dir) {
@@ -33,7 +28,15 @@ for (const fp of files) {
   const raw = fs.readFileSync(fp, "utf8");
   const doc = matter(raw);
   const wc = wordCount(doc.content);
-  const [lo, hi] = bounds(doc.data.word_range);
+  let lo, hi;
+  try {
+    const { min, max } = rangeBoundsWithGrace(doc.data.word_range);
+    lo = min;
+    hi = max;
+  } catch (err) {
+    errors.push(`${fp}: ${err.message}`);
+    continue;
+  }
   if (wc < lo || wc > hi) {
     errors.push(`${fp}: ${wc} words (expected ${lo}–${hi})`);
   }
