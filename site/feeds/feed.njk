@@ -1,0 +1,46 @@
+---
+permalink: feeds/feed.xml
+layout: null
+eleventyExcludeFromCollections: true
+---
+{% set entries = collections.publishedEssays %}
+{% set feedUrl = "feeds/feed.xml" | url %}
+{% set siteUrl = "/" | url %}
+{% set mostRecent = entries | first %}
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:due="https://due.page/ns">
+  <title>{{ site.title }}</title>
+  <id>{{ siteUrl }}</id>
+  <link href="{{ feedUrl }}" rel="self" />
+  <link href="{{ siteUrl }}" rel="alternate" />
+  <updated>
+    {% if mostRecent and mostRecent.data.published_at %}
+      {{ mostRecent.data.published_at | date("yyyy-LL-dd") }}
+    {% else %}
+      {{ page.date | date("yyyy-LL-dd") }}
+    {% endif %}
+  </updated>
+  <author>
+    <name>{{ site.title }}</name>
+  </author>
+  {% for entry in entries %}
+    {% set canonicalUrl = entry.url | url %}
+    {% set releaseNotes = entry.data.release_notes or [] %}
+    {% set latestReleaseNote = releaseNotes | last %}
+    {% if not latestReleaseNote %}
+      {% set latestReleaseNote = "No release notes yet." %}
+    {% endif %}
+    {% set entryVersion = entry.data.version or "0.0" %}
+    <entry>
+      <title>{{ entry.data.title }}</title>
+      <link href="{{ canonicalUrl }}" />
+      <id>{{ canonicalUrl }}</id>
+      {% if entry.data.published_at %}
+        <published>{{ entry.data.published_at | date("yyyy-LL-dd") }}</published>
+        <updated>{{ entry.data.published_at | date("yyyy-LL-dd") }}</updated>
+      {% endif %}
+      <due:version>{{ entryVersion }}</due:version>
+      <summary type="text">{{ latestReleaseNote }}</summary>
+    </entry>
+  {% endfor %}
+</feed>
