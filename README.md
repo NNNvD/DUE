@@ -26,7 +26,7 @@ Your site content is in `site/`. Published essays render at `/essays/published/.
 title: "Title here"
 topic: "Proposed topic"
 author: yourhandle
-coauthors: []             # GitHub handles
+coauthors: []             # GitHub handles or { user, since_version }
 acknowledgments: []       # list of { user, note, since_version }
 status: draft             # draft|published
 started_at: YYYY-MM-DD

@@ -7,7 +7,20 @@ layout: base.njk
     <span class="badge">Snapshot v{{ version }}</span>
     <span class="badge">{{ word_range }} words</span>
     {% if author %}<span>By <strong>@{{ author }}</strong></span>{% endif %}
-    {% if coauthors and coauthors.length %}<span>with {% for a in coauthors %}@{{a}}{% if not loop.last %}, {% endif %}{% endfor %}</span>{% endif %}
+    {% if coauthors and coauthors.length %}
+      <span>with
+        {% for coauthor in coauthors %}
+          {% if coauthor is string %}
+            {% set handle = coauthor %}
+            {% set since = null %}
+          {% else %}
+            {% set handle = coauthor.user | default(coauthor.handle, true) | default(coauthor.github, true) %}
+            {% set since = coauthor.since_version | default(null, true) %}
+          {% endif %}
+          <span class="coauthor"{% if since %} title="Coauthor since v{{ since }}"{% endif %}>@{{ handle }}</span>{% if not loop.last %}, {% endif %}
+        {% endfor %}
+      </span>
+    {% endif %}
     {% if published_at %}<span>Published: {{ published_at | date("yyyy-LL-dd") }}</span>{% endif %}
   </div>
   <div class="content">
