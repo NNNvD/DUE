@@ -1,0 +1,43 @@
+---
+layout: base.njk
+title: "Contribute to DUE"
+---
+<section class="card">
+  <h2 style="margin-top:0">Contribution guidelines</h2>
+  <p>DUE thrives on iterative essays. Follow these quick steps to keep contributions smooth and consistent.</p>
+  <ul>
+    <li><strong>Plan your work:</strong> use the issue templates below to propose a new essay or suggest improvements.</li>
+    <li><strong>Draft locally:</strong> copy a draft into <code>site/essays/drafts/</code>, update the front matter, then run <code>npm run start</code> for live previews.</li>
+    <li><strong>Submit changes:</strong> open a pull request with a clear summary. Keep essays within their declared <code>word_range</code> and stick to ISO dates.</li>
+    <li><strong>Label intent:</strong> add the <code>minor</code> label for light edits or <code>major</code> for substantial revisions before merging.</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2>Credit policy</h2>
+  <p>Every merged pull request updates both the version and the human credits so contributors get visible recognition.</p>
+  <ul>
+    <li><strong>Minor contributions</strong> (labelled <code>minor</code>) trigger a patch bump and add the author to the essay's acknowledgments.</li>
+    <li><strong>Major contributions</strong> (labelled <code>major</code>) advance the major version and list the contributor as a coauthor.</li>
+    <li>Release notes in front matter record what changed so readers can trace each revision.</li>
+    <li>Automation handles the bookkeeping—just apply the right label before merge.</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2>Issue templates</h2>
+  <p>Kick off work with the GitHub issue forms. They collect the front matter you need and link back to the relevant files.</p>
+  <div class="cta-row" style="gap:1rem; flex-wrap:wrap;">
+    <a class="btn btn-primary" href="{{ site.repoUrl }}/issues/new?template=new-essay.yml">Start a new essay</a>
+    <a class="btn btn-ghost" href="{{ site.repoUrl }}/issues/new?template=suggest-change.yml">Suggest a change</a>
+  </div>
+  <ul>
+    <li><strong>Start a new essay:</strong> seeds a draft file with required metadata so you can begin writing immediately.</li>
+    <li><strong>Suggest a change:</strong> outlines the context for edits, making it easy to review tweaks or major rewrites.</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2>Need more?</h2>
+  <p>For deeper instructions, read <a href="{{ site.baseUrl }}essays/published/">published essays</a> for examples or dive into the repository's <a href="{{ site.repoUrl }}#readme">documentation</a>.</p>
+</section>
