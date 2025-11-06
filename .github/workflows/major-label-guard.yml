@@ -1,0 +1,68 @@
+name: Guard major label
+
+on:
+  pull_request_target:
+    types:
+      - labeled
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  enforce:
+    if: github.event.label.name == 'major'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce maintainer-only access to major label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const actor = context.payload.sender?.login;
+            if (!actor) {
+              core.info('No actor found on the event payload.');
+              return;
+            }
+
+            const { data: permission } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: actor,
+            });
+
+            const allowed = ['admin', 'maintain'];
+            if (allowed.includes(permission.permission)) {
+              core.info(`@${actor} has ${permission.permission} permission. Keeping the label.`);
+              return;
+            }
+
+            const issueNumber = context.payload.pull_request.number;
+            const labelName = context.payload.label.name;
+
+            core.info(`@${actor} has ${permission.permission} permission. Removing the ${labelName} label.`);
+
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                name: labelName,
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+              core.warning(`Label ${labelName} was already removed.`);
+              return;
+            }
+
+            const commentBody = `Hi @${actor}! The **${labelName}** label is reserved for repository maintainers. The label has been removed.`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: commentBody,
+            });
+
+            core.setFailed(`Removed ${labelName} label added by @${actor} without maintainer permissions.`);
