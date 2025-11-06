@@ -1,0 +1,12 @@
+# Configuration for lychee link checker
+# Limit scans to Markdown content and ignore generated assets
+include = ["**/*.md"]
+exclude_path = [
+  "node_modules",
+  "_site"
+]
+
+# Suppress known false positives such as local development URLs
+exclude = [
+  "http://localhost(:\\d+)?"
+]

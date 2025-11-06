@@ -1,0 +1,45 @@
+name: Scheduled Link Check
+
+on:
+  schedule:
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lychee:
+    name: Lychee link check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare report directory
+        run: mkdir -p lychee
+
+      - name: Run lychee
+        id: lychee
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: >-
+            --config lychee.toml
+            --max-errors 5
+            --format markdown
+            --output lychee/report.md
+            **/*.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Upload lychee report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-report
+          path: lychee
+
+      - name: Fail if link checker found errors
+        if: steps.lychee.outcome == 'failure'
+        run: exit 1

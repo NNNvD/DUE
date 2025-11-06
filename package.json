@@ -5,15 +5,18 @@
   "scripts": {
     "build": "eleventy",
     "start": "eleventy --serve",
+    "check:frontmatter": "node scripts/validateFrontmatter.js",
     "check:words": "node scripts/checkWordRange.js",
     "autopublish": "node scripts/autopublish.js",
     "bump": "node scripts/bumpVersionAndCredit.js",
-    "lint:md": "npx --yes @igorshubovych/markdownlint-cli@0.41.0 \"**/*.md\" --config .markdownlint.json --ignore-path .markdownlintignore"
+    "validate:feeds": "node scripts/validateFeeds.js",
+    "verify:feeds": "npm run build && npm run validate:feeds"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0"
   },
   "dependencies": {
+    "ajv": "^8.17.1",
     "dayjs": "^1.11.13",
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
