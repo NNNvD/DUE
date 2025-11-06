@@ -17,8 +17,9 @@ module.exports = function(eleventyConfig) {
   });
   eleventyConfig.addCollection("publishedEssays", (collectionApi) => {
     return collectionApi
-      .getFilteredByGlob("site/essays/**/*.md")
+      .getFilteredByGlob("site/essays/published/**/*.md")
       .filter((item) => item.data.status === "published")
+      .filter((item) => !item.fileSlug.startsWith("_"))
       .sort((a, b) => {
         const aDate = a.data.published_at ? new Date(a.data.published_at) : new Date(0);
         const bDate = b.data.published_at ? new Date(b.data.published_at) : new Date(0);
