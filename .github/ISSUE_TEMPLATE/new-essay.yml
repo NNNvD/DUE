@@ -15,6 +15,8 @@ body:
     attributes:
       label: Topic
       placeholder: e.g., The role of time pressure in clarity
+    validations:
+      required: true
   - type: input
     id: author
     attributes:
@@ -31,15 +33,22 @@ body:
         - 500-1000
         - 1000-1500
       default: 500-1000
+    validations:
+      required: true
   - type: input
     id: started_at
     attributes:
       label: Start date (YYYY-MM-DD)
+      description: Required to track drafting cadence.
+    validations:
+      required: true
   - type: input
     id: deadline_at
     attributes:
       label: Deadline date (YYYY-MM-DD)
       description: Typically 30 days after start
+    validations:
+      required: true
   - type: textarea
     id: notes
     attributes:

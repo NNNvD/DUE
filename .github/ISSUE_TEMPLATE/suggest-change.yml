@@ -19,6 +19,8 @@ body:
         - minor (patch bump; Acknowledgments)
         - major (major bump; Coauthor)
       default: 0
+    validations:
+      required: true
   - type: textarea
     id: changes
     attributes:
