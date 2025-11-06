@@ -168,19 +168,21 @@ module.exports = function(eleventyConfig) {
         const aDate = a.data.published_at ? new Date(a.data.published_at) : new Date(0);
         const bDate = b.data.published_at ? new Date(b.data.published_at) : new Date(0);
         return bDate - aDate;
-      });
-    return entries;
+      })
+    );
   });
 
   eleventyConfig.addCollection("draftEssays", (collectionApi) => {
-    return collectionApi
-      .getFilteredByTag("essay")
+    return filterEssayTemplates(
+      collectionApi
+        .getFilteredByGlob("site/essays/**/*.md")
       .filter((item) => item.data.status === "draft")
       .sort((a, b) => {
         const aDeadline = a.data.deadline_at ? new Date(a.data.deadline_at) : new Date(8640000000000000);
         const bDeadline = b.data.deadline_at ? new Date(b.data.deadline_at) : new Date(8640000000000000);
         return aDeadline - bDeadline;
-      });
+      })
+    );
   });
 
   eleventyConfig.addCollection("snapshots", (collectionApi) => {
