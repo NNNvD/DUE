@@ -20,6 +20,16 @@ npm run start        # dev server at http://localhost:8080
 ```
 Your site content is in `site/`. Published essays render at `/essays/published/...`
 
+## Create a new draft
+
+Use the interactive helper to scaffold front matter for a draft:
+
+```bash
+npm run new
+```
+
+The script prompts for title, topic, author, key dates, word range, and slug, then writes a new Markdown file to `site/essays/drafts/`.
+
 ## Content model (front matter)
 ```yaml
 ---
