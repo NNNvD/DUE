@@ -7,7 +7,8 @@
     "start": "eleventy --serve",
     "check:words": "node scripts/checkWordRange.js",
     "autopublish": "node scripts/autopublish.js",
-    "bump": "node scripts/bumpVersionAndCredit.js"
+    "bump": "node scripts/bumpVersionAndCredit.js",
+    "new": "node scripts/newDraft.js"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0"
