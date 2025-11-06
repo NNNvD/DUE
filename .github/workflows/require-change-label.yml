@@ -2,34 +2,44 @@ name: Require label for essay changes
 
 on:
   pull_request:
-    types: [opened, synchronize, labeled, unlabeled, reopened, ready_for_review]
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - labeled
+      - unlabeled
 
 jobs:
   require-label:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check labels on changes to published essays
+
+      - name: Collect PR context
+        id: context
         uses: actions/github-script@v7
         with:
           script: |
-            const labels = (context.payload.pull_request.labels || []).map(l => l.name);
-            const files = await github.paginate(
-              github.rest.pulls.listFiles,
-              {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.payload.pull_request.number,
-                per_page: 100,
-              }
-            );
-            const touchesPublished = files.some(
-              (f) => f.filename.startsWith('site/essays/published/') && f.filename.endsWith('.md')
-            );
-            if (!touchesPublished) {
-              return;
-            }
-            const ok = labels.includes('minor') || labels.includes('major');
-            if (!ok) {
-              core.setFailed('PR modifies published essays but lacks required label: "minor" or "major".');
-            }
+            const pr = context.payload.pull_request;
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
+            const labels = (pr.labels || []).map(label => ({ name: label.name }));
+            const changed = files.map(file => file.filename).join("\n");
+            core.setOutput("labels", JSON.stringify(labels));
+            core.setOutput("changed", changed);
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Require minor/major label for published essay edits
+        run: node scripts/checkPublishedEssayLabels.js
+        env:
+          PR_LABELS: ${{ steps.context.outputs.labels }}
+          CHANGED_FILES: ${{ steps.context.outputs.changed }}
