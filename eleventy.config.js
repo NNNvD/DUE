@@ -37,6 +37,13 @@ module.exports = function(eleventyConfig) {
       });
   });
 
+  eleventyConfig.addFilter("split", (value, delimiter = "/") => {
+    if (typeof value !== "string") {
+      return [];
+    }
+    return value.split(delimiter);
+  });
+
   eleventyConfig.addCollection("snapshots", (collectionApi) => {
     return collectionApi.getFilteredByGlob("site/essays/snapshots/**/*.md");
   });
