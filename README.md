@@ -8,6 +8,7 @@ This is a minimal starter for **DUE — Deadline for Unfinished Essays**, design
 - Repo-native content under `site/essays/`.
 - **Auto-publish** overdue drafts (30‑day timer) via scheduled workflow.
 - **Word-range enforcement** on PRs (250–500, 500–1000, 1000–1500 with small grace).
+- **Published essay label guard** fails PRs that touch `site/essays/published/` without a `minor` or `major` label.
 - **Version bump + credits** on merged PRs using `minor` / `major` labels:
   - `minor` → patch bump (adds to Acknowledgments)
   - `major` → major bump (adds to Coauthors)
@@ -45,6 +46,7 @@ Markdown content here...
 - **Deploy Pages**: Builds on push to `main` and deploys to GitHub Pages.
 - **Auto-publish**: Runs hourly; moves overdue `site/essays/drafts/*.md` to `site/essays/published/` and sets version per `initial_status`.
 - **Word range check**: Runs on PRs; fails if essay content is out of bounds.
+- **Published essay label guard**: Ensures PRs editing `site/essays/published/` include either the `minor` or `major` label.
 - **Version bump**: On merged PRs with `minor` or `major` label, bumps version and updates credits.
 
 ### Enable GitHub Pages

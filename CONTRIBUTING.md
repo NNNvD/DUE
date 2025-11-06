@@ -15,7 +15,7 @@ site/essays/drafts/your-slug.md
 Use the **Suggest a change** issue form:
 - {{ repoUrl }}/issues/new?template=suggest-change.yml
 
-For substantial changes, open a PR and add the **major** label. For small fixes, add **minor**.
+For substantial changes, open a PR and add the **major** label. For small fixes, add **minor**. Pull requests that modify `site/essays/published/` must include one of these labels or CI will fail.
 
 ## Versioning & credit
 - Minor → patch bump and Acknowledgments
