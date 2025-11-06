@@ -7,10 +7,12 @@
     "start": "eleventy --serve",
     "check:words": "node scripts/checkWordRange.js",
     "autopublish": "node scripts/autopublish.js",
-    "bump": "node scripts/bumpVersionAndCredit.js"
+    "bump": "node scripts/bumpVersionAndCredit.js",
+    "test": "vitest"
   },
   "devDependencies": {
-    "@11ty/eleventy": "^3.0.0"
+    "@11ty/eleventy": "^3.0.0",
+    "vitest": "^1.6.0"
   },
   "dependencies": {
     "dayjs": "^1.11.13",
