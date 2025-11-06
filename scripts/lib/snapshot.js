@@ -12,7 +12,12 @@ function writeSnapshot(fromFilePath, frontMatter, content) {
   const dir = path.join("site/essays/snapshots", slug);
   const dest = path.join(dir, `v${version}.md`);
 
-  const data = { ...frontMatter, layout: "snapshot.njk", origin_slug: slug };
+  const data = {
+    ...frontMatter,
+    layout: "snapshot.njk",
+    origin_slug: slug,
+    permalink: `/essays/published/${slug}/v${version}/`,
+  };
   fs.ensureDirSync(dir);
   const out = matter.stringify(content, data);
   fs.writeFileSync(dest, out, "utf8");
