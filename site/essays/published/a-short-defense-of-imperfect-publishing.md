@@ -10,7 +10,7 @@ deadline_at: 2025-10-21
 initial_status: complete
 version: 1.0
 published_at: 2025-10-18
-word_range: "250-500"
+word_range: "25-75"
 release_notes:
   - "Initial publication as complete (v1.0)."
 ---
