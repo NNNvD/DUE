@@ -1,8 +1,7 @@
-const { describe, it, expect } = require("vitest");
-const {
-  bump,
-  applyContribution
-} = require("../bumpVersionAndCredit");
+import { describe, it, expect } from "vitest";
+import bumpVersionAndCredit from "../bumpVersionAndCredit.js";
+
+const { bump, applyContribution } = bumpVersionAndCredit;
 
 describe("bump", () => {
   it("increments the minor version for minor contributions", () => {

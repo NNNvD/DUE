@@ -1,9 +1,7 @@
-const { describe, it, expect } = require("vitest");
-const {
-  wordCount,
-  bounds,
-  validateWordRange
-} = require("../checkWordRange");
+import { describe, it, expect } from "vitest";
+import checkWordRange from "../checkWordRange.js";
+
+const { wordCount, bounds, validateWordRange } = checkWordRange;
 
 describe("wordCount", () => {
   it("counts words while ignoring markdown syntax", () => {
