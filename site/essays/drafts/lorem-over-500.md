@@ -1,7 +1,7 @@
 ---
 title: "Lorem Ipsum Boundary Test"
 topic: "Automated lorem ipsum content for word range validation"
-author: testauthor
+author: lorem-boundary-tester
 coauthors: []
 acknowledgments: []
 status: draft
