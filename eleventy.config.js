@@ -186,16 +186,16 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addFilter("essayMeta", computeEssayMeta);
   eleventyConfig.addCollection("publishedEssays", (collectionApi) => {
-    return collectionApi
+    const items = collectionApi
       .getFilteredByGlob("site/essays/published/**/*.md")
       .filter((item) => item.data.status === "published")
-      .filter((item) => !item.fileSlug.startsWith("_"))
       .sort((a, b) => {
         const aDate = a.data.published_at ? new Date(a.data.published_at) : new Date(0);
         const bDate = b.data.published_at ? new Date(b.data.published_at) : new Date(0);
         return bDate - aDate;
-      })
-    );
+      });
+
+    return filterEssayTemplates(items);
   });
 
   eleventyConfig.addCollection("draftEssays", (collectionApi) => {
