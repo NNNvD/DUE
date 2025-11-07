@@ -1,3 +1,5 @@
+const meta = require("./site/_data/meta");
+
 function formatDateValue(value, format = "yyyy-LL-dd") {
   if (!value) return "";
   const date = new Date(value);
@@ -185,6 +187,17 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addFilter("essayMeta", computeEssayMeta);
+  eleventyConfig.addFilter("absoluteUrl", (value, siteData) => {
+    return meta.absoluteUrl(value, siteData);
+  });
+  eleventyConfig.addFilter("rssDate", value => {
+    if (!value) return "";
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+    return date.toUTCString();
+  });
   eleventyConfig.addCollection("publishedEssays", (collectionApi) => {
     const items = collectionApi
       .getFilteredByGlob("site/essays/published/**/*.md")

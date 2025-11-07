@@ -30,8 +30,10 @@ jobs:
             });
             const labels = (pr.labels || []).map(label => ({ name: label.name }));
             const changed = files.map(file => file.filename).join("\n");
+            const details = files.map(file => ({ filename: file.filename, patch: file.patch || "" }));
             core.setOutput("labels", JSON.stringify(labels));
             core.setOutput("changed", changed);
+            core.setOutput("changed_details", JSON.stringify(details));
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -43,3 +45,4 @@ jobs:
         env:
           PR_LABELS: ${{ steps.context.outputs.labels }}
           CHANGED_FILES: ${{ steps.context.outputs.changed }}
+          CHANGED_FILE_DETAILS: ${{ steps.context.outputs.changed_details }}

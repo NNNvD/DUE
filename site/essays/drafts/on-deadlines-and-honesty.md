@@ -9,9 +9,9 @@ started_at: 2025-10-21
 deadline_at: 2025-11-20
 initial_status: unfinished
 version: 0.1
-word_range: "500-1000"
+word_range: "30-80"
 release_notes: []
 ---
-Deadlines have a way of stripping away our favorite illusions. Without the luxury of infinite revision, we learn what we really think. 
+Deadlines have a way of stripping away our favorite illusions. Without the luxury of infinite revision, we learn what we really think.
 
 This essay explores how constraint clarifies intention, and why “good enough, now” often beats “perfect, never.”
