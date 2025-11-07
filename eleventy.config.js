@@ -1,3 +1,5 @@
+const meta = require("./site/_data/meta");
+
 function formatDateValue(value, format = "yyyy-LL-dd") {
   if (!value) return "";
   const date = new Date(value);
@@ -144,6 +146,31 @@ function computeEssayMeta(data = {}) {
   return meta;
 }
 
+function filterEssayTemplates(collection = []) {
+  if (!Array.isArray(collection)) {
+    return [];
+  }
+
+  return collection.filter((item) => {
+    if (!item || typeof item !== "object") {
+      return false;
+    }
+
+    const inputPath = item.inputPath || "";
+    const fileSlug = item.fileSlug || "";
+
+    if (fileSlug.startsWith("_")) {
+      return false;
+    }
+
+    if (inputPath.includes("/_templates/")) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
 module.exports = function(eleventyConfig) {
   const parseVersion = (value) => {
     const parts = String(value || "0.0").split(".");
@@ -160,29 +187,40 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addFilter("essayMeta", computeEssayMeta);
+  eleventyConfig.addFilter("absoluteUrl", (value, siteData) => {
+    return meta.absoluteUrl(value, siteData);
+  });
+  eleventyConfig.addFilter("rssDate", value => {
+    if (!value) return "";
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+    return date.toUTCString();
+  });
   eleventyConfig.addCollection("publishedEssays", (collectionApi) => {
-    return collectionApi
+    const items = collectionApi
       .getFilteredByGlob("site/essays/published/**/*.md")
       .filter((item) => item.data.status === "published")
-      .filter((item) => !item.fileSlug.startsWith("_"))
       .sort((a, b) => {
         const aDate = a.data.published_at ? new Date(a.data.published_at) : new Date(0);
         const bDate = b.data.published_at ? new Date(b.data.published_at) : new Date(0);
         return bDate - aDate;
-      })
-    );
+      });
+
+    return filterEssayTemplates(items);
   });
 
   eleventyConfig.addCollection("draftEssays", (collectionApi) => {
     return filterEssayTemplates(
       collectionApi
         .getFilteredByGlob("site/essays/**/*.md")
-      .filter((item) => item.data.status === "draft")
-      .sort((a, b) => {
-        const aDeadline = a.data.deadline_at ? new Date(a.data.deadline_at) : new Date(8640000000000000);
-        const bDeadline = b.data.deadline_at ? new Date(b.data.deadline_at) : new Date(8640000000000000);
-        return aDeadline - bDeadline;
-      })
+        .filter((item) => item.data.status === "draft")
+        .sort((a, b) => {
+          const aDeadline = a.data.deadline_at ? new Date(a.data.deadline_at) : new Date(8640000000000000);
+          const bDeadline = b.data.deadline_at ? new Date(b.data.deadline_at) : new Date(8640000000000000);
+          return aDeadline - bDeadline;
+        })
     );
   });
 
