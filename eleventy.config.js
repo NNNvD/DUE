@@ -146,6 +146,32 @@ function computeEssayMeta(data = {}) {
   return meta;
 }
 
+function normalizeWordRange(value) {
+  if (!value) return null;
+  const matches = String(value).match(/\d+/g);
+  if (!matches || !matches.length) return null;
+
+  const numbers = matches
+    .map((entry) => parseInt(entry, 10))
+    .filter((entry) => Number.isFinite(entry));
+
+  if (!numbers.length) return null;
+
+  const sum = numbers.reduce((total, current) => total + current, 0);
+  return sum / numbers.length;
+}
+
+function wordRangeTone(value) {
+  const average = normalizeWordRange(value);
+
+  if (average === null) return "badge--tone-muted";
+  if (average < 500) return "badge--magenta";
+  if (average < 1000) return "badge--orange";
+  if (average < 1500) return "badge--teal";
+
+  return "badge--tone-muted";
+}
+
 function filterEssayTemplates(collection = []) {
   if (!Array.isArray(collection)) {
     return [];
@@ -190,6 +216,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter("absoluteUrl", (value, siteData) => {
     return meta.absoluteUrl(value, siteData);
   });
+  eleventyConfig.addFilter("wordRangeTone", wordRangeTone);
   eleventyConfig.addFilter("rssDate", value => {
     if (!value) return "";
     const date = value instanceof Date ? value : new Date(value);
