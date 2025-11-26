@@ -39,7 +39,10 @@
       </div>
       <nav>
         <a href="{{ site.baseUrl }}">Home</a>
-        <a href="{{ site.baseUrl }}contribute/">Contribute</a>
+        <a href="{{ '/essays/' | url }}">Essays</a>
+        <a href="{{ '/drafts/' | url }}">Drafts</a>
+        <a href="{{ '/about/' | url }}">About</a>
+        <a class="pill pill--outline" href="{{ site.baseUrl }}contribute/">Contribute</a>
       </nav>
     </header>
     {% set breadcrumbEnabled = breadcrumb is not defined or breadcrumb %}

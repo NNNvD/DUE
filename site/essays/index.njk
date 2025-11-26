@@ -1,0 +1,94 @@
+---
+layout: base.njk
+title: "Essay library"
+description: "Browse every DUE essay, whether it's live or still in draft, with color-coded length badges."
+---
+{% set published = collections.publishedEssays %}
+{% set drafts = collections.draftEssays %}
+
+<section class="page-header card">
+  <p class="eyebrow">Library</p>
+  <h2>Browse every essay</h2>
+  <p class="lede">Scan the full catalogue to see what's shipping next and what already launched. Length badges are magenta for concise pieces (<500 words), orange for mid-length (500-1000), and teal for deeper dives (1000-1500).</p>
+  <div class="stat-grid">
+    <div class="stat">
+      <div class="stat__number">{{ published.length }}</div>
+      <div class="stat__label">Published</div>
+    </div>
+    <div class="stat">
+      <div class="stat__number">{{ drafts.length }}</div>
+      <div class="stat__label">Drafts</div>
+    </div>
+    <div class="stat">
+      <div class="stat__number">{{ (published.length + drafts.length) }}</div>
+      <div class="stat__label">Total essays</div>
+    </div>
+  </div>
+</section>
+
+<section class="stack">
+  <div class="section-heading">
+    <p class="eyebrow">Published</p>
+    <h3>Latest releases</h3>
+    <p class="muted">Newest first, including version and release notes.</p>
+  </div>
+  {% if published.length %}
+    <div class="card-list">
+      {% for post in published %}
+        <article class="card list-card">
+          <header class="list-card__header">
+            <h4 class="card-title"><a href="{{ post.url | url }}">{{ post.data.title }}</a></h4>
+            <div class="meta">
+              <span class="badge badge--tone-info">v{{ post.data.version }}</span>
+              {% if post.data.word_range %}<span class="badge {{ post.data.word_range | wordRangeTone }}">{{ post.data.word_range }} words</span>{% endif %}
+              {% if post.data.initial_status == "complete" %}
+                <span class="badge badge--tone-success">Published completed</span>
+              {% else %}
+                <span class="badge badge--tone-warn">Published unfinished</span>
+              {% endif %}
+              {% if post.data.published_at %}<span>Published {{ post.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+            </div>
+          </header>
+          {% if post.data.topic %}<p class="muted"><strong>Topic:</strong> {{ post.data.topic }}</p>{% endif %}
+          {% if post.data.release_notes and post.data.release_notes.length %}
+            <p class="muted"><strong>Latest:</strong> {{ post.data.release_notes[0] }}</p>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card"><p>No essays published yet.</p></div>
+  {% endif %}
+</section>
+
+<section class="stack">
+  <div class="section-heading">
+    <p class="eyebrow">Drafts</p>
+    <h3>Publishing soon</h3>
+    <p class="muted">Drafts are ordered by their publish date so you can jump in where momentum is highest.</p>
+  </div>
+  {% if drafts.length %}
+    <div class="card-list">
+      {% for draft in drafts %}
+        <article class="card list-card" data-deadline="{{ draft.data.deadline_at }}">
+          <header class="list-card__header">
+            <h4 class="card-title">{{ draft.data.title }}</h4>
+            <div class="meta">
+              {% if draft.data.deadline_at %}
+                <span class="badge deadline-badge" data-deadline-badge="{{ draft.data.deadline_at }}" data-deadline-label="{{ draft.data.deadline_at | date('yyyy-LL-dd') }}" title="Publishes {{ draft.data.deadline_at | date('yyyy-LL-dd') }}">{{ draft.data.deadline_at | date('yyyy-LL-dd') }}</span>
+              {% else %}
+                <span class="badge">Deadline pending</span>
+              {% endif %}
+              {% if draft.data.word_range %}<span class="badge {{ draft.data.word_range | wordRangeTone }}">{{ draft.data.word_range }} words</span>{% endif %}
+              {% if draft.data.started_at %}<span>Started {{ draft.data.started_at | date("yyyy-LL-dd") }}</span>{% endif %}
+            </div>
+          </header>
+          {% if draft.data.topic %}<p class="muted"><strong>Topic:</strong> {{ draft.data.topic }}</p>{% endif %}
+          <p class="countdown"><span data-countdown>{% if draft.data.deadline_at %}Publishes at {{ draft.data.deadline_at | date('yyyy-LL-dd') }}{% else %}Deadline not yet scheduled.{% endif %}</span></p>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card"><p>No drafts in progress. Start a new essay to begin writing.</p></div>
+  {% endif %}
+</section>
