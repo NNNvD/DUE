@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% set metaTitle = ogTitle or title or site.title %}
   <title>{{ metaTitle }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   {% if canonical %}
   <link rel="canonical" href="{{ canonical }}">
   <meta property="og:url" content="{{ canonical }}">
@@ -39,7 +41,10 @@
       </div>
       <nav>
         <a href="{{ site.baseUrl }}">Home</a>
-        <a href="{{ site.baseUrl }}contribute/">Contribute</a>
+        <a href="{{ '/essays/' | url }}">Essays</a>
+        <a href="{{ '/drafts/' | url }}">Drafts</a>
+        <a href="{{ '/about/' | url }}">About</a>
+        <a class="pill pill--outline" href="{{ site.baseUrl }}contribute/">Contribute</a>
       </nav>
     </header>
     {% set breadcrumbEnabled = breadcrumb is not defined or breadcrumb %}

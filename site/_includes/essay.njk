@@ -3,32 +3,44 @@
 layout: base.njk
 ---
 <article class="card">
-  <h1>{{ title }}</h1>
-  <div class="meta">
-    <span class="badge">Version {{ version }}</span>
-    {% if initial_status == "complete" %}
-      <span class="badge">Published completed</span>
-    {% else %}
-      <span class="badge">Published unfinished</span>
-    {% endif %}
-    <span class="badge">{{ word_range }} words</span>
-    {% if author %}<span>By <strong>@{{ author }}</strong></span>{% endif %}
-    {% if coauthors and coauthors.length %}
-      <span>with
-        {% for coauthor in coauthors %}
-          {% if coauthor is string %}
-            {% set handle = coauthor %}
-            {% set since = null %}
-          {% else %}
-            {% set handle = coauthor.user | default(coauthor.handle, true) | default(coauthor.github, true) %}
-            {% set since = coauthor.since_version | default(null, true) %}
-          {% endif %}
-          <span class="coauthor"{% if since %} title="Coauthor since v{{ since }}"{% endif %}>@{{ handle }}</span>{% if not loop.last %}, {% endif %}
-        {% endfor %}
-      </span>
-    {% endif %}
-    {% if published_at %}<span>Published: {{ published_at | date("yyyy-LL-dd") }}</span>{% endif %}
-  </div>
+  <header class="essay-header">
+    <div class="essay-header__row">
+      <div>
+        <p class="eyebrow">Published essay</p>
+        <h1 class="essay-title">{{ title }}</h1>
+      </div>
+      <div class="essay-badges">
+        <span class="badge badge--tone-info">Version {{ version }}</span>
+        {% if initial_status == "complete" %}
+          <span class="badge badge--tone-success">Published completed</span>
+        {% else %}
+          <span class="badge badge--tone-warn">Published unfinished</span>
+        {% endif %}
+        <span class="badge {{ word_range | wordRangeTone }}">{{ word_range }} words</span>
+        {% if published_at %}<span class="badge badge--tone-muted">Published {{ published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+      </div>
+    </div>
+    <div class="essay-header__row">
+      <div class="essay-contributors">
+        {% if author %}<span>By <strong>@{{ author }}</strong></span>{% endif %}
+        {% if coauthors and coauthors.length %}
+          <span>with
+            {% for coauthor in coauthors %}
+              {% if coauthor is string %}
+                {% set handle = coauthor %}
+                {% set since = null %}
+              {% else %}
+                {% set handle = coauthor.user | default(coauthor.handle, true) | default(coauthor.github, true) %}
+                {% set since = coauthor.since_version | default(null, true) %}
+              {% endif %}
+              <span class="coauthor"{% if since %} title="Coauthor since v{{ since }}"{% endif %}>@{{ handle }}</span>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+          </span>
+        {% endif %}
+      </div>
+      {% if topic %}<span class="badge badge--tone-muted">Topic: {{ topic }}</span>{% endif %}
+    </div>
+  </header>
   <div class="content">
     {{ content | safe }}
   </div>

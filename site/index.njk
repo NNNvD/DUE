@@ -1,84 +1,148 @@
 ---
 layout: base.njk
 title: "DUE — Essays"
+description: "See what is shipping now, browse recent essays, and jump into the next deadline."
 ---
-<section class="hero card">
-  <h2 style="margin-top:0">Publish under pressure.</h2>
-  <p>One topic. Thirty days. Essays go live finished or not. Minor contributions are acknowledged; major ones earn coauthorship. Every essay evolves with semantic versioning.</p>
-  <div class="cta-row">
-    <a class="btn btn-primary" href="{{ site.repoUrl }}/issues/new?template=new-essay.yml">Start a new essay</a>
-    <a class="btn btn-ghost" href="{{ site.repoUrl }}/issues/new?template=suggest-change.yml">Suggest a change</a>
+{% set drafts = collections.draftEssays %}
+{% set published = collections.publishedEssays %}
+{% set latest = published | first %}
+
+<section class="hero card spotlight">
+  <div class="hero__copy">
+    <p class="eyebrow">Deadline for Unfinished Essays</p>
+    <h2>Publish under pressure.</h2>
+    <p class="lede">One topic. Thirty days. Essays ship finished or not, with every iteration versioned in public. Major contributions earn coauthorship; quick edits earn acknowledgments.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="{{ site.repoUrl }}/issues/new?template=new-essay.yml">Start a new essay</a>
+      <a class="btn btn-secondary" href="{{ site.repoUrl }}/issues/new?template=suggest-change.yml">Suggest a change</a>
+      <a class="btn btn-ghost" href="{{ '/essays/' | url }}">Browse essays</a>
+    </div>
+    <div class="legend-badges">
+      <span class="legend-badge magenta">Under 500 words</span>
+      <span class="legend-badge orange">500-1000 words</span>
+      <span class="legend-badge teal">1000-1500 words</span>
+    </div>
+  </div>
+  <div class="hero__visual">
+    <div class="hero__image">
+      <img src="https://images.unsplash.com/photo-1461344577544-4e5dc9487184?auto=format&fit=crop&w=1080&q=80" alt="Pen furiously writing on a page">
+    </div>
+    <div class="hero__legend">
+      <strong>Color leads the way.</strong>
+      <p>Magenta badges mark quick reads, orange signals mid-length drafts, and teal highlights the long-form pushes.</p>
+    </div>
+  </div>
+  <div class="hero__panel">
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat__number">{{ published.length }}</div>
+        <div class="stat__label">Published</div>
+      </div>
+      <div class="stat">
+        <div class="stat__number">{{ drafts.length }}</div>
+        <div class="stat__label">In progress</div>
+      </div>
+      <div class="stat">
+        <div class="stat__number">30</div>
+        <div class="stat__label">days to ship</div>
+      </div>
+    </div>
+    <p class="caption">Length badges stay consistent across the site so you can spot short, mid, and long reads at a glance.</p>
   </div>
 </section>
 
-{% set drafts = collections.draftEssays %}
-<h2>In Progress</h2>
-{% if drafts.length %}
-  {% set active = drafts[0] %}
-  <div class="card in-progress" data-deadline="{{ active.data.deadline_at }}">
-    <h3>Currently writing: {{ active.data.title }}</h3>
-    <div class="meta">
-      {% if active.data.word_range %}<span class="badge">{{ active.data.word_range }} words</span>{% endif %}
-      {% if active.data.started_at %}<span>Started: {{ active.data.started_at | date("yyyy-LL-dd") }}</span>{% endif %}
-      {% if active.data.deadline_at %}<span>Publishes: {{ active.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
+<section class="grid grid-two">
+  <article class="card in-progress">
+    <div class="section-heading">
+      <p class="eyebrow">Now writing</p>
+      <h3>In progress</h3>
+      <p>Deadlines arrive fast—help keep the current draft on track.</p>
     </div>
-    <p class="countdown">
-      <span data-countdown>
-        {% if active.data.deadline_at %}
-          Publishes at {{ active.data.deadline_at | date("yyyy-LL-dd") }}
-        {% else %}
-          Deadline not yet scheduled.
-        {% endif %}
-      </span>
-    </p>
-    {% if active.data.topic %}<p><strong>Topic:</strong> {{ active.data.topic }}</p>{% endif %}
-  </div>
-  {% if drafts.length > 1 %}
-    <div class="card">
-      <h4>Also drafting</h4>
-      <ul class="draft-list">
-        {% for draft in drafts %}
-          {% if not loop.first %}
-          <li>
-            <strong>{{ draft.data.title }}</strong>
-            {% if draft.data.deadline_at %} — publishes {{ draft.data.deadline_at | date("yyyy-LL-dd") }}{% endif %}
-          </li>
-          {% endif %}
-        {% endfor %}
-      </ul>
-    </div>
-  {% endif %}
-{% else %}
-  <div class="card">
-    <p>No drafts in progress. Start a new essay to begin writing.</p>
-  </div>
-{% endif %}
-
-<h2>Published Essays</h2>
-{% for post in collections.publishedEssays %}
-  <div class="card">
-    <h3><a href="{{ post.url | url }}">{{ post.data.title }}</a></h3>
-      <div class="meta">
-        <span class="badge">v{{ post.data.version }}</span>
-        <span class="badge">{{ post.data.word_range }} words</span>
-        <span class="badge">
-          {% if post.data.initial_status == "complete" %}
-            Published completed
-          {% else %}
-            Published unfinished
-          {% endif %}
-        </span>
-        {% if post.data.published_at %}<span>Published: {{ post.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+    {% if drafts.length %}
+      {% set active = drafts[0] %}
+      <div class="stack">
+        <div class="meta">
+          {% if active.data.word_range %}<span class="badge {{ active.data.word_range | wordRangeTone }}">{{ active.data.word_range }} words</span>{% endif %}
+          {% if active.data.started_at %}<span>Started {{ active.data.started_at | date("yyyy-LL-dd") }}</span>{% endif %}
+          {% if active.data.deadline_at %}<span>Publishes {{ active.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
+        </div>
+        <h4 class="card-title">{{ active.data.title }}</h4>
+        {% if active.data.topic %}<p class="muted"><strong>Topic:</strong> {{ active.data.topic }}</p>{% endif %}
+        <p class="countdown"><span data-countdown>{% if active.data.deadline_at %}Publishes at {{ active.data.deadline_at | date("yyyy-LL-dd") }}{% else %}Deadline not yet scheduled.{% endif %}</span></p>
       </div>
-    {% if post.data.release_notes and post.data.release_notes.length %}
-      <p><strong>Latest:</strong> {{ post.data.release_notes[0] }}</p>
+      {% if drafts.length > 1 %}
+        <div class="divider"></div>
+        <div class="stack">
+          <p class="eyebrow">Also drafting</p>
+          <ul class="draft-list">
+            {% for draft in drafts %}
+              {% if not loop.first %}
+              <li>
+                <span class="draft-title">{{ draft.data.title }}</span>
+                {% if draft.data.deadline_at %}<span class="muted"> — publishes {{ draft.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
+              </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    {% else %}
+      <p>No drafts in progress. Start a new essay to begin writing.</p>
     {% endif %}
+  </article>
+
+  <article class="card">
+    <div class="section-heading">
+      <p class="eyebrow">Latest release</p>
+      <h3>Most recently published</h3>
+      <p>Catch up on what just shipped before the next round of edits.</p>
+    </div>
+    {% if latest %}
+      <div class="stack">
+        <h4 class="card-title"><a href="{{ latest.url | url }}">{{ latest.data.title }}</a></h4>
+        <div class="meta">
+          <span class="badge badge--tone-info">v{{ latest.data.version }}</span>
+          {% if latest.data.word_range %}<span class="badge {{ latest.data.word_range | wordRangeTone }}">{{ latest.data.word_range }} words</span>{% endif %}
+          {% if latest.data.initial_status == "complete" %}
+            <span class="badge badge--tone-success">Published completed</span>
+          {% else %}
+            <span class="badge badge--tone-warn">Published unfinished</span>
+          {% endif %}
+          {% if latest.data.published_at %}<span>Published {{ latest.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+        </div>
+        {% if latest.data.release_notes and latest.data.release_notes.length %}
+          <p class="muted"><strong>Latest:</strong> {{ latest.data.release_notes[0] }}</p>
+        {% endif %}
+      </div>
+    {% else %}
+      <p>No essays published yet.</p>
+    {% endif %}
+  </article>
+</section>
+
+<section class="card">
+  <div class="section-heading">
+    <p class="eyebrow">Explore</p>
+    <h3>Keep reading and contributing</h3>
   </div>
-{% else %}
-  <p>No essays published yet.</p>
-{% endfor %}
-
-<hr>
-
-<h2>About</h2>
-<p><strong>DUE — Deadline for Unfinished Essays</strong> publishes short essays under a 30‑day deadline. Finished or not, they go live. Minor contributions are acknowledged; major contributions earn coauthorship. Essays evolve using semantic versioning.</p>
+  <div class="card-grid">
+    <div class="card panel">
+      <p class="eyebrow">Library</p>
+      <h4 class="card-title">Browse all essays</h4>
+      <p class="muted">See everything that has shipped and what is still cooking, all in one place.</p>
+      <a class="inline-link" href="{{ '/essays/' | url }}">Open the library →</a>
+    </div>
+    <div class="card panel">
+      <p class="eyebrow">Deadlines</p>
+      <h4 class="card-title">Draft schedule</h4>
+      <p class="muted">View every draft ordered by publish date so you can jump in where help is needed.</p>
+      <a class="inline-link" href="{{ '/drafts/' | url }}">See the queue →</a>
+    </div>
+    <div class="card panel">
+      <p class="eyebrow">Backstory</p>
+      <h4 class="card-title">About DUE</h4>
+      <p class="muted">Learn how deadlines, acknowledgments, and versioning shape the project.</p>
+      <a class="inline-link" href="{{ '/about/' | url }}">Read the story →</a>
+    </div>
+  </div>
+</section>
