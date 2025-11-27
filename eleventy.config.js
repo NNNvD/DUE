@@ -1,4 +1,6 @@
 const meta = require("./site/_data/meta");
+const fg = require("fast-glob");
+const matter = require("gray-matter");
 
 function formatDateValue(value, format = "yyyy-LL-dd") {
   if (!value) return "";
@@ -197,6 +199,35 @@ function filterEssayTemplates(collection = []) {
   });
 }
 
+function loadEssaysByStatus(status = "published") {
+  const pattern = status === "draft"
+    ? "site/essays/drafts/**/*.md"
+    : "site/essays/published/**/*.md";
+
+  return fg.sync(pattern).map((file) => {
+    const { data, content } = matter.read(file);
+    const slug = (data.page && data.page.fileSlug) || data.slug || (file.split("/").pop() || "").replace(/\.md$/, "");
+    const segment = status === "draft" ? "drafts" : "published";
+    const url = `/essays/${segment}/${slug}/`;
+
+    return {
+      inputPath: file,
+      fileSlug: slug,
+      url,
+      data: {
+        ...data,
+        status,
+        page: {
+          ...(data.page || {}),
+          url,
+          fileSlug: slug,
+        },
+      },
+      templateContent: content,
+    };
+  });
+}
+
 module.exports = function(eleventyConfig) {
   const parseVersion = (value) => {
     const parts = String(value || "0.0").split(".");
@@ -225,10 +256,21 @@ module.exports = function(eleventyConfig) {
     }
     return date.toUTCString();
   });
+  const isPublishedEssay = (item = {}) => {
+    const status = item.data && item.data.status;
+    const inputPath = item.inputPath || "";
+    return status === "published" && inputPath.includes("/essays/published/");
+  };
+
+  const isDraftEssay = (item = {}) => {
+    const status = item.data && item.data.status;
+    const inputPath = item.inputPath || "";
+    return status === "draft" && inputPath.includes("/essays/drafts/");
+  };
+
   eleventyConfig.addCollection("publishedEssays", (collectionApi) => {
-    const items = collectionApi
-      .getFilteredByGlob("site/essays/published/**/*.md")
-      .filter((item) => item.data.status === "published")
+    const items = loadEssaysByStatus("published")
+      .filter(isPublishedEssay)
       .sort((a, b) => {
         const aDate = a.data.published_at ? new Date(a.data.published_at) : new Date(0);
         const bDate = b.data.published_at ? new Date(b.data.published_at) : new Date(0);
@@ -240,9 +282,8 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addCollection("draftEssays", (collectionApi) => {
     return filterEssayTemplates(
-      collectionApi
-        .getFilteredByGlob("site/essays/**/*.md")
-        .filter((item) => item.data.status === "draft")
+      loadEssaysByStatus("draft")
+        .filter(isDraftEssay)
         .sort((a, b) => {
           const aDeadline = a.data.deadline_at ? new Date(a.data.deadline_at) : new Date(8640000000000000);
           const bDeadline = b.data.deadline_at ? new Date(b.data.deadline_at) : new Date(8640000000000000);
@@ -303,6 +344,10 @@ module.exports = function(eleventyConfig) {
       });
   });
 
+  // Copy static assets directly so style and script changes show up in the build output
+  eleventyConfig.addPassthroughCopy({ "site/assets": "assets" });
+  eleventyConfig.addWatchTarget("site/assets");
+
   // Allow custom domain via site/CNAME passthrough (optional)
   try {
     eleventyConfig.addPassthroughCopy("CNAME");
@@ -317,6 +362,7 @@ module.exports = function(eleventyConfig) {
       data: "_data",
       output: "_site"
     },
+    templateFormats: ["njk", "md"],
     // Ensure 11ty-generated URLs respect the Pages base path
     pathPrefix: "/DUE/"
   };

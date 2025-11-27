@@ -1,4 +1,3 @@
-
 ---
 layout: base.njk
 ---
@@ -48,8 +47,10 @@ layout: base.njk
 
 {% if page.inputPath and "essays/published/" in page.inputPath %}
   {% set ctaRelativePath = page.inputPath | replace("./", "") %}
-  {% set ctaIssueTitle = ("Suggest change: " ~ ctaRelativePath) | urlencode %}
-  {% set ctaIssueUrl = site.repoUrl ~ "/issues/new?template=suggest-change.yml&title=" ~ ctaIssueTitle %}
+  {% set minorTitle = ("[Minor] " ~ ctaRelativePath) | urlencode %}
+  {% set majorTitle = ("[Major] " ~ ctaRelativePath) | urlencode %}
+  {% set minorIssueUrl = site.repoUrl ~ "/issues/new?template=suggest-minor-change.yml&title=" ~ minorTitle %}
+  {% set majorIssueUrl = site.repoUrl ~ "/issues/new?template=suggest-major-change.yml&title=" ~ majorTitle %}
   {% include "cta-suggest-change.njk" %}
 {% endif %}
 

@@ -1,0 +1,26 @@
+name: Suggest a minor change to an essay
+description: Propose copyedits, clarifications, or small additions. Minor edits add acknowledgments.
+title: "[Minor] short description"
+labels: ["suggestion", "minor"]
+body:
+  - type: input
+    id: essay_path
+    attributes:
+      label: Essay file path
+      placeholder: site/essays/published/your-essay.md
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Rationale
+      placeholder: "This improves the intro by..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_changes
+    attributes:
+      label: Proposed changes (Markdown or diff)
+      placeholder: "## New paragraph..."
+    validations:
+      required: true
