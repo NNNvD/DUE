@@ -30,7 +30,7 @@
   {% if description %}
   <meta name="twitter:description" content="{{ description }}">
   {% endif %}
-  <link rel="stylesheet" href="{{ site.baseUrl }}assets/style.css">
+  <link rel="stylesheet" href="{{ "/assets/style.css" | url }}">
 </head>
 <body>
   <main>
@@ -40,11 +40,11 @@
         <small>{{ site.tagline }}</small>
       </div>
       <nav>
-        <a href="{{ site.baseUrl }}">Home</a>
+        <a href="{{ "/" | url }}">Home</a>
         <a href="{{ '/essays/' | url }}">Essays</a>
         <a href="{{ '/drafts/' | url }}">Drafts</a>
         <a href="{{ '/about/' | url }}">About</a>
-        <a class="pill pill--outline" href="{{ site.baseUrl }}contribute/">Contribute</a>
+        <a class="pill pill--outline" href="{{ '/contribute/' | url }}">Contribute</a>
       </nav>
     </header>
     {% set breadcrumbEnabled = breadcrumb is not defined or breadcrumb %}
@@ -60,7 +60,7 @@
     {% if breadcrumbEnabled and hasBreadcrumbs %}
       <nav class="breadcrumbs" aria-label="Breadcrumb">
         <ol>
-          <li><a href="{{ site.baseUrl }}">Home</a></li>
+          <li><a href="{{ "/" | url }}">Home</a></li>
           {% set accumulated = '' %}
           {% for part in stemParts %}
             {% if part and part != 'index' %}

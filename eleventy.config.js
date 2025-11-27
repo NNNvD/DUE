@@ -303,6 +303,10 @@ module.exports = function(eleventyConfig) {
       });
   });
 
+  // Copy static assets directly so style and script changes show up in the build output
+  eleventyConfig.addPassthroughCopy({ "site/assets": "assets" });
+  eleventyConfig.addWatchTarget("site/assets");
+
   // Allow custom domain via site/CNAME passthrough (optional)
   try {
     eleventyConfig.addPassthroughCopy("CNAME");
