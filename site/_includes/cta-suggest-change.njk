@@ -1,12 +1,19 @@
 <section class="card call-to-action">
-  <h3>Suggest a change</h3>
+  <h3>Propose edits for this essay</h3>
   <p>
-    Found something to improve in this essay? Open an issue and start with the
-    file already referenced.
+    Choose how substantial your contribution will be. Minor suggestions cover phrasing,
+    typos, and small clarifications. Major suggestions reshape sections or add new
+    arguments and will be reviewed as coauthor-level contributions.
   </p>
-  <p>
-    <a href="{{ ctaIssueUrl }}" target="_blank" rel="noopener noreferrer">
-      Suggest a change for <code>{{ ctaRelativePath }}</code>
+  <div class="cta-row" style="flex-wrap:wrap; gap:0.75rem;">
+    <a class="btn btn-secondary" href="{{ minorIssueUrl }}" target="_blank" rel="noopener noreferrer">
+      Suggest minor change
     </a>
+    <a class="btn btn-primary" href="{{ majorIssueUrl }}" target="_blank" rel="noopener noreferrer">
+      Suggest major change
+    </a>
+  </div>
+  <p class="muted" style="margin-bottom:0;">
+    Each link opens a prefilled GitHub issue scoped to <code>{{ ctaRelativePath }}</code>.
   </p>
 </section>
