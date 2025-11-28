@@ -333,3 +333,11 @@ If you want these split into **GitHub Project** items with dependencies, I can o
 - **Countdown reliability:** Specify a consistent time source (UTC) and refresh cadence; handle deadline edits by reading from data on each render and scheduling client updates. Provide an accessible text fallback when JavaScript is disabled or when time drift is detected.
 - **Versioning policy:** Document how essay versions increment (e.g., patch for typo/a11y fixes, minor for content additions, major for structural rewrites) and tie it to release notes. Enforce via a small checklist in PR templates or a lint that blocks inconsistent version bumps.
 
+## Additional considerations before implementation
+
+- **Data classification and secrets handling:** Define who can access stored comment submissions (including logs), where secrets live (CI, serverless, local dev), and how rotations are handled. Add a quick RACI so moderation and ops owners are explicit.
+- **Staging + fixtures:** Ensure a staging environment (or preview deploys) exists for testing the full comment flow end-to-end with sample essays and mock submissions before enabling on production.
+- **Rollback and failure modes:** Document how to disable new flows quickly (feature flags/env toggles) and how to manually ingest comments if the function or PR creation fails. Keep a runbook for moderators and maintainers.
+- **Content governance:** Decide who approves comment publication, how often queues are reviewed, and what thresholds trigger escalation (e.g., abuse reports, security concerns).
+- **Browser coverage:** List supported browsers/devices for the comment UI, countdown, and search, plus how degradations are handled for unsupported cases.
+
