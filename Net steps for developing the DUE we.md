@@ -321,3 +321,15 @@ mk "QA: end-to-end acceptance tests" "Full v1 verification." "qa"
 
 If you want these split into **GitHub Project** items with dependencies, I can output a CSV or a GitHub Projects (v2) `gql` script as well.
 
+---
+
+## Recommendations to cover gaps & risks
+
+- **Spam and abuse controls:** Expand the comment workstream to require a honeypot plus at least one bot-mitigation (e.g., hCaptcha/Turnstile, IP/user-agent throttling, or short-term submission quotas). Log rejected submissions and surface an admin-visible queue for false positives.
+- **Privacy and data handling:** Define retention and access rules for commenter contact info (e.g., store minimal fields, encrypt at rest, redact after publication or `N` days). Add a short privacy notice near the form clarifying use and retention.
+- **Observability:** Add minimal telemetry for the comment pipeline (function errors, validation failures, PR creation latency) and client errors (comment widget load/submit failures). Alert on sustained failures so moderators know when to switch to a fallback intake.
+- **Search and comments performance budgets:** Set bundle-size and latency targets for search and comments (e.g., search index ≤ `X` KB gzipped; giscus/scripts lazy-loaded; countdown updates throttled). Prefer pagination or top-N results when the index grows to keep time-to-interact fast on low-end devices.
+- **CI minimums:** In the CI alignment item, explicitly retain the checks that guard quality: build, word-range/word-count verification, a11y/SEO linters (axe/lighthouse), and any schema/meta validators. Only remove flows tied to public authoring.
+- **Countdown reliability:** Specify a consistent time source (UTC) and refresh cadence; handle deadline edits by reading from data on each render and scheduling client updates. Provide an accessible text fallback when JavaScript is disabled or when time drift is detected.
+- **Versioning policy:** Document how essay versions increment (e.g., patch for typo/a11y fixes, minor for content additions, major for structural rewrites) and tie it to release notes. Enforce via a small checklist in PR templates or a lint that blocks inconsistent version bumps.
+
