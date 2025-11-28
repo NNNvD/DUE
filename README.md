@@ -69,14 +69,15 @@ Markdown content here...
 2. Go to **Settings → Pages**.
 3. Set **Build and deployment** to **GitHub Actions**. The provided workflow will deploy automatically on push to `main`.
 
-## Contributing flow (recommended)
-- Read the [Contribute guide](./site/contribute.njk) (rendered at <code>/contribute/</code>) for a quick overview of the process.
-- **Start a new essay**: copy `site/essays/drafts/_template.md` (or any draft), set `started_at`, `deadline_at = started_at + 30d`, choose `word_range`, write.
-- **Mark complete**: set `initial_status: complete` if you intend first publish to be 1.0.
-- **Suggestions**: contributors open PRs against the essay file:
-  - Add label **minor** for small fixes → Acknowledgments, patch bump.
-  - Add label **major** for substantial changes → Coauthor, major bump.
-- On merge, the workflow bumps version + credits automatically.
+## Public participation
+- Read the [Comments page](./site/contribute.njk) (rendered at <code>/contribute/</code>) for how to leave feedback once essays publish.
+- Drafting and edits now happen in the backend. Public interaction is limited to comments on published essays.
+- Moderators pre-review comments before publishing them; accepted feedback is credited in acknowledgments or release notes as appropriate.
+
+### Configure giscus for comments
+- Enable **Discussions** on your GitHub repository and create a category (e.g., "General").
+- In `site/_data/site.json`, set `giscus.repo`, `giscus.repoId`, `giscus.category`, and `giscus.categoryId` to match the repository and category you want to host discussions in.
+- Keep `giscus.mapping` as `pathname` so threads align with essay URLs. Once set, published essays will render the discussion widget along with a "Jump to comments" link.
 
 ## Notes
 - This starter stores history in front‑matter `release_notes`. For full version snapshots, keep tagged versions or store copies.
