@@ -3,6 +3,7 @@ layout: base.njk
 ---
 <article class="card">
   <header class="essay-header">
+    {% set isPublishedEssay = page.inputPath and '/essays/published/' in page.inputPath %}
     <div class="essay-header__row">
       <div>
         <p class="eyebrow">Published essay</p>
@@ -39,20 +40,16 @@ layout: base.njk
       </div>
       {% if topic %}<span class="badge badge--tone-muted">Topic: {{ topic }}</span>{% endif %}
     </div>
+    {% if isPublishedEssay and site.giscus and site.giscus.repo %}
+      <div class="essay-header__row">
+        <a class="jump-to-comments" href="#comments">Jump to comments ↓</a>
+      </div>
+    {% endif %}
   </header>
   <div class="content">
     {{ content | safe }}
   </div>
 </article>
-
-{% if page.inputPath and "essays/published/" in page.inputPath %}
-  {% set ctaRelativePath = page.inputPath | replace("./", "") %}
-  {% set minorTitle = ("[Minor] " ~ ctaRelativePath) | urlencode %}
-  {% set majorTitle = ("[Major] " ~ ctaRelativePath) | urlencode %}
-  {% set minorIssueUrl = site.repoUrl ~ "/issues/new?template=suggest-minor-change.yml&title=" ~ minorTitle %}
-  {% set majorIssueUrl = site.repoUrl ~ "/issues/new?template=suggest-major-change.yml&title=" ~ majorTitle %}
-  {% include "cta-suggest-change.njk" %}
-{% endif %}
 
 <section class="card">
   <h3>Release notes</h3>
@@ -120,6 +117,6 @@ layout: base.njk
   {% endif %}
 </section>
 
-{% if status == "published" %}
+{% if isPublishedEssay and status == "published" %}
   {% include "giscus.njk" %}
 {% endif %}

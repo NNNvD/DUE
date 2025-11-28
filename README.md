@@ -74,6 +74,11 @@ Markdown content here...
 - Drafting and edits now happen in the backend. Public interaction is limited to comments on published essays.
 - Moderators pre-review comments before publishing them; accepted feedback is credited in acknowledgments or release notes as appropriate.
 
+### Configure giscus for comments
+- Enable **Discussions** on your GitHub repository and create a category (e.g., "General").
+- In `site/_data/site.json`, set `giscus.repo`, `giscus.repoId`, `giscus.category`, and `giscus.categoryId` to match the repository and category you want to host discussions in.
+- Keep `giscus.mapping` as `pathname` so threads align with essay URLs. Once set, published essays will render the discussion widget along with a "Jump to comments" link.
+
 ## Notes
 - This starter stores history in front‑matter `release_notes`. For full version snapshots, keep tagged versions or store copies.
 - GitHub-hosted runners [execute on UTC time](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#scheduled-events).
