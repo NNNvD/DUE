@@ -1,4 +1,4 @@
-Net steps for developing the DUE website
+Next steps for developing the DUE website
 
 # Milestone
 
@@ -320,3 +320,4 @@ mk "QA: end-to-end acceptance tests" "Full v1 verification." "qa"
 ```
 
 If you want these split into **GitHub Project** items with dependencies, I can output a CSV or a GitHub Projects (v2) `gql` script as well.
+
