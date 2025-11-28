@@ -42,9 +42,9 @@
       <nav>
         <a href="{{ "/" | url }}">Home</a>
         <a href="{{ '/essays/' | url }}">Essays</a>
-        <a href="{{ '/drafts/' | url }}">Drafts</a>
+        <a href="{{ '/drafts/' | url }}">Drafts (read-only)</a>
         <a href="{{ '/about/' | url }}">About</a>
-        <a class="pill pill--outline" href="{{ '/contribute/' | url }}">Contribute</a>
+        <a class="pill pill--outline" href="{{ '/contribute/' | url }}">Comments</a>
       </nav>
     </header>
     {% set breadcrumbEnabled = breadcrumb is not defined or breadcrumb %}
