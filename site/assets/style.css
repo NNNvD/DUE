@@ -547,6 +547,61 @@ main > .breadcrumbs {
   gap: var(--space-sm);
 }
 
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-panel);
+}
+
+.share-actions__label {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.share-actions__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.share-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(31, 41, 55, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.share-button:hover {
+  text-decoration: none;
+  transform: translateY(-1px);
+  border-color: var(--ring);
+  box-shadow: 0 12px 28px rgba(31, 41, 55, 0.08);
+}
+
+.share-button--copy {
+  background: linear-gradient(90deg, #eef2ff, #ecfeff);
+}
+
+.share-actions__status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 .essay-badges, .essay-contributors {
   display: flex;
   flex-wrap: wrap;

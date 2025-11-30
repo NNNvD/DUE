@@ -5,12 +5,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% set metaTitle = ogTitle or title or site.title %}
+  {% set canonicalUrl = canonical or meta.buildCanonicalUrl({ page: page, site: site }) %}
   <title>{{ metaTitle }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  {% if canonical %}
-  <link rel="canonical" href="{{ canonical }}">
-  <meta property="og:url" content="{{ canonical }}">
+  {% if canonicalUrl %}
+  <link rel="canonical" href="{{ canonicalUrl }}">
+  <meta property="og:url" content="{{ canonicalUrl }}">
   {% endif %}
   {% if description %}
   <meta name="description" content="{{ description }}">
@@ -83,5 +84,6 @@
   </main>
   <script type="module" src="{{ "/assets/countdown.js" | url }}"></script>
   <script type="module" src="{{ "/assets/comments.js" | url }}"></script>
+  <script type="module" src="{{ "/assets/share.js" | url }}"></script>
 </body>
 </html>

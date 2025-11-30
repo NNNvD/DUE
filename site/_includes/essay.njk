@@ -3,6 +3,12 @@ layout: base.njk
 ---
 <article class="card">
   {% set length = word_range | wordRangeMeta %}
+  {% set shareUrl = canonical or meta.buildCanonicalUrl({ page: page, site: site }) %}
+  {% set shareLabel = (title or site.title) ~ ' — ' ~ site.title %}
+  {% set shareSnippet = shareLabel ~ ' ' ~ shareUrl %}
+  {% set encodedShareUrl = shareUrl | urlencode %}
+  {% set encodedShareText = shareLabel | urlencode %}
+  {% set encodedShareSnippet = shareSnippet | urlencode %}
   <header class="essay-header">
     {% set isPublishedEssay = page.inputPath and '/essays/published/' in page.inputPath %}
     <div class="essay-header__row">
@@ -52,6 +58,20 @@ layout: base.njk
         {% if display_keywords and display_keywords.length %}<span>Keywords: {{ display_keywords | join(", ") }}</span>{% endif %}
       </div>
     </div>
+    {% if isPublishedEssay %}
+      <div class="essay-header__row">
+        <div class="share-actions" data-share role="group" aria-label="Share this essay">
+          <span class="share-actions__label">Share</span>
+          <div class="share-actions__buttons">
+            <a class="share-button" href="https://mastodon.social/share?text={{ encodedShareSnippet }}" target="_blank" rel="noopener noreferrer">Mastodon</a>
+            <a class="share-button" href="https://twitter.com/intent/tweet?text={{ encodedShareText }}&url={{ encodedShareUrl }}" target="_blank" rel="noopener noreferrer">X / Twitter</a>
+            <a class="share-button" href="https://www.linkedin.com/sharing/share-offsite/?url={{ encodedShareUrl }}" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <button type="button" class="share-button share-button--copy" data-share-copy data-share-url="{{ shareUrl }}">Copy link</button>
+          </div>
+          <p class="share-actions__status" data-share-status role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    {% endif %}
     {% if isPublishedEssay and site.giscus and site.giscus.repo %}
       <div class="essay-header__row">
         <a class="jump-to-comments" href="#comments">Jump to comments ↓</a>
