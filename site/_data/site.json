@@ -8,5 +8,8 @@
     "categoryId": "",
     "mapping": "pathname",
     "theme": "light"
+  },
+  "comments": {
+    "endpoint": "/api/submit-comment"
   }
 }

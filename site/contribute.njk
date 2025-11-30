@@ -1,39 +1,34 @@
 ---
 layout: base.njk
-title: "Contribute to DUE"
+title: "Comment on DUE"
 ---
 <section class="card">
-  <h2 style="margin-top:0">Contribution guidelines</h2>
-  <p>DUE thrives on iterative essays. Follow these quick steps to keep contributions smooth and consistent.</p>
+  <h2 style="margin-top:0">Commenting on DUE</h2>
+  <p>DUE is now comments-only for the public. Drafting and edits happen in the backend, but readers can share feedback on published essays once comments open.</p>
   <ul>
-    <li><strong>Plan your work:</strong> use the issue templates below to propose a new essay or suggest improvements.</li>
-    <li><strong>Draft locally:</strong> copy a draft into <code>site/essays/drafts/</code>, update the front matter, then run <code>npm run start</code> for live previews.</li>
-    <li><strong>Submit changes:</strong> open a pull request with a clear summary. Keep essays within their declared <code>word_range</code> and stick to ISO dates.</li>
-    <li><strong>Label intent:</strong> add the <code>minor</code> label for light edits or <code>major</code> for substantial revisions before merging.</li>
+    <li><strong>Where to comment:</strong> visit any published essay and scroll to the comments section.</li>
+    <li><strong>What to include:</strong> note whether your feedback is <em>minor</em> (typos, phrasing, references) or <em>major</em> (structural or thematic changes). The form lets you pick either intent before you type.</li>
+    <li><strong>Stay concise:</strong> keep topics and keywords tight (≤5 each) so discussions stay focused.</li>
+    <li><strong>Be respectful:</strong> follow the project’s tone and cite sources when you can.</li>
   </ul>
 </section>
 
 <section class="card">
-  <h2>Credit policy</h2>
-  <p>Every merged pull request updates both the version and the human credits so contributors get visible recognition.</p>
+  <h2>What happens to your feedback</h2>
+  <p>Comments are pre-moderated. Accepted notes may be published under the essay with a status such as “Not yet implemented” or “Implemented.”</p>
   <ul>
-    <li><strong>Minor contributions</strong> (labelled <code>minor</code>) trigger a patch bump and add the author to the essay's acknowledgments.</li>
-    <li><strong>Major contributions</strong> (labelled <code>major</code>) advance the major version and list the contributor as a coauthor.</li>
-    <li>Release notes in front matter record what changed so readers can trace each revision.</li>
-    <li>Automation handles the bookkeeping—just apply the right label before merge.</li>
+    <li>Minor feedback is acknowledged in the essay credits once incorporated.</li>
+    <li>Major feedback that materially shifts the essay is tracked in release notes and version bumps.</li>
+    <li>For sensitive issues, flag them in your comment so moderators can review before posting.</li>
   </ul>
 </section>
 
 <section class="card">
-  <h2>Issue templates</h2>
-  <p>Contribution flows begin from published essays. Open any essay and use the per-page buttons to propose a minor or major change.</p>
-  <p>
-    If you need to discuss a new topic or coordinate larger plans, start with the essay library and pick a place to contribute:
-    <a class="inline-link" href="{{ '/essays/' | url }}">browse published essays →</a>
-  </p>
+  <h2>While comments are closed on drafts</h2>
+  <p>Drafts remain visible so readers can see what is coming next, but comments open only after publication. Check back on the publish date listed in the draft schedule.</p>
 </section>
 
 <section class="card">
   <h2>Need more?</h2>
-  <p>For deeper instructions, read <a href="{{ site.baseUrl }}essays/published/">published essays</a> for examples or dive into the repository's <a href="{{ site.repoUrl }}#readme">documentation</a>.</p>
+  <p>Read the <a href="{{ '/about/' | url }}">About page</a> for the project story, browse <a href="{{ '/essays/' | url }}">published essays</a>, or follow the <a href="{{ '/drafts/' | url }}">draft schedule</a> to see what is coming next.</p>
 </section>

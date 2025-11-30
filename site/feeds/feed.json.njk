@@ -3,9 +3,9 @@ permalink: feeds/feed.json
 layout: null
 eleventyExcludeFromCollections: true
 ---
-{% set entries = collections.publishedEssays %}
-{% set feedUrl = "feeds/feed.json" | url %}
-{% set siteUrl = "/" | url %}
+{% set entries = collections.publishedEssays or [] %}
+{% set feedUrl = 'feeds/feed.json' | url | absoluteUrl(site) %}
+{% set siteUrl = '/' | url | absoluteUrl(site) %}
 {
   "version": "https://jsonfeed.org/version/1.1",
   "title": {{ site.title | dump | safe }},
@@ -13,13 +13,10 @@ eleventyExcludeFromCollections: true
   "feed_url": {{ feedUrl | dump | safe }},
   "items": [
     {% for entry in entries %}
-      {% set canonicalUrl = entry.url | url %}
+      {% set canonicalUrl = (entry.data.canonical or entry.url | url) | absoluteUrl(site) %}
       {% set releaseNotes = entry.data.release_notes or [] %}
-      {% set latestReleaseNote = releaseNotes | last %}
-      {% if not latestReleaseNote %}
-        {% set latestReleaseNote = "No release notes yet." %}
-      {% endif %}
-      {% set entryVersion = entry.data.version or "0.0" %}
+      {% set latestReleaseNote = releaseNotes | first or meta.extractDescription(entry.data) %}
+      {% set entryVersion = entry.data.version or '0.0' %}
       {
         "id": {{ canonicalUrl | dump | safe }},
         "url": {{ canonicalUrl | dump | safe }},
