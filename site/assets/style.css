@@ -8,7 +8,7 @@
   --ink: #1f2937;
   --muted: #4b5563;
   --muted-2: #6b7280;
-  --accent: #f97316;
+  --accent: #c2410c;
   --accent-2: #d946ef;
   --accent-3: #14b8a6;
   --accent-soft: #ffd9b5;
@@ -34,10 +34,14 @@ body {
   min-height: 100vh;
 }
 
-main {
+.page-shell {
   max-width: 1140px;
   margin: var(--space-2xl) auto;
   padding: 0 var(--space-page-inline) var(--space-2xl);
+}
+
+main {
+  margin: 0;
 }
 
 a {
@@ -46,8 +50,35 @@ a {
   font-weight: 600;
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
 a:hover {
   text-decoration: underline;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  padding: 0.5rem 1rem;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  font-weight: 700;
+  color: var(--ink);
+  box-shadow: 0 10px 24px rgba(31, 41, 55, 0.12);
+  z-index: 1000;
+}
+
+.skip-link:focus-visible {
+  left: var(--space-page-inline);
+  top: var(--space-sm);
 }
 
 h1, h2, h3, h4 {

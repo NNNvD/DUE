@@ -36,13 +36,14 @@
   <link rel="stylesheet" href="{{ "/assets/style.css" | url }}">
 </head>
 <body>
-  <main>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div class="page-shell">
     <header>
       <div class="brand">
         <h1><a href="{{ "/" | url }}">{{ site.title }}</a></h1>
         <small>{{ site.tagline }}</small>
       </div>
-      <nav>
+      <nav aria-label="Primary navigation">
         <a href="{{ "/" | url }}">Home</a>
         <a href="{{ '/essays/' | url }}">Essays</a>
         <a href="{{ '/drafts/' | url }}">Drafts (read-only)</a>
@@ -50,43 +51,45 @@
         <a class="pill pill--outline" href="{{ '/contribute/' | url }}">Comments</a>
       </nav>
     </header>
-    {% set breadcrumbEnabled = breadcrumb is not defined or breadcrumb %}
-    {% set pathStem = page.filePathStem or '' %}
-    {% set stemParts = pathStem | split('/') %}
-    {% set lastSegment = '' %}
-    {% for part in stemParts %}
-      {% if part and part != 'index' %}
-        {% set lastSegment = part %}
-      {% endif %}
-    {% endfor %}
-    {% set hasBreadcrumbs = lastSegment != '' %}
-    {% if breadcrumbEnabled and hasBreadcrumbs %}
-      <nav class="breadcrumbs" aria-label="Breadcrumb">
-        <ol>
-          <li><a href="{{ "/" | url }}">Home</a></li>
-          {% set accumulated = '' %}
-          {% for part in stemParts %}
-            {% if part and part != 'index' %}
-              {% set accumulated = accumulated + '/' + part %}
-              {% set label = part | replace('-', ' ') | replace('_', ' ') | capitalize %}
-              {% if part != lastSegment %}
-                <li><a href="{{ (accumulated + '/') | url }}">{{ label }}</a></li>
-              {% else %}
-                <li aria-current="page">{{ label }}</li>
+    <main id="main-content">
+      {% set breadcrumbEnabled = breadcrumb is not defined or breadcrumb %}
+      {% set pathStem = page.filePathStem or '' %}
+      {% set stemParts = pathStem | split('/') %}
+      {% set lastSegment = '' %}
+      {% for part in stemParts %}
+        {% if part and part != 'index' %}
+          {% set lastSegment = part %}
+        {% endif %}
+      {% endfor %}
+      {% set hasBreadcrumbs = lastSegment != '' %}
+      {% if breadcrumbEnabled and hasBreadcrumbs %}
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="{{ "/" | url }}">Home</a></li>
+            {% set accumulated = '' %}
+            {% for part in stemParts %}
+              {% if part and part != 'index' %}
+                {% set accumulated = accumulated + '/' + part %}
+                {% set label = part | replace('-', ' ') | replace('_', ' ') | capitalize %}
+                {% if part != lastSegment %}
+                  <li><a href="{{ (accumulated + '/') | url }}">{{ label }}</a></li>
+                {% else %}
+                  <li aria-current="page">{{ label }}</li>
+                {% endif %}
               {% endif %}
-            {% endif %}
-          {% endfor %}
-        </ol>
-      </nav>
-    {% endif %}
-    {{ content | safe }}
+            {% endfor %}
+          </ol>
+        </nav>
+      {% endif %}
+      {{ content | safe }}
+    </main>
     <footer>
       Built with Eleventy. Content &copy; {{ site.currentYear }}. Subscribe via
       <a href="{{ '/feeds/feed.xml' | url }}">Atom</a>
       or
       <a href="{{ '/feeds/feed.json' | url }}">JSON</a> feeds.
     </footer>
-  </main>
+  </div>
   <script type="module" src="{{ "/assets/countdown.js" | url }}"></script>
   <script type="module" src="{{ "/assets/comments.js" | url }}"></script>
   <script type="module" src="{{ "/assets/share.js" | url }}"></script>
