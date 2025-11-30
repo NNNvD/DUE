@@ -80,6 +80,11 @@ Markdown content here...
 - In `site/_data/site.json`, set `giscus.repo`, `giscus.repoId`, `giscus.category`, and `giscus.categoryId` to match the repository and category you want to host discussions in.
 - Keep `giscus.mapping` as `pathname` so threads align with essay URLs. Once set, published essays will render the discussion widget along with a "Jump to comments" link.
 
+### Configure moderated comment intake
+- The feedback form posts to `comments.endpoint` (default `/api/submit-comment`). Point this at the deployed serverless handler in `api/submit-comment.js`.
+- Set `COMMENTS_REPO`/`COMMENTS_TOKEN` (or `GITHUB_REPOSITORY`/`GITHUB_TOKEN`) so the handler can create a branch, add a YAML file under `data/comments/<slug>/pending/`, and open a PR.
+- Optional: tune `COMMENTS_BASE_BRANCH`, `COMMENTS_BRANCH_PREFIX`, `COMMENTS_DIR`, `COMMENTS_SITE_BASE`, and `COMMENTS_MAX_LENGTH` to fit your repo layout. See [`docs/comment-intake.md`](./docs/comment-intake.md) for setup and a sample `curl` request.
+
 ## Notes
 - This starter stores history in front‑matter `release_notes`. For full version snapshots, keep tagged versions or store copies.
 - GitHub-hosted runners [execute on UTC time](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#scheduled-events).

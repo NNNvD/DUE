@@ -136,6 +136,10 @@ layout: base.njk
       <p class="muted">Pick an intent and tell us what to improve. Comments are moderated before they appear.</p>
     </div>
     <form class="comment-form" method="post" action="{{ site.comments.endpoint | default('') }}" data-comment-form data-comment-endpoint="{{ site.comments.endpoint | default('') }}">
+      <input type="hidden" name="slug" value="{{ page.fileSlug }}">
+      <input type="hidden" name="essayTitle" value="{{ title }}">
+      <input type="hidden" name="essayPath" value="{{ page.url | url }}">
+      <input type="hidden" name="essayUrl" value="{{ site.siteUrl }}{{ page.url | url }}">
       <fieldset class="intent-buttons" aria-label="Feedback intent">
         <legend class="visually-hidden">Choose feedback intent</legend>
         <div class="intent-buttons__controls">

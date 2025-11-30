@@ -62,6 +62,55 @@ function validate(form) {
   return true;
 }
 
+function serializeForm(form) {
+  const data = {};
+  new FormData(form).forEach((value, key) => {
+    data[key] = value;
+  });
+  return data;
+}
+
+async function submit(form, endpoint) {
+  const status = form.querySelector('[data-comment-status]');
+  const submitButton = form.querySelector('button[type="submit"]');
+
+  const payload = serializeForm(form);
+
+  if (submitButton) {
+    submitButton.disabled = true;
+  }
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json().catch(() => ({}));
+    const success = data && data.success;
+
+    if (!response.ok || !success) {
+      const message =
+        (data && data.message) ||
+        (data && data.errors && data.errors.join(' ')) ||
+        'Unable to send feedback right now. Please try again later.';
+      throw new Error(message);
+    }
+
+    status.textContent = data.message || 'Thanks for sharing feedback. We will review it soon.';
+    form.reset();
+  } catch (error) {
+    status.textContent = error.message || 'Unable to send feedback right now. Please try again later.';
+  } finally {
+    if (submitButton) {
+      submitButton.disabled = false;
+    }
+  }
+}
+
 export function initCommentForms(root = document) {
   const forms = root.querySelectorAll('[data-comment-form]');
   forms.forEach((form) => {
@@ -90,6 +139,9 @@ export function initCommentForms(root = document) {
         status.textContent = 'Submission endpoint is not configured yet. Use the discussion thread below to leave your note.';
         return;
       }
+
+      event.preventDefault();
+      submit(form, endpoint);
     });
   });
 }
