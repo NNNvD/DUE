@@ -523,6 +523,54 @@ footer {
   font-size: 0.9rem;
 }
 
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.filters__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.filters__controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-md);
+}
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.filter input,
+.filter select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  font-size: 1rem;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: inset 0 1px 2px rgba(31, 41, 55, 0.06);
+}
+
+.filter input:focus,
+.filter select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+[data-search-interactive] .card-list {
+  align-items: stretch;
+}
+
 @media (min-width: 720px) {
   .list-card__header {
     flex-direction: row;
