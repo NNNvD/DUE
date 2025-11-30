@@ -2,11 +2,13 @@
 layout: base.njk
 ---
 <article class="card">
+  {% set length = word_range | wordRangeMeta %}
   <header class="essay-header">
+    {% set isPublishedEssay = page.inputPath and '/essays/published/' in page.inputPath %}
     <div class="essay-header__row">
       <div>
         <p class="eyebrow">Published essay</p>
-        <h1 class="essay-title">{{ title }}</h1>
+        <h1 class="essay-title {{ length.titleClass }}">{{ title }}</h1>
       </div>
       <div class="essay-badges">
         <span class="badge badge--tone-info">Version {{ version }}</span>
@@ -15,7 +17,15 @@ layout: base.njk
         {% else %}
           <span class="badge badge--tone-warn">Published unfinished</span>
         {% endif %}
-        <span class="badge {{ word_range | wordRangeTone }}">{{ word_range }} words</span>
+        {% if word_range %}
+          <div class="length-chip" aria-label="Length: {{ word_range }} words">
+            <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
+            <span class="length-chip__text">
+              <span>{{ word_range }} words</span>
+              {% if word_count %}<span aria-hidden="true">•</span><span>{{ word_count }} words</span>{% endif %}
+            </span>
+          </div>
+        {% endif %}
         {% if published_at %}<span class="badge badge--tone-muted">Published {{ published_at | date("yyyy-LL-dd") }}</span>{% endif %}
       </div>
     </div>
@@ -37,22 +47,21 @@ layout: base.njk
           </span>
         {% endif %}
       </div>
-      {% if topic %}<span class="badge badge--tone-muted">Topic: {{ topic }}</span>{% endif %}
+      <div class="meta">
+        {% if topic %}<span>Topic: {{ topic | shortWords(5) }}</span>{% endif %}
+        {% if display_keywords and display_keywords.length %}<span>Keywords: {{ display_keywords | join(", ") }}</span>{% endif %}
+      </div>
     </div>
+    {% if isPublishedEssay and site.giscus and site.giscus.repo %}
+      <div class="essay-header__row">
+        <a class="jump-to-comments" href="#comments">Jump to comments ↓</a>
+      </div>
+    {% endif %}
   </header>
   <div class="content">
     {{ content | safe }}
   </div>
 </article>
-
-{% if page.inputPath and "essays/published/" in page.inputPath %}
-  {% set ctaRelativePath = page.inputPath | replace("./", "") %}
-  {% set minorTitle = ("[Minor] " ~ ctaRelativePath) | urlencode %}
-  {% set majorTitle = ("[Major] " ~ ctaRelativePath) | urlencode %}
-  {% set minorIssueUrl = site.repoUrl ~ "/issues/new?template=suggest-minor-change.yml&title=" ~ minorTitle %}
-  {% set majorIssueUrl = site.repoUrl ~ "/issues/new?template=suggest-major-change.yml&title=" ~ majorTitle %}
-  {% include "cta-suggest-change.njk" %}
-{% endif %}
 
 <section class="card">
   <h3>Release notes</h3>
@@ -80,7 +89,7 @@ layout: base.njk
       {% endfor %}
     </ul>
   {% else %}
-    <p>Contribute a minor improvement (grammar, phrasing, examples, references) to be credited here.</p>
+    <p>Credits for incorporated feedback will appear here once comments are published and merged.</p>
   {% endif %}
 </section>
 
@@ -120,6 +129,6 @@ layout: base.njk
   {% endif %}
 </section>
 
-{% if status == "published" %}
+{% if isPublishedEssay and status == "published" %}
   {% include "giscus.njk" %}
 {% endif %}
