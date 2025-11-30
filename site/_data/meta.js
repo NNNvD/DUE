@@ -95,9 +95,88 @@ function buildCanonicalUrl(data) {
   return absoluteUrl(pageUrl);
 }
 
+function normalizeAuthors(data = {}) {
+  const authors = [];
+
+  if (data.author) {
+    authors.push({
+      "@type": "Person",
+      name: data.author,
+    });
+  }
+
+  if (Array.isArray(data.coauthors)) {
+    data.coauthors.forEach((coauthor) => {
+      if (!coauthor) return;
+
+      if (typeof coauthor === "string") {
+        authors.push({
+          "@type": "Person",
+          name: coauthor,
+        });
+        return;
+      }
+
+      const handle = coauthor.user || coauthor.handle || coauthor.github;
+      if (handle) {
+        authors.push({
+          "@type": "Person",
+          name: handle,
+        });
+      }
+    });
+  }
+
+  return authors.length ? authors : undefined;
+}
+
+function buildArticleJsonLd(data = {}) {
+  const canonicalUrl = buildCanonicalUrl(data);
+  const description = extractDescription(data);
+  const authors = normalizeAuthors(data);
+  const keywords = Array.isArray(data.display_keywords)
+    ? data.display_keywords
+    : Array.isArray(data.keywords)
+      ? data.keywords.slice(0, 5)
+      : undefined;
+
+  const wordCount = typeof data.word_count === "number" ? data.word_count : undefined;
+  const datePublished = data.published_at || data.started_at;
+  const dateModified =
+    data.last_modified_at || data.published_at || (data.page?.date ? data.page.date.toISOString() : undefined);
+
+  const payload = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: data.title,
+    description,
+    mainEntityOfPage: canonicalUrl,
+    url: canonicalUrl,
+    inLanguage: "en",
+    version: data.version,
+    datePublished,
+    dateModified,
+    author: authors,
+    keywords,
+    wordCount,
+    publisher: {
+      "@type": "Organization",
+      name: site.title,
+      url: site.siteUrl,
+    },
+  };
+
+  if (data.socialImage) {
+    payload.image = data.socialImage;
+  }
+
+  return payload;
+}
+
 module.exports = {
   absoluteUrl,
   buildCanonicalUrl,
   extractDescription,
   ensureTrailingSlash,
+  buildArticleJsonLd,
 };

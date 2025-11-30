@@ -33,6 +33,11 @@
   {% if description %}
   <meta name="twitter:description" content="{{ description }}">
   {% endif %}
+  {% if jsonLd %}
+  <script type="application/ld+json">
+    {{ jsonLd | dump | safe }}
+  </script>
+  {% endif %}
   <link rel="stylesheet" href="{{ "/assets/style.css" | url }}">
 </head>
 <body>

@@ -32,5 +32,16 @@ module.exports = {
       if (!data.social_image) return null;
       return meta.absoluteUrl(data.social_image, data.site);
     },
+    jsonLd: (data) => {
+      const isPublishedEssay = data?.page?.inputPath?.includes("/essays/published/");
+      if (!isPublishedEssay) return null;
+
+      return meta.buildArticleJsonLd({
+        ...data,
+        description: meta.extractDescription(data),
+        socialImage: data.socialImage,
+        display_keywords: data.display_keywords,
+      });
+    },
   },
 };
