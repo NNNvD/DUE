@@ -130,6 +130,49 @@ layout: base.njk
 </section>
 
 {% if isPublishedEssay and status == "published" %}
+  {% set essayComments = comments.byEssay[page.fileSlug] or [] %}
+  <section class="card" id="comments">
+    <div class="section-heading">
+      <h3>Published comments</h3>
+      <p class="muted">Notes that made it through moderation. Status chips indicate whether changes landed.</p>
+    </div>
+    {% if essayComments.length %}
+      <ul class="comment-list" aria-live="polite">
+        {% for comment in essayComments %}
+          {% set intentLabel = 'Minor feedback' %}
+          {% if comment.intent == 'major' %}
+            {% set intentLabel = 'Major feedback' %}
+          {% endif %}
+          {% if comment.status == 'implemented' %}
+            {% set statusLabel = 'Implemented' %}
+            {% set statusTone = 'badge--tone-success' %}
+          {% elif comment.status == 'rejected' %}
+            {% set statusLabel = 'Rejected' %}
+            {% set statusTone = 'badge--tone-critical' %}
+          {% else %}
+            {% set statusLabel = 'Not yet implemented' %}
+            {% set statusTone = 'badge--tone-warn' %}
+          {% endif %}
+          <li class="comment">
+            <div class="comment__header">
+              <div>
+                <p class="comment__eyebrow">{{ intentLabel }}{% if comment.submitted_at %} • {{ comment.submitted_at | date('yyyy-LL-dd') }}{% endif %}</p>
+                <p class="comment__author">{{ comment.name }}</p>
+              </div>
+              <span class="badge {{ statusTone }}">{{ statusLabel }}</span>
+            </div>
+            <p class="comment__body">{{ comment.comment | escape | replace('\n', '<br>') | safe }}</p>
+            {% if comment.moderation_note %}
+              <p class="comment__note"><strong>Moderation note:</strong> {{ comment.moderation_note }}</p>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">No published comments yet. Share your feedback below.</p>
+    {% endif %}
+  </section>
+
   <section class="card" id="feedback">
     <div class="comment-form__header">
       <h3>Share feedback</h3>

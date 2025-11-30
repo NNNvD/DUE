@@ -47,3 +47,12 @@ curl -X POST \
 ```
 
 If configured correctly, the response returns `{ "success": true, "prUrl": "..." }` and the PR contains the pending YAML file.
+
+## Publishing comments after moderation
+- When a PR merges, move files from `pending/` to `approved/` (or commit directly to `approved/`).
+- `npm run build` now runs `scripts/promoteComments.js`, which automatically promotes any `pending/*.yml` files to `approved/*.yml` and stamps `moderated_at` if missing. Set `COMMENTS_SKIP_PROMOTE=1` to opt out.
+- Update the YAML before/after promotion to reflect status:
+  - `implemented: true` (or `status: implemented`) → shows the **Implemented** chip.
+  - `status: rejected` + `moderation_note: ...` → shows the **Rejected** chip and the note.
+  - Omit both to keep the default **Not yet implemented** status.
+- Approved comments render under the essay in a "Published comments" section; the original discussion thread (giscus) remains below the form.
