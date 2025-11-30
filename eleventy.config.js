@@ -174,6 +174,58 @@ function wordRangeTone(value) {
   return "badge--tone-muted";
 }
 
+function wordRangeMeta(value) {
+  const average = normalizeWordRange(value);
+
+  if (average === null) {
+    return {
+      tone: "badge--tone-muted",
+      titleClass: "title--muted",
+      icon: "circle",
+      palette: "muted",
+      label: "Length unknown",
+    };
+  }
+
+  if (average < 500) {
+    return {
+      tone: "badge--magenta",
+      titleClass: "title--magenta",
+      icon: "square",
+      palette: "magenta",
+      label: "Concise",
+    };
+  }
+
+  if (average < 1000) {
+    return {
+      tone: "badge--orange",
+      titleClass: "title--orange",
+      icon: "triangle",
+      palette: "orange",
+      label: "Mid-length",
+    };
+  }
+
+  if (average < 1500) {
+    return {
+      tone: "badge--teal",
+      titleClass: "title--teal",
+      icon: "circle",
+      palette: "teal",
+      label: "Long-form",
+    };
+  }
+
+  return {
+    tone: "badge--tone-muted",
+    titleClass: "title--muted",
+    icon: "circle",
+    palette: "muted",
+    label: "Length unknown",
+  };
+}
+
 function filterEssayTemplates(collection = []) {
   if (!Array.isArray(collection)) {
     return [];
@@ -248,6 +300,15 @@ module.exports = function(eleventyConfig) {
     return meta.absoluteUrl(value, siteData);
   });
   eleventyConfig.addFilter("wordRangeTone", wordRangeTone);
+  eleventyConfig.addFilter("wordRangeMeta", wordRangeMeta);
+  eleventyConfig.addFilter("shortWords", (value, count = 5) => {
+    if (!value || typeof value !== "string") return "";
+    return value
+      .trim()
+      .split(/\s+/)
+      .slice(0, count)
+      .join(" ");
+  });
   eleventyConfig.addFilter("rssDate", value => {
     if (!value) return "";
     const date = value instanceof Date ? value : new Date(value);

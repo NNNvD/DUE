@@ -98,17 +98,33 @@ description: "See what is shipping now, browse recent essays, and jump into the 
       <p>Catch up on what just shipped before the next round of edits.</p>
     </div>
     {% if latest %}
+      {% set length = latest.data.word_range | wordRangeMeta %}
       <div class="stack">
-        <h4 class="card-title"><a href="{{ latest.url | url }}">{{ latest.data.title }}</a></h4>
+        {% if latest.data.word_range %}
+          <div class="length-chip" aria-label="Length: {{ latest.data.word_range }} words">
+            <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
+            <span class="length-chip__text">
+              <span>{{ latest.data.word_range }} words</span>
+              {% if latest.data.word_count %}<span aria-hidden="true">•</span><span>{{ latest.data.word_count }} words</span>{% endif %}
+            </span>
+          </div>
+        {% endif %}
+        <h4 class="card-title {{ length.titleClass }}"><a href="{{ latest.url | url }}">{{ latest.data.title }}</a></h4>
         <div class="meta">
           <span class="badge badge--tone-info">v{{ latest.data.version }}</span>
-          {% if latest.data.word_range %}<span class="badge {{ latest.data.word_range | wordRangeTone }}">{{ latest.data.word_range }} words</span>{% endif %}
           {% if latest.data.initial_status == "complete" %}
             <span class="badge badge--tone-success">Published completed</span>
           {% else %}
             <span class="badge badge--tone-warn">Published unfinished</span>
           {% endif %}
           {% if latest.data.published_at %}<span>Published {{ latest.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+        </div>
+        <div class="meta">
+          {% if latest.data.author %}<span>By <strong>@{{ latest.data.author }}</strong></span>{% endif %}
+          {% if latest.data.topic %}<span>Topic: {{ latest.data.topic | shortWords(5) }}</span>{% endif %}
+          {% if latest.data.display_keywords and latest.data.display_keywords.length %}
+            <span>Keywords: {{ latest.data.display_keywords | join(", ") }}</span>
+          {% endif %}
         </div>
         {% if latest.data.release_notes and latest.data.release_notes.length %}
           <p class="muted"><strong>Latest:</strong> {{ latest.data.release_notes[0] }}</p>

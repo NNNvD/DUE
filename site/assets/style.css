@@ -196,6 +196,46 @@ main > .breadcrumbs {
   margin: 0;
 }
 
+.card-title a { color: inherit; }
+
+.length-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.length-chip__text {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.length-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  background: var(--border);
+}
+
+.length-icon--square { border-radius: 4px; }
+.length-icon--triangle { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+.length-icon--circle { border-radius: 999px; }
+
+.length-icon--magenta { background: var(--magenta); }
+.length-icon--orange { background: var(--orange); }
+.length-icon--teal { background: var(--teal); }
+
+.title--magenta { color: var(--magenta); }
+.title--orange { color: var(--orange); }
+.title--teal { color: var(--teal); }
+.title--muted { color: var(--muted); }
+
 .hero {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

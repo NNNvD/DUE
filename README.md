@@ -51,6 +51,7 @@ version: 0.1                 # 1.0 if complete at first publish else 0.1
 canonical_url: https://example.com/essays/title   # optional absolute canonical link
 published_at: YYYY-MM-DD     # set automatically on publish
 word_range: "500-1000"       # 250-500|500-1000|1000-1500
+word_count: 0                 # set via `npm run check:words -- --write`
 release_notes:
   - "Auto-published at deadline."
 ---
@@ -60,7 +61,7 @@ Markdown content here...
 ## Workflows
 - **Deploy Pages**: Builds on push to `main` and deploys to GitHub Pages.
 - **Auto-publish**: Runs hourly; moves overdue `site/essays/drafts/*.md` to `site/essays/published/` and sets version per `initial_status`.
-- **Word range check**: Runs on PRs; fails if essay content is out of bounds.
+- **Word range + count check**: Runs on PRs; fails if essay content is out of bounds or `word_count` is missing/outdated. Use `npm run check:words -- --write` before opening a PR to sync counts.
 - **Published essay label guard**: Ensures PRs editing `site/essays/published/` include either the `minor` or `major` label.
 - **Version bump**: On merged PRs with `minor` or `major` label, bumps version and updates credits.
 
