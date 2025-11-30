@@ -35,6 +35,14 @@ export function initializeCountdowns(root = document) {
     const display = block.querySelector("[data-countdown]");
     if (!target || !display) continue;
 
+    if (!display.hasAttribute("aria-live")) {
+      display.setAttribute("aria-live", "polite");
+    }
+
+    if (!display.hasAttribute("role")) {
+      display.setAttribute("role", "status");
+    }
+
     const deadline = new Date(target);
     if (Number.isNaN(deadline.getTime())) {
       display.textContent = `Publishes at ${target}`;

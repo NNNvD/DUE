@@ -14,34 +14,62 @@ description: "All essays in draft mode ordered by publish date."
 {% if drafts.length %}
   <div class="card-list">
     {% for draft in drafts %}
+      {% set length = draft.data.word_range | wordRangeMeta %}
       <article class="card draft-card" data-deadline="{{ draft.data.deadline_at }}">
         <header class="list-card__header">
-          <h3 class="card-title">{{ draft.data.title }}</h3>
-          <div class="meta">
-            {% if draft.data.deadline_at %}
-              <span
-                class="badge deadline-badge"
-                data-deadline-badge="{{ draft.data.deadline_at }}"
-                data-deadline-label="{{ draft.data.deadline_at | date('yyyy-LL-dd') }}"
-                title="Publishes {{ draft.data.deadline_at | date('yyyy-LL-dd') }}"
-              >{{ draft.data.deadline_at | date('yyyy-LL-dd') }}</span>
-            {% else %}
-              <span class="badge">Deadline pending</span>
-            {% endif %}
-            {% if draft.data.word_range %}<span class="badge {{ draft.data.word_range | wordRangeTone }}">{{ draft.data.word_range }} words</span>{% endif %}
-            {% if draft.data.started_at %}<span>Started {{ draft.data.started_at | date("yyyy-LL-dd") }}</span>{% endif %}
+          <div>
+            <p class="eyebrow">Draft</p>
+            <h3 class="card-title {{ length.titleClass }}">{{ draft.data.title }}</h3>
+            <div class="meta meta--draft">
+              <span class="meta-pill">
+                <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
+                <span class="badge {{ length.tone }}" aria-label="{{ length.label }} length">{{ length.label }}</span>
+                {% if draft.data.word_range %}
+                  <span class="muted">{{ draft.data.word_range }} words</span>
+                {% endif %}
+              </span>
+              {% if draft.data.deadline_at %}
+                <span
+                  class="badge deadline-badge"
+                  data-deadline-badge="{{ draft.data.deadline_at }}"
+                  data-deadline-label="{{ draft.data.deadline_at | date('yyyy-LL-dd') }}"
+                  title="Publishes {{ draft.data.deadline_at | date('yyyy-LL-dd') }}"
+                >{{ draft.data.deadline_at | date('yyyy-LL-dd') }}</span>
+              {% else %}
+                <span class="badge">Deadline pending</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="countdown" aria-live="polite" role="status">
+            <p class="muted">Time to publish</p>
+            <p class="countdown-value" data-countdown>
+              {% if draft.data.deadline_at %}
+                Publishes at {{ draft.data.deadline_at | date('yyyy-LL-dd') }}
+              {% else %}
+                Deadline not yet scheduled.
+              {% endif %}
+            </p>
           </div>
         </header>
-        {% if draft.data.topic %}<p class="muted"><strong>Topic:</strong> {{ draft.data.topic }}</p>{% endif %}
-        <p class="countdown">
-          <span data-countdown>
-            {% if draft.data.deadline_at %}
-              Publishes at {{ draft.data.deadline_at | date('yyyy-LL-dd') }}
-            {% else %}
-              Deadline not yet scheduled.
-            {% endif %}
-          </span>
-        </p>
+
+        <dl class="draft-meta">
+          <div>
+            <dt>Author</dt>
+            <dd>{{ draft.data.author }}</dd>
+          </div>
+          {% if draft.data.topic %}
+            <div>
+              <dt>Topic</dt>
+              <dd>{{ draft.data.topic | shortWords(5) }}</dd>
+            </div>
+          {% endif %}
+          {% if draft.data.started_at %}
+            <div>
+              <dt>Started</dt>
+              <dd>{{ draft.data.started_at | date("yyyy-LL-dd") }}</dd>
+            </div>
+          {% endif %}
+        </dl>
       </article>
     {% endfor %}
   </div>

@@ -406,6 +406,20 @@ main > .breadcrumbs {
   font-size: 0.9rem;
 }
 
+.meta--draft {
+  align-items: center;
+}
+
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
 .muted { color: var(--muted); }
 
 .badge {
@@ -458,6 +472,62 @@ main > .breadcrumbs {
 }
 
 .history-version { font-weight: 700; }
+
+.draft-card .list-card__header {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.countdown {
+  text-align: right;
+  min-width: 220px;
+}
+
+.countdown-value {
+  margin: 0;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.draft-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.draft-meta div {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-panel);
+}
+
+.draft-meta dt {
+  margin: 0 0 0.25rem;
+  color: var(--muted);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.draft-meta dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .draft-card .list-card__header {
+    flex-direction: column;
+  }
+
+  .countdown {
+    text-align: left;
+    width: 100%;
+  }
+}
 .history-date { color: var(--muted); font-size: 0.85rem; }
 .history-note { margin: var(--space-2xs) 0 0; color: var(--muted); }
 .history-linkout { margin-top: var(--space-md); }
