@@ -6,6 +6,7 @@ Thanks for improving DUE!
 - Drafting and edits happen in the backend. The public can provide feedback through comments on published essays.
 - Read the [Comments page](/contribute/) for what to include (minor vs. major feedback) and how moderation works.
 - Drafts stay visible for transparency, but comments open only after publication.
+- The issue tracker is reserved for maintainers. We removed public issue/PR templates that invited content edits.
 
 ## Moderation and credit
 - Comments are pre-moderated. Approved feedback is published with a status chip such as “Not yet implemented” or “Implemented.”
@@ -17,9 +18,9 @@ Thanks for improving DUE!
 - GitHub automatically requests this review via CODEOWNERS and branch protection will block merges until it is granted.
 - Please factor this into release timelines so reviewers have time to respond.
 
-## Contributor requirements
-- **Verified email** — This repository only accepts contributions from accounts with a verified email address. Confirm your email in your [GitHub account settings](https://github.com/settings/emails) before opening an issue or pull request.
-- **Complete the issue forms** — Provide all required fields in the issue templates so maintainers have enough context to triage quickly.
+## Contributor requirements (maintainers)
+- **Verified email** — This repository only accepts contributions from accounts with a verified email address. Confirm your email in your [GitHub account settings](https://github.com/settings/emails) before opening a pull request.
+- **Private triage** — Issues are maintainer-only. Use internal channels to track authoring work; public readers should use comments on published essays for feedback.
 - **Ongoing moderation** — Maintainers regularly review submissions and may adjust templates or close incomplete reports to keep the queue actionable. If spam or off-topic activity increases, expect additional follow-up questions.
 
 ## Versioning & credit

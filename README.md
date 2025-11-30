@@ -1,12 +1,12 @@
 
 # DUE — Starter (Eleventy + GitHub Pages)
 
-This is a minimal starter for **DUE — Deadline for Unfinished Essays**, designed to run entirely on **GitHub Pages** with **GitHub Actions** for automation.
+This is a minimal starter for **DUE — Deadline for Unfinished Essays**, designed to run entirely on **GitHub Pages** with **GitHub Actions** for automation. Public participation is **comments-only**; drafting and edits happen in the backend.
 
 ## What you get
 - Static site with **Eleventy (11ty)** rendering essays from Markdown.
 - Repo-native content under `site/essays/`.
-- **Auto-publish** overdue drafts (30‑day timer) via scheduled workflow.
+- **Auto-publish** overdue drafts (30‑day timer) via scheduled workflow (for maintainers).
 - **Word-range enforcement** on PRs (250–500, 500–1000, 1000–1500 with small grace).
 - **Published essay label guard** fails PRs that touch `site/essays/published/` without a `minor` or `major` label.
 - **Version bump + credits** on merged PRs using `minor` / `major` labels:
@@ -24,9 +24,9 @@ Your site content is in `site/`. Published essays render at `/essays/published/.
 ## Project board
 - **Live board**: [https://github.com/your-username/your-repo/projects/1](https://github.com/your-username/your-repo/projects/1)
 - **Column + issue breakdown**: see [`docs/project-board.md`](docs/project-board.md) for the current priority assignments (`P0`, `P1`, `P2`, `Done`).
-## Create a new draft
+## Authoring (maintainers)
 
-Use the interactive helper to scaffold front matter for a draft:
+Drafting and edits happen in the backend. Maintainers can scaffold a draft locally:
 
 ```bash
 npm run new
@@ -70,8 +70,8 @@ Markdown content here...
 3. Set **Build and deployment** to **GitHub Actions**. The provided workflow will deploy automatically on push to `main`.
 
 ## Public participation
-- Read the [Comments page](./site/contribute.njk) (rendered at <code>/contribute/</code>) for how to leave feedback once essays publish.
 - Drafting and edits now happen in the backend. Public interaction is limited to comments on published essays.
+- Read the [Comments page](./site/contribute.njk) (rendered at <code>/contribute/</code>) for how to leave feedback once essays publish. Issues and PR templates for public content edits have been removed.
 - Moderators pre-review comments before publishing them; accepted feedback is credited in acknowledgments or release notes as appropriate.
 
 ### Configure giscus for comments

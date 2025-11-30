@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Questions or other feedback
-    url: https://due.org/contact
-    about: Use the contact form for general inquiries or reports that do not fit the templates.
+  - name: Comment on an essay
+    url: https://due.build/contribute/
+    about: Use the site’s comments-only flow for feedback on published essays.
