@@ -1,5 +1,5 @@
 {% if site.giscus and site.giscus.repo %}
-<section class="card">
+<section class="card" id="discussion">
   <h3>Discussion</h3>
   <script src="https://giscus.app/client.js"
     data-repo="{{ site.giscus.repo }}"
@@ -16,6 +16,11 @@
     async>
   </script>
   <noscript>Enable JavaScript to view the discussion.</noscript>
+</section>
+{% else %}
+<section class="card" id="discussion">
+  <h3>Discussion</h3>
+  <p>Comments will appear here once giscus is configured. Set <code>giscus.repo</code> and related IDs in <code>site/_data/site.json</code>.</p>
 </section>
 {% endif %}
 
