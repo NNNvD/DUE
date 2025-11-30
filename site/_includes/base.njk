@@ -5,12 +5,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% set metaTitle = ogTitle or title or site.title %}
+  {% set canonicalUrl = canonical or meta.buildCanonicalUrl({ page: page, site: site }) %}
   <title>{{ metaTitle }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  {% if canonical %}
-  <link rel="canonical" href="{{ canonical }}">
-  <meta property="og:url" content="{{ canonical }}">
+  {% if canonicalUrl %}
+  <link rel="canonical" href="{{ canonicalUrl }}">
+  <meta property="og:url" content="{{ canonicalUrl }}">
   {% endif %}
   {% if description %}
   <meta name="description" content="{{ description }}">
@@ -19,6 +20,8 @@
   <meta property="og:title" content="{{ metaTitle }}">
   <meta property="og:type" content="{{ ogType or 'website' }}">
   <meta property="og:site_name" content="{{ site.title }}">
+  <link rel="alternate" type="application/atom+xml" title="{{ site.title }} feed" href="{{ '/feeds/feed.xml' | url | absoluteUrl(site) }}">
+  <link rel="alternate" type="application/feed+json" title="{{ site.title }} feed (JSON)" href="{{ '/feeds/feed.json' | url | absoluteUrl(site) }}">
   {% if socialImage %}
   <meta property="og:image" content="{{ socialImage }}">
   <meta name="twitter:card" content="summary_large_image">
@@ -42,9 +45,9 @@
       <nav>
         <a href="{{ "/" | url }}">Home</a>
         <a href="{{ '/essays/' | url }}">Essays</a>
-        <a href="{{ '/drafts/' | url }}">Drafts</a>
+        <a href="{{ '/drafts/' | url }}">Drafts (read-only)</a>
         <a href="{{ '/about/' | url }}">About</a>
-        <a class="pill pill--outline" href="{{ '/contribute/' | url }}">Contribute</a>
+        <a class="pill pill--outline" href="{{ '/contribute/' | url }}">Comments</a>
       </nav>
     </header>
     {% set breadcrumbEnabled = breadcrumb is not defined or breadcrumb %}
@@ -78,9 +81,14 @@
     {% endif %}
     {{ content | safe }}
     <footer>
-      Built with Eleventy. Content &copy; {{ site.currentYear }}.
+      Built with Eleventy. Content &copy; {{ site.currentYear }}. Subscribe via
+      <a href="{{ '/feeds/feed.xml' | url }}">Atom</a>
+      or
+      <a href="{{ '/feeds/feed.json' | url }}">JSON</a> feeds.
     </footer>
   </main>
   <script type="module" src="{{ "/assets/countdown.js" | url }}"></script>
+  <script type="module" src="{{ "/assets/comments.js" | url }}"></script>
+  <script type="module" src="{{ "/assets/share.js" | url }}"></script>
 </body>
 </html>
