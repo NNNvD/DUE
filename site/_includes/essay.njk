@@ -2,11 +2,13 @@
 layout: base.njk
 ---
 <article class="card">
+  {% set length = word_range | wordRangeMeta %}
   <header class="essay-header">
+    {% set isPublishedEssay = page.inputPath and '/essays/published/' in page.inputPath %}
     <div class="essay-header__row">
       <div>
         <p class="eyebrow">Published essay</p>
-        <h1 class="essay-title">{{ title }}</h1>
+        <h1 class="essay-title {{ length.titleClass }}">{{ title }}</h1>
       </div>
       <div class="essay-badges">
         <span class="badge badge--tone-info">Version {{ version }}</span>
@@ -15,7 +17,15 @@ layout: base.njk
         {% else %}
           <span class="badge badge--tone-warn">Published unfinished</span>
         {% endif %}
-        <span class="badge {{ word_range | wordRangeTone }}">{{ word_range }} words</span>
+        {% if word_range %}
+          <div class="length-chip" aria-label="Length: {{ word_range }} words">
+            <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
+            <span class="length-chip__text">
+              <span>{{ word_range }} words</span>
+              {% if word_count %}<span aria-hidden="true">•</span><span>{{ word_count }} words</span>{% endif %}
+            </span>
+          </div>
+        {% endif %}
         {% if published_at %}<span class="badge badge--tone-muted">Published {{ published_at | date("yyyy-LL-dd") }}</span>{% endif %}
       </div>
     </div>
@@ -37,22 +47,21 @@ layout: base.njk
           </span>
         {% endif %}
       </div>
-      {% if topic %}<span class="badge badge--tone-muted">Topic: {{ topic }}</span>{% endif %}
+      <div class="meta">
+        {% if topic %}<span>Topic: {{ topic | shortWords(5) }}</span>{% endif %}
+        {% if display_keywords and display_keywords.length %}<span>Keywords: {{ display_keywords | join(", ") }}</span>{% endif %}
+      </div>
     </div>
+    {% if isPublishedEssay and site.giscus and site.giscus.repo %}
+      <div class="essay-header__row">
+        <a class="jump-to-comments" href="#comments">Jump to comments ↓</a>
+      </div>
+    {% endif %}
   </header>
   <div class="content">
     {{ content | safe }}
   </div>
 </article>
-
-{% if page.inputPath and "essays/published/" in page.inputPath %}
-  {% set ctaRelativePath = page.inputPath | replace("./", "") %}
-  {% set minorTitle = ("[Minor] " ~ ctaRelativePath) | urlencode %}
-  {% set majorTitle = ("[Major] " ~ ctaRelativePath) | urlencode %}
-  {% set minorIssueUrl = site.repoUrl ~ "/issues/new?template=suggest-minor-change.yml&title=" ~ minorTitle %}
-  {% set majorIssueUrl = site.repoUrl ~ "/issues/new?template=suggest-major-change.yml&title=" ~ majorTitle %}
-  {% include "cta-suggest-change.njk" %}
-{% endif %}
 
 <section class="card">
   <h3>Release notes</h3>
@@ -80,7 +89,7 @@ layout: base.njk
       {% endfor %}
     </ul>
   {% else %}
-    <p>Contribute a minor improvement (grammar, phrasing, examples, references) to be credited here.</p>
+    <p>Credits for incorporated feedback will appear here once comments are published and merged.</p>
   {% endif %}
 </section>
 
@@ -120,6 +129,70 @@ layout: base.njk
   {% endif %}
 </section>
 
-{% if status == "published" %}
+{% if isPublishedEssay and status == "published" %}
+  <section class="card" id="feedback">
+    <div class="comment-form__header">
+      <h3>Share feedback</h3>
+      <p class="muted">Pick an intent and tell us what to improve. Comments are moderated before they appear.</p>
+    </div>
+    <form class="comment-form" method="post" action="{{ site.comments.endpoint | default('') }}" data-comment-form data-comment-endpoint="{{ site.comments.endpoint | default('') }}">
+      <input type="hidden" name="slug" value="{{ page.fileSlug }}">
+      <input type="hidden" name="essayTitle" value="{{ title }}">
+      <input type="hidden" name="essayPath" value="{{ page.url | url }}">
+      <input type="hidden" name="essayUrl" value="{{ site.siteUrl }}{{ page.url | url }}">
+      <fieldset class="intent-buttons" aria-label="Feedback intent">
+        <legend class="visually-hidden">Choose feedback intent</legend>
+        <div class="intent-buttons__controls">
+          <div class="intent-option">
+            <input type="radio" name="intent" id="intent-minor" value="minor" required>
+            <label for="intent-minor" data-intent-label="Minor feedback">
+              <strong>Minor feedback</strong>
+              <span class="intent-option__hint">Typos, phrasing, or small references</span>
+            </label>
+          </div>
+          <div class="intent-option">
+            <input type="radio" name="intent" id="intent-major" value="major" required>
+            <label for="intent-major" data-intent-label="Major feedback">
+              <strong>Major feedback</strong>
+              <span class="intent-option__hint">Structural shifts or thematic changes</span>
+            </label>
+          </div>
+        </div>
+        <p class="field-error" data-error-for="intent"></p>
+      </fieldset>
+
+      <div class="form-row">
+        <label for="comment-name">Name <span aria-hidden="true">*</span></label>
+        <input id="comment-name" name="name" type="text" autocomplete="name" required>
+        <p class="field-help">Displayed with your comment. Pseudonyms are okay.</p>
+        <p class="field-error" data-error-for="name"></p>
+      </div>
+
+      <div class="form-row">
+        <label for="comment-contact">Contact (optional)</label>
+        <input id="comment-contact" name="contact" type="text" autocomplete="email">
+        <p class="field-help">Email, Mastodon handle, or another way to follow up.</p>
+      </div>
+
+      <div class="form-row">
+        <label for="comment-body">Comment <span aria-hidden="true">*</span></label>
+        <textarea id="comment-body" name="comment" rows="6" required></textarea>
+        <p class="field-help">Share context and citations so we can evaluate your suggestion.</p>
+        <p class="field-error" data-error-for="comment"></p>
+      </div>
+
+      <div class="form-row honeypot" aria-hidden="true">
+        <label for="comment-website">Leave this blank</label>
+        <input id="comment-website" type="text" name="website" tabindex="-1" autocomplete="off" data-honeypot>
+      </div>
+
+      <p class="privacy-note">By submitting, you allow us to store your comment and optional contact details for moderation and follow-up.</p>
+
+      <div class="comment-actions">
+        <p class="comment-status" data-comment-status role="status" aria-live="polite">Select an intent to begin.</p>
+        <button type="submit" class="btn btn-primary">Send feedback</button>
+      </div>
+    </form>
+  </section>
   {% include "giscus.njk" %}
 {% endif %}

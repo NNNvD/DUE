@@ -1,6 +1,6 @@
 ---
-title: "On Deadlines and Honesty"
-topic: "The role of time pressure in intellectual clarity"
+title: On Deadlines and Honesty
+topic: The role of time pressure in intellectual clarity
 author: noahvandongen
 coauthors: []
 acknowledgments: []
@@ -9,8 +9,9 @@ started_at: 2025-10-21
 deadline_at: 2025-11-20
 initial_status: unfinished
 version: 0.1
-word_range: "30-80"
+word_range: 30-80
 release_notes: []
+word_count: 38
 ---
 Deadlines have a way of stripping away our favorite illusions. Without the luxury of infinite revision, we learn what we really think.
 
