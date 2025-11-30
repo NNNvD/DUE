@@ -130,5 +130,65 @@ layout: base.njk
 </section>
 
 {% if isPublishedEssay and status == "published" %}
+  <section class="card" id="feedback">
+    <div class="comment-form__header">
+      <h3>Share feedback</h3>
+      <p class="muted">Pick an intent and tell us what to improve. Comments are moderated before they appear.</p>
+    </div>
+    <form class="comment-form" method="post" action="{{ site.comments.endpoint | default('') }}" data-comment-form data-comment-endpoint="{{ site.comments.endpoint | default('') }}">
+      <fieldset class="intent-buttons" aria-label="Feedback intent">
+        <legend class="visually-hidden">Choose feedback intent</legend>
+        <div class="intent-buttons__controls">
+          <div class="intent-option">
+            <input type="radio" name="intent" id="intent-minor" value="minor" required>
+            <label for="intent-minor" data-intent-label="Minor feedback">
+              <strong>Minor feedback</strong>
+              <span class="intent-option__hint">Typos, phrasing, or small references</span>
+            </label>
+          </div>
+          <div class="intent-option">
+            <input type="radio" name="intent" id="intent-major" value="major" required>
+            <label for="intent-major" data-intent-label="Major feedback">
+              <strong>Major feedback</strong>
+              <span class="intent-option__hint">Structural shifts or thematic changes</span>
+            </label>
+          </div>
+        </div>
+        <p class="field-error" data-error-for="intent"></p>
+      </fieldset>
+
+      <div class="form-row">
+        <label for="comment-name">Name <span aria-hidden="true">*</span></label>
+        <input id="comment-name" name="name" type="text" autocomplete="name" required>
+        <p class="field-help">Displayed with your comment. Pseudonyms are okay.</p>
+        <p class="field-error" data-error-for="name"></p>
+      </div>
+
+      <div class="form-row">
+        <label for="comment-contact">Contact (optional)</label>
+        <input id="comment-contact" name="contact" type="text" autocomplete="email">
+        <p class="field-help">Email, Mastodon handle, or another way to follow up.</p>
+      </div>
+
+      <div class="form-row">
+        <label for="comment-body">Comment <span aria-hidden="true">*</span></label>
+        <textarea id="comment-body" name="comment" rows="6" required></textarea>
+        <p class="field-help">Share context and citations so we can evaluate your suggestion.</p>
+        <p class="field-error" data-error-for="comment"></p>
+      </div>
+
+      <div class="form-row honeypot" aria-hidden="true">
+        <label for="comment-website">Leave this blank</label>
+        <input id="comment-website" type="text" name="website" tabindex="-1" autocomplete="off" data-honeypot>
+      </div>
+
+      <p class="privacy-note">By submitting, you allow us to store your comment and optional contact details for moderation and follow-up.</p>
+
+      <div class="comment-actions">
+        <p class="comment-status" data-comment-status role="status" aria-live="polite">Select an intent to begin.</p>
+        <button type="submit" class="btn btn-primary">Send feedback</button>
+      </div>
+    </form>
+  </section>
   {% include "giscus.njk" %}
 {% endif %}
