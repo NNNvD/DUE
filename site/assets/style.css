@@ -105,6 +105,24 @@ header nav a:hover {
   box-shadow: 0 10px 24px rgba(31, 41, 55, 0.08);
 }
 
+.jump-to-comments {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.95rem;
+  padding: 0.3rem 0.6rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(31, 41, 55, 0.05);
+}
+
+.jump-to-comments:hover {
+  text-decoration: none;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(31, 41, 55, 0.08);
+}
+
 .brand h1 {
   font-size: 1.3rem;
   margin: 0;
