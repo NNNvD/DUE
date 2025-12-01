@@ -7,6 +7,7 @@
     "start": "eleventy --serve",
     "check:frontmatter": "node scripts/validateFrontmatter.js",
     "check:words": "node scripts/checkWordRange.js",
+    "check:a11y": "node scripts/checkA11y.js",
     "autopublish": "node scripts/autopublish.js",
     "bump": "node scripts/bumpVersionAndCredit.js",
     "test": "vitest",

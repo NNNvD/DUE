@@ -62,6 +62,7 @@ Markdown content here...
 - **Deploy Pages**: Builds on push to `main` and deploys to GitHub Pages.
 - **Auto-publish**: Runs hourly; moves overdue `site/essays/drafts/*.md` to `site/essays/published/` and sets version per `initial_status`.
 - **Word range + count check**: Runs on PRs; fails if essay content is out of bounds or `word_count` is missing/outdated. Use `npm run check:words -- --write` before opening a PR to sync counts.
+- **Accessibility report**: Ensures pages expose alt text, labels, landmarks, and WCAG-friendly palette contrast. Run `npm run build` then `npm run check:a11y` locally to reproduce CI results.
 - **Published essay label guard**: Ensures PRs editing `site/essays/published/` include either the `minor` or `major` label.
 - **Version bump**: On merged PRs with `minor` or `major` label, bumps version and updates credits.
 
