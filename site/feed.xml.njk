@@ -3,28 +3,37 @@ permalink: feed.xml
 layout: null
 eleventyExcludeFromCollections: true
 ---
-{% set posts = collections.publishedEssays or [] %}
-{% set latest = posts | first %}
+{% set entries = collections.publishedEssays or [] %}
+{% set feedUrl = 'feed.xml' | url | absoluteUrl(site) %}
+{% set siteUrl = '/' | url | absoluteUrl(site) %}
+{% set latest = entries | first %}
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:due="https://due.page/ns">
   <channel>
     <title>{{ site.title }}</title>
-    <link>{{ site.siteUrl }}</link>
+    <link>{{ siteUrl }}</link>
     <description>{{ site.tagline }}</description>
-    <lastBuildDate>{{ (latest and latest.data.published_at) | rssDate }}</lastBuildDate>
-    <generator>Eleventy</generator>
-    {% for post in posts %}
-      {% set releaseNote = "" %}
-      {% if post.data.release_notes and post.data.release_notes.length %}
-        {% set releaseNote = post.data.release_notes[0] %}
+    <lastBuildDate>
+      {% if latest and latest.data.published_at %}
+        {{ latest.data.published_at | rssDate }}
+      {% else %}
+        {{ page.date | rssDate }}
       {% endif %}
+    </lastBuildDate>
+    <generator>Eleventy</generator>
+    {% for post in entries %}
+      {% set releaseNotes = post.data.release_notes or [] %}
+      {% set releaseNote = releaseNotes | first or meta.extractDescription(post.data) %}
+      {% set canonicalUrl = (post.data.canonical or post.url | url) | absoluteUrl(site) %}
+      {% set version = post.data.version or '0.0' %}
       <item>
         <title>{{ post.data.title }}</title>
-        <link>{{ post.url | url | absoluteUrl(site.siteUrl) }}</link>
-        <guid isPermaLink="true">{{ post.url | url | absoluteUrl(site.siteUrl) }}</guid>
-        <pubDate>{{ post.data.published_at | rssDate }}</pubDate>
+        <link>{{ canonicalUrl }}</link>
+        <guid isPermaLink="true">{{ canonicalUrl }}</guid>
+        {% if post.data.published_at %}<pubDate>{{ post.data.published_at | rssDate }}</pubDate>{% endif %}
         {% if releaseNote %}<description>{{ releaseNote | escape }}</description>{% endif %}
         {% if post.data.author %}<dc:creator>@{{ post.data.author }}</dc:creator>{% endif %}
+        <due:version>{{ version }}</due:version>
       </item>
     {% endfor %}
   </channel>

@@ -130,6 +130,13 @@ function resolveGiscusConfig() {
   };
 }
 
+function resolveCommentConfig() {
+  const defaults = baseConfig.comments || {};
+  return {
+    endpoint: process.env.COMMENTS_ENDPOINT || defaults.endpoint || "",
+  };
+}
+
 const pathPrefix = computePathPrefix();
 
 const siteData = {
@@ -144,6 +151,7 @@ const siteData = {
     return this._siteUrl;
   },
   giscus: resolveGiscusConfig(),
+  comments: resolveCommentConfig(),
 };
 
 module.exports = siteData;
