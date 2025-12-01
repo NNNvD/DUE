@@ -7,7 +7,7 @@ const { wordCount } = require("../../scripts/checkWordRange");
 module.exports = {
   eleventyComputed: {
     canonical: (data) => meta.buildCanonicalUrl(data),
-    description: (data) => meta.extractDescription(data),
+    description: (data) => meta.buildMetaDescription(data),
     ogTitle: (data) => data.title || data.topic || data.site?.title,
     ogType: () => "article",
     word_count: (data) => {
@@ -38,7 +38,7 @@ module.exports = {
 
       return meta.buildArticleJsonLd({
         ...data,
-        description: meta.extractDescription(data),
+        description: meta.buildMetaDescription(data),
         socialImage: data.socialImage,
         display_keywords: data.display_keywords,
       });

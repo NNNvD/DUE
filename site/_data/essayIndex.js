@@ -89,7 +89,7 @@ function loadEssays(status = "published") {
     const keywords = Array.isArray(data.keywords) ? data.keywords : [];
     const word_range = data.word_range || null;
     const lengthMeta = wordRangeMeta(word_range);
-    const description = meta.extractDescription({
+    const description = meta.buildMetaDescription({
       ...data,
       page: { ...(data.page || {}), inputPath: file },
     });

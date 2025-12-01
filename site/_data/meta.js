@@ -82,6 +82,26 @@ function extractDescription(data) {
   return data?.topic || data?.title || "";
 }
 
+function buildMetaDescription(data = {}) {
+  if (data.description) {
+    return truncate(data.description, 160);
+  }
+
+  const raw = extractDescription(data);
+  const summary = raw || "";
+  const title = data.title || data.topic || "";
+
+  if (title && summary && !summary.toLowerCase().startsWith(title.toLowerCase())) {
+    return truncate(`${title}: ${summary}`, 160);
+  }
+
+  if (summary) {
+    return truncate(summary, 160);
+  }
+
+  return truncate(title, 160);
+}
+
 function buildCanonicalUrl(data) {
   if (data?.canonical) {
     return data.canonical;
@@ -177,6 +197,7 @@ module.exports = {
   absoluteUrl,
   buildCanonicalUrl,
   extractDescription,
+  buildMetaDescription,
   ensureTrailingSlash,
   buildArticleJsonLd,
 };
