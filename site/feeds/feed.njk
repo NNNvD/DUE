@@ -3,9 +3,9 @@ permalink: feeds/feed.xml
 layout: null
 eleventyExcludeFromCollections: true
 ---
-{% set entries = collections.publishedEssays %}
-{% set feedUrl = "feeds/feed.xml" | url %}
-{% set siteUrl = "/" | url %}
+{% set entries = collections.publishedEssays or [] %}
+{% set feedUrl = 'feeds/feed.xml' | url | absoluteUrl(site) %}
+{% set siteUrl = '/' | url | absoluteUrl(site) %}
 {% set mostRecent = entries | first %}
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:due="https://due.page/ns">
@@ -15,29 +15,26 @@ eleventyExcludeFromCollections: true
   <link href="{{ siteUrl }}" rel="alternate" />
   <updated>
     {% if mostRecent and mostRecent.data.published_at %}
-      {{ mostRecent.data.published_at | date("yyyy-LL-dd") }}
+      {{ mostRecent.data.published_at | date('yyyy-LL-dd') }}
     {% else %}
-      {{ page.date | date("yyyy-LL-dd") }}
+      {{ page.date | date('yyyy-LL-dd') }}
     {% endif %}
   </updated>
   <author>
     <name>{{ site.title }}</name>
   </author>
   {% for entry in entries %}
-    {% set canonicalUrl = entry.url | url %}
+    {% set canonicalUrl = (entry.data.canonical or entry.url | url) | absoluteUrl(site) %}
     {% set releaseNotes = entry.data.release_notes or [] %}
-    {% set latestReleaseNote = releaseNotes | last %}
-    {% if not latestReleaseNote %}
-      {% set latestReleaseNote = "No release notes yet." %}
-    {% endif %}
-    {% set entryVersion = entry.data.version or "0.0" %}
+    {% set latestReleaseNote = releaseNotes | first or meta.extractDescription(entry.data) %}
+    {% set entryVersion = entry.data.version or '0.0' %}
     <entry>
       <title>{{ entry.data.title }}</title>
       <link href="{{ canonicalUrl }}" />
       <id>{{ canonicalUrl }}</id>
       {% if entry.data.published_at %}
-        <published>{{ entry.data.published_at | date("yyyy-LL-dd") }}</published>
-        <updated>{{ entry.data.published_at | date("yyyy-LL-dd") }}</updated>
+        <published>{{ entry.data.published_at | date('yyyy-LL-dd') }}</published>
+        <updated>{{ entry.data.published_at | date('yyyy-LL-dd') }}</updated>
       {% endif %}
       <due:version>{{ entryVersion }}</due:version>
       <summary type="text">{{ latestReleaseNote }}</summary>

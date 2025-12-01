@@ -26,7 +26,75 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
   </div>
 </section>
 
-<section class="stack">
+<section class="card filters">
+  <div class="filters__header">
+    <div>
+      <p class="eyebrow">Search & filter</p>
+      <h3 class="card-title">Find an essay by topic, author, or length</h3>
+      <p class="muted">Search titles, topics, keywords, authors, and coauthors, then slice by length, completeness, or keyword. Sort results by publish date or deadline.</p>
+    </div>
+    <div class="filters__controls">
+      <label class="filter">
+        <span>Search</span>
+        <input type="search" name="q" placeholder="Try 'deadlines' or 'publishing'" data-filter-search>
+      </label>
+      <label class="filter">
+        <span>Length bin</span>
+        <select data-filter-length>
+          <option value="">All lengths</option>
+          <option value="concise">Concise (250-500)</option>
+          <option value="midlength">Mid-length (500-1000)</option>
+          <option value="longform">Long-form (1000-1500)</option>
+        </select>
+      </label>
+      <label class="filter">
+        <span>Publication state</span>
+        <select data-filter-finished>
+          <option value="">Published & drafts</option>
+          <option value="complete">Published completed</option>
+          <option value="unfinished">Published unfinished</option>
+          <option value="draft">Drafts only</option>
+        </select>
+      </label>
+      <label class="filter">
+        <span>Author or coauthor</span>
+        <select data-filter-author>
+          <option value="">All authors</option>
+        </select>
+      </label>
+      <label class="filter">
+        <span>Keyword</span>
+        <select data-filter-keyword>
+          <option value="">All keywords</option>
+        </select>
+      </label>
+      <label class="filter">
+        <span>Sort</span>
+        <select data-filter-sort>
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+        </select>
+      </label>
+    </div>
+  </div>
+</section>
+
+<section class="stack" data-search-interactive hidden data-base-url="{{ '/' | url }}">
+  <div class="section-heading">
+    <p class="eyebrow">Interactive browser</p>
+    <h3>Filter and search every essay</h3>
+    <p class="muted">Results update instantly as you search. Drafts include a live countdown; published pieces carry their version and status.</p>
+  </div>
+  <div class="card-list" data-search-results>
+    <div class="card"><p>Loading the essay index…</p></div>
+  </div>
+</section>
+
+<script type="application/json" data-essay-search>
+  {{ essayIndex | dump | safe }}
+</script>
+
+<section class="stack" data-search-fallback>
   <div class="section-heading">
     <p class="eyebrow">Published</p>
     <h3>Latest releases</h3>
@@ -36,11 +104,22 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
     <div class="card-list">
       {% for post in published %}
         <article class="card list-card">
+          {% set length = post.data.word_range | wordRangeMeta %}
           <header class="list-card__header">
-            <h4 class="card-title"><a href="{{ post.url | url }}">{{ post.data.title }}</a></h4>
+            <div class="stack">
+              {% if post.data.word_range %}
+                <div class="length-chip" aria-label="Length: {{ post.data.word_range }} words">
+                  <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
+                  <span class="length-chip__text">
+                    <span>{{ post.data.word_range }} words</span>
+                    {% if post.data.word_count %}<span aria-hidden="true">•</span><span>{{ post.data.word_count }} words</span>{% endif %}
+                  </span>
+                </div>
+              {% endif %}
+              <h4 class="card-title {{ length.titleClass }}"><a href="{{ post.url | url }}">{{ post.data.title }}</a></h4>
+            </div>
             <div class="meta">
               <span class="badge badge--tone-info">v{{ post.data.version }}</span>
-              {% if post.data.word_range %}<span class="badge {{ post.data.word_range | wordRangeTone }}">{{ post.data.word_range }} words</span>{% endif %}
               {% if post.data.initial_status == "complete" %}
                 <span class="badge badge--tone-success">Published completed</span>
               {% else %}
@@ -49,7 +128,13 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
               {% if post.data.published_at %}<span>Published {{ post.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
             </div>
           </header>
-          {% if post.data.topic %}<p class="muted"><strong>Topic:</strong> {{ post.data.topic }}</p>{% endif %}
+          <div class="meta">
+            {% if post.data.author %}<span>By <strong>@{{ post.data.author }}</strong></span>{% endif %}
+            {% if post.data.topic %}<span>Topic: {{ post.data.topic | shortWords(5) }}</span>{% endif %}
+            {% if post.data.display_keywords and post.data.display_keywords.length %}
+              <span>Keywords: {{ post.data.display_keywords | join(", ") }}</span>
+            {% endif %}
+          </div>
           {% if post.data.release_notes and post.data.release_notes.length %}
             <p class="muted"><strong>Latest:</strong> {{ post.data.release_notes[0] }}</p>
           {% endif %}
@@ -61,7 +146,7 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
   {% endif %}
 </section>
 
-<section class="stack">
+<section class="stack" data-search-fallback>
   <div class="section-heading">
     <p class="eyebrow">Drafts</p>
     <h3>Publishing soon</h3>
@@ -92,3 +177,5 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
     <div class="card"><p>No drafts in progress. New drafts will appear here once scheduled.</p></div>
   {% endif %}
 </section>
+
+<script type="module" src="{{ '/assets/search.js' | url }}"></script>
