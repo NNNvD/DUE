@@ -1,0 +1,110 @@
+---
+layout: base.njk
+title: "Website style guide"
+description: "Reusable design guidance for the DUE site including palette, typography, and components."
+---
+<section class="page-header card">
+  <p class="eyebrow">Design system</p>
+  <h2>Website style guide</h2>
+  <p class="lede">Use this page to keep new pages and components consistent. Lean on the existing palette, typography, spacing tokens, and cards so everything feels like DUE even as layouts grow.</p>
+</section>
+
+<section class="card-grid">
+  <article class="card panel">
+    <p class="eyebrow">Approach</p>
+    <h3 class="card-title">Tone and hierarchy</h3>
+    <ul class="muted">
+      <li>Lead with concise headlines and a short lede; reserve long-form text for essays.</li>
+      <li>Use cards to group related ideas and to provide consistent padding, borders, and shadows.</li>
+      <li>Favor inline links over buttons except for high-intent actions like comments.</li>
+    </ul>
+  </article>
+  <article class="card panel">
+    <p class="eyebrow">Accessibility</p>
+    <h3 class="card-title">Readable defaults</h3>
+    <ul class="muted">
+      <li>Keep the body copy at 16px with the UI font stack and reserve headings for the essay font.</li>
+      <li>Use the <code>.skip-link</code> and breadcrumb output baked into the base layout; avoid removing them.</li>
+      <li>Links should remain high-contrast and underlined on hover; avoid custom focus outlines.</li>
+    </ul>
+  </article>
+  <article class="card panel">
+    <p class="eyebrow">Spacing</p>
+    <h3 class="card-title">Scale and shells</h3>
+    <ul class="muted">
+      <li>Default spacing tokens come from <code>--space-2xs</code> through <code>--space-2xl</code>; stick to them for gaps and padding.</li>
+      <li>Pages sit in a <code>.page-shell</code> with generous inline padding; avoid edge-to-edge layouts.</li>
+      <li>Card padding is controlled by <code>--space-card-padding-block</code> and <code>--space-card-padding-inline</code> so grids stay aligned.</li>
+    </ul>
+  </article>
+</section>
+
+<section class="card">
+  <div class="section-heading">
+    <p class="eyebrow">Palette</p>
+    <h3>Color usage</h3>
+    <p class="muted">Anchor the brand on warm orange links with magenta and teal as supporting accents. Use the neutral surfaces for readability and keep state colors consistent.</p>
+  </div>
+  <div class="legend-badges">
+    <span class="legend-badge orange">Accent #c2410c / #fb923c</span>
+    <span class="legend-badge magenta">Magenta #d946ef</span>
+    <span class="legend-badge teal">Teal #14b8a6 / #0d9488</span>
+    <span class="legend-badge">Surface #ffffff</span>
+    <span class="legend-badge">Panel #f2f4f7</span>
+    <span class="legend-badge">Border #e5e7eb</span>
+  </div>
+  <ul class="muted">
+    <li>Use the primary accent for links, outlines, and focus rings; reserve magenta, orange, and teal badges for length cues and highlights.</li>
+    <li>Place content on <code>--surface</code> cards with <code>--bg</code> and <code>--bg-panel</code> surrounding them to maintain depth.</li>
+    <li>For statuses, prefer the existing <code>.badge</code> tone variants instead of inventing new colors.</li>
+  </ul>
+</section>
+
+<section class="card">
+  <div class="section-heading">
+    <p class="eyebrow">Typography</p>
+    <h3>Font and rhythm</h3>
+    <p class="muted">Pair the UI-friendly Manrope stack with Space Grotesk headings. Maintain generous line heights to keep essays readable.</p>
+  </div>
+  <ul class="muted">
+    <li>Headings (h1–h4) and <code>.card-title</code> use the essay font; body copy uses the UI stack for clarity.</li>
+    <li><code>.eyebrow</code> labels provide uppercase section markers; keep them short and avoid sentence case.</li>
+    <li><code>.lede</code> text should stay near 1.05rem and use muted color to establish hierarchy without overwhelming the headline.</li>
+    <li>When listing metadata, use the <code>.meta</code>, <code>.meta-pill</code>, and <code>.muted</code> helpers to keep spacing and color consistent.</li>
+  </ul>
+</section>
+
+<section class="card">
+  <div class="section-heading">
+    <p class="eyebrow">Components</p>
+    <h3>Reusable building blocks</h3>
+    <p class="muted">Start with the default card, then add small variations for context instead of crafting one-off modules.</p>
+  </div>
+  <div class="card-grid">
+    <article class="card panel">
+      <h4 class="card-title">Cards and panels</h4>
+      <p class="muted">Use <code>.card</code> for most sections; apply <code>.panel</code> for lighter, dashed outlines on secondary content. <code>.card-grid</code> and <code>.grid-two</code> keep responsive columns even.</p>
+    </article>
+    <article class="card panel">
+      <h4 class="card-title">Badges and pills</h4>
+      <p class="muted">Use <code>.length-chip</code> and <code>.legend-badge</code> for word-count cues; <code>.badge--tone-*</code> handles status messaging; <code>.accent-pill</code> adds a subtle gradient dot for inline notes.</p>
+    </article>
+    <article class="card panel">
+      <h4 class="card-title">Heroes and banners</h4>
+      <p class="muted">The <code>.hero.spotlight</code> layout provides a soft gradient frame, while <code>.hero__panel</code> and <code>.hero__visual</code> boxes handle supporting copy and imagery.</p>
+    </article>
+  </div>
+</section>
+
+<section class="card">
+  <div class="section-heading">
+    <p class="eyebrow">Interaction</p>
+    <h3>Links, forms, and motion</h3>
+    <p class="muted">Keep interactions predictable and avoid bespoke hover states so the brand remains calm and deliberate.</p>
+  </div>
+  <ul class="muted">
+    <li>Default links inherit the accent color and gain an underline on hover; avoid replacing them with buttons unless the action is primary (e.g., commenting).</li>
+    <li>Reuse the inline comment metadata pattern (<code>.comment__eyebrow</code>, <code>.comment__meta</code>, and <code>.comment</code> stack) for any reader-submitted blocks.</li>
+    <li>Respect form defaults: use <code>label</code> elements, leave focus outlines intact, and keep inputs in stacked layouts with <code>--space-sm</code> gaps.</li>
+  </ul>
+</section>
