@@ -6,7 +6,7 @@ This is a minimal starter for **DUE — Deadline for Unfinished Essays**, design
 ## What you get
 - Static site with **Eleventy (11ty)** rendering essays from Markdown.
 - Repo-native content under `site/essays/`.
-- **Auto-publish** overdue drafts (30‑day timer) via scheduled workflow (for maintainers).
+- **Auto-publish** overdue drafts (30‑day timer) via a **manual** workflow dispatch (enable a cron only if your backend needs the repo to keep publishing on a schedule).
 - **Word-range enforcement** on PRs (250–500, 500–1000, 1000–1500 with small grace).
 - **Published essay label guard** fails PRs that touch `site/essays/published/` without a `minor` or `major` label.
 - **Version bump + credits** on merged PRs using `minor` / `major` labels:
@@ -60,11 +60,16 @@ Markdown content here...
 
 ## Workflows
 - **Deploy Pages**: Builds on push to `main` and deploys to GitHub Pages.
-- **Auto-publish**: Runs hourly; moves overdue `site/essays/drafts/*.md` to `site/essays/published/` and sets version per `initial_status`.
+- **Auto-publish**: **Manual dispatch** workflow that moves overdue `site/essays/drafts/*.md` to `site/essays/published/` and sets version per `initial_status`. Enable the cron trigger only if this repo remains the publishing authority; otherwise leave it manual so the backend controls timing.
 - **Word range + count check**: Runs on PRs; fails if essay content is out of bounds or `word_count` is missing/outdated. Use `npm run check:words -- --write` before opening a PR to sync counts.
 - **Accessibility report**: Ensures pages expose alt text, labels, landmarks, and WCAG-friendly palette contrast. Run `npm run build` then `npm run check:a11y` locally to reproduce CI results.
+- **Feed validation**: Confirms `/feeds/feed.xml` and `/feeds/feed.json` are present and well formed after a build.
 - **Published essay label guard**: Ensures PRs editing `site/essays/published/` include either the `minor` or `major` label.
-- **Version bump**: On merged PRs with `minor` or `major` label, bumps version and updates credits.
+- **Version bump**: On merged PRs with `minor` or `major` label, bumps version and updates credits for backend-authored changes.
+
+### QA + acceptance
+- Run `npm run qa` to execute the automated acceptance bundle (word/length checks, build, accessibility audit, and feed validation).
+- Follow [`docs/qa-acceptance.md`](./docs/qa-acceptance.md) for manual end-to-end verification of the comments pipeline, search/filters, share/meta, and accessibility behaviors.
 
 ### Enable GitHub Pages
 1. Push this repository to GitHub.

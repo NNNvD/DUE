@@ -13,7 +13,8 @@
     "test": "vitest",
     "lint:md": "node scripts/lintMarkdown.js",
     "validate:feeds": "node scripts/validateFeeds.js",
-    "verify:feeds": "npm run build && npm run validate:feeds"
+    "verify:feeds": "npm run build && npm run validate:feeds",
+    "qa": "npm run check:words && npm run build && npm run check:a11y && npm run validate:feeds"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",
