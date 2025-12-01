@@ -53,6 +53,48 @@ description: "Reusable design guidance for the DUE site including palette, typog
     <span class="legend-badge">Panel #f2f4f7</span>
     <span class="legend-badge">Border #e5e7eb</span>
   </div>
+  <div class="swatch-grid" role="list">
+    <article class="swatch-card" role="listitem">
+      <div class="swatch swatch--accent"></div>
+      <div class="swatch-meta">
+        <p class="swatch-name">Accent</p>
+        <p class="muted">#c2410c base / #fb923c hover</p>
+        <p class="muted swatch-usage">Primary link color, outlines, and focus rings.</p>
+      </div>
+    </article>
+    <article class="swatch-card" role="listitem">
+      <div class="swatch swatch--magenta"></div>
+      <div class="swatch-meta">
+        <p class="swatch-name">Magenta</p>
+        <p class="muted">#d946ef</p>
+        <p class="muted swatch-usage">Highlights, word-length badges, and critical tones.</p>
+      </div>
+    </article>
+    <article class="swatch-card" role="listitem">
+      <div class="swatch swatch--teal"></div>
+      <div class="swatch-meta">
+        <p class="swatch-name">Teal</p>
+        <p class="muted">#14b8a6 / #0d9488</p>
+        <p class="muted swatch-usage">Info states, success messaging, and dotted gradients.</p>
+      </div>
+    </article>
+    <article class="swatch-card" role="listitem">
+      <div class="swatch swatch--surface"></div>
+      <div class="swatch-meta">
+        <p class="swatch-name">Surface + panels</p>
+        <p class="muted">#ffffff / #f2f4f7</p>
+        <p class="muted swatch-usage">Card backgrounds, shells, and neutral dividers.</p>
+      </div>
+    </article>
+    <article class="swatch-card" role="listitem">
+      <div class="swatch swatch--ink"></div>
+      <div class="swatch-meta">
+        <p class="swatch-name">Ink + muted</p>
+        <p class="muted">#1f2937 / #4b5563</p>
+        <p class="muted swatch-usage">Headlines, body copy, and supporting metadata.</p>
+      </div>
+    </article>
+  </div>
   <ul class="muted">
     <li>Use the primary accent for links, outlines, and focus rings; reserve magenta, orange, and teal badges for length cues and highlights.</li>
     <li>Place content on <code>--surface</code> cards with <code>--bg</code> and <code>--bg-panel</code> surrounding them to maintain depth.</li>
@@ -65,6 +107,52 @@ description: "Reusable design guidance for the DUE site including palette, typog
     <p class="eyebrow">Typography</p>
     <h3>Font and rhythm</h3>
     <p class="muted">Pair the UI-friendly Manrope stack with Space Grotesk headings. Maintain generous line heights to keep essays readable.</p>
+  </div>
+  <div class="type-grid">
+    <article class="type-sample">
+      <p class="eyebrow">Headlines</p>
+      <div class="type-preview">
+        <p class="type-heading">Space Grotesk — H2 / 700</p>
+        <p class="type-lede">Lead with a crisp headline and short lede before diving into the details.</p>
+      </div>
+    </article>
+    <article class="type-sample">
+      <p class="eyebrow">Body + meta</p>
+      <div class="type-preview">
+        <p class="type-body">Manrope — 1rem / 1.6 line height keeps prose comfortable and calm.</p>
+        <p class="meta type-meta"><span>Label</span><span class="meta-pill">Pill</span><span class="badge badge--tone-info">Info</span></p>
+      </div>
+    </article>
+  </div>
+  <div class="space-ruler" aria-label="Spacing tokens visualized">
+    <div class="space-bar" style="--space-size: var(--space-2xs);">
+      <div class="space-bar__meter"></div>
+      <div class="space-bar__label"><span class="space-token">--space-2xs</span><span class="space-value">0.35rem</span></div>
+    </div>
+    <div class="space-bar" style="--space-size: var(--space-xs);">
+      <div class="space-bar__meter"></div>
+      <div class="space-bar__label"><span class="space-token">--space-xs</span><span class="space-value">0.5rem</span></div>
+    </div>
+    <div class="space-bar" style="--space-size: var(--space-sm);">
+      <div class="space-bar__meter"></div>
+      <div class="space-bar__label"><span class="space-token">--space-sm</span><span class="space-value">0.75rem</span></div>
+    </div>
+    <div class="space-bar" style="--space-size: var(--space-md);">
+      <div class="space-bar__meter"></div>
+      <div class="space-bar__label"><span class="space-token">--space-md</span><span class="space-value">1rem</span></div>
+    </div>
+    <div class="space-bar" style="--space-size: var(--space-lg);">
+      <div class="space-bar__meter"></div>
+      <div class="space-bar__label"><span class="space-token">--space-lg</span><span class="space-value">1.5rem</span></div>
+    </div>
+    <div class="space-bar" style="--space-size: var(--space-xl);">
+      <div class="space-bar__meter"></div>
+      <div class="space-bar__label"><span class="space-token">--space-xl</span><span class="space-value">2rem</span></div>
+    </div>
+    <div class="space-bar" style="--space-size: var(--space-2xl);">
+      <div class="space-bar__meter"></div>
+      <div class="space-bar__label"><span class="space-token">--space-2xl</span><span class="space-value">3rem</span></div>
+    </div>
   </div>
   <ul class="muted">
     <li>Headings (h1–h4) and <code>.card-title</code> use the essay font; body copy uses the UI stack for clarity.</li>
@@ -92,6 +180,49 @@ description: "Reusable design guidance for the DUE site including palette, typog
     <article class="card panel">
       <h4 class="card-title">Heroes and banners</h4>
       <p class="muted">The <code>.hero.spotlight</code> layout provides a soft gradient frame, while <code>.hero__panel</code> and <code>.hero__visual</code> boxes handle supporting copy and imagery.</p>
+    </article>
+  </div>
+  <div class="component-grid">
+    <article class="component-preview hero spotlight">
+      <div class="hero__panel">
+        <p class="eyebrow">Spotlight hero</p>
+        <h4 class="card-title">Pair narrative and visual</h4>
+        <p class="muted">Use for key announcements: a left column for copy with badges and a right column for imagery or metrics.</p>
+        <div class="legend-badges">
+          <span class="legend-badge orange">Card</span>
+          <span class="legend-badge teal">Panel</span>
+          <span class="legend-badge magenta">Accent</span>
+        </div>
+      </div>
+      <div class="hero__visual">
+        <p class="muted">Example visual frame</p>
+        <div class="swatch-stack">
+          <span class="swatch-dot swatch-dot--orange"></span>
+          <span class="swatch-dot swatch-dot--magenta"></span>
+          <span class="swatch-dot swatch-dot--teal"></span>
+        </div>
+        <p class="caption">Use gradients and badges to call attention without overpowering the copy.</p>
+      </div>
+    </article>
+    <article class="component-preview card panel">
+      <p class="eyebrow">Card anatomy</p>
+      <h4 class="card-title">Stacked metadata</h4>
+      <p class="muted">Keep headlines tight, add a <code>.meta</code> row for supporting facts, and end with a calm call to action.</p>
+      <div class="meta">
+        <span class="meta-pill">Meta pill</span>
+        <span class="badge badge--tone-success">Badge success</span>
+        <span class="badge badge--tone-warn">Badge warn</span>
+      </div>
+      <p class="caption">Padding comes from <code>--space-card-padding-*</code> to match other grids.</p>
+    </article>
+    <article class="component-preview comment">
+      <div class="comment__header">
+        <p class="comment__eyebrow">Reader note</p>
+        <span class="badge badge--tone-info">Info</span>
+      </div>
+      <p class="comment__author">Comment pattern</p>
+      <p class="comment__body">Use the stacked comment styling for community submissions and keep focus outlines intact.</p>
+      <p class="comment__note">Buttons, timestamps, and labels stay in the <code>.comment__meta</code> row.</p>
     </article>
   </div>
 </section>
