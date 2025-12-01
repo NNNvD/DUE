@@ -11,11 +11,11 @@ description: "See what is shipping now, browse recent essays, and jump into the 
   <div class="hero__copy">
     <p class="eyebrow">Deadline for Unfinished Essays</p>
     <h2>Publish under pressure.</h2>
-    <p class="lede">One topic. Thirty days. Essays go live finished or not. Minor contributions are acknowledged; major ones earn coauthorship. Every release is versioned and openly iterated.</p>
+    <p class="lede">One topic. Thirty days. Essays go live finished or not. Public readers can follow along and leave comments once an essay is published; authoring and edits happen in the backend.</p>
     <div class="cta-row">
       <a class="btn btn-primary" href="{{ '/essays/' | url }}">Browse essays</a>
-      <a class="btn btn-secondary" href="{{ '/drafts/' | url }}">See draft schedule</a>
-      <a class="btn btn-ghost" href="{{ '/about/' | url }}">How contributions work</a>
+      <a class="btn btn-secondary" href="{{ '/drafts/' | url }}">See draft schedule (read-only)</a>
+      <a class="btn btn-ghost" href="{{ '/contribute/' | url }}">How commenting works</a>
     </div>
     <div class="legend-badges">
       <span class="legend-badge magenta">Under 500 words</span>
@@ -56,7 +56,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
     <div class="section-heading">
       <p class="eyebrow">Now writing</p>
       <h3>In progress</h3>
-      <p>Deadlines arrive fast—help keep the current draft on track.</p>
+      <p>Deadlines arrive fast—track what is coming next. Drafts are view-only until they publish.</p>
     </div>
     {% if drafts.length %}
       {% set active = drafts[0] %}
@@ -98,17 +98,33 @@ description: "See what is shipping now, browse recent essays, and jump into the 
       <p>Catch up on what just shipped before the next round of edits.</p>
     </div>
     {% if latest %}
+      {% set length = latest.data.word_range | wordRangeMeta %}
       <div class="stack">
-        <h4 class="card-title"><a href="{{ latest.url | url }}">{{ latest.data.title }}</a></h4>
+        {% if latest.data.word_range %}
+          <div class="length-chip" aria-label="Length: {{ latest.data.word_range }} words">
+            <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
+            <span class="length-chip__text">
+              <span>{{ latest.data.word_range }} words</span>
+              {% if latest.data.word_count %}<span aria-hidden="true">•</span><span>{{ latest.data.word_count }} words</span>{% endif %}
+            </span>
+          </div>
+        {% endif %}
+        <h4 class="card-title {{ length.titleClass }}"><a href="{{ latest.url | url }}">{{ latest.data.title }}</a></h4>
         <div class="meta">
           <span class="badge badge--tone-info">v{{ latest.data.version }}</span>
-          {% if latest.data.word_range %}<span class="badge {{ latest.data.word_range | wordRangeTone }}">{{ latest.data.word_range }} words</span>{% endif %}
           {% if latest.data.initial_status == "complete" %}
             <span class="badge badge--tone-success">Published completed</span>
           {% else %}
             <span class="badge badge--tone-warn">Published unfinished</span>
           {% endif %}
           {% if latest.data.published_at %}<span>Published {{ latest.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+        </div>
+        <div class="meta">
+          {% if latest.data.author %}<span>By <strong>@{{ latest.data.author }}</strong></span>{% endif %}
+          {% if latest.data.topic %}<span>Topic: {{ latest.data.topic | shortWords(5) }}</span>{% endif %}
+          {% if latest.data.display_keywords and latest.data.display_keywords.length %}
+            <span>Keywords: {{ latest.data.display_keywords | join(", ") }}</span>
+          {% endif %}
         </div>
         {% if latest.data.release_notes and latest.data.release_notes.length %}
           <p class="muted"><strong>Latest:</strong> {{ latest.data.release_notes[0] }}</p>
@@ -123,7 +139,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
 <section class="card">
   <div class="section-heading">
     <p class="eyebrow">Explore</p>
-    <h3>Keep reading and contributing</h3>
+    <h3>Keep reading and commenting</h3>
   </div>
   <div class="card-grid">
     <div class="card panel">
@@ -135,13 +151,13 @@ description: "See what is shipping now, browse recent essays, and jump into the 
     <div class="card panel">
       <p class="eyebrow">Deadlines</p>
       <h4 class="card-title">Draft schedule</h4>
-      <p class="muted">View every draft ordered by publish date so you can jump in where help is needed.</p>
-      <a class="inline-link" href="{{ '/drafts/' | url }}">See the queue →</a>
+      <p class="muted">View every draft ordered by publish date so you can plan your reading. Drafts are read-only.</p>
+      <a class="inline-link" href="{{ '/drafts/' | url }}">See the queue (read-only) →</a>
     </div>
     <div class="card panel">
       <p class="eyebrow">Backstory</p>
       <h4 class="card-title">About DUE</h4>
-      <p class="muted">Learn how deadlines, acknowledgments, and versioning shape the project.</p>
+      <p class="muted">Learn how deadlines, acknowledgments, and the comment policy shape the project.</p>
       <a class="inline-link" href="{{ '/about/' | url }}">Read the story →</a>
     </div>
   </div>

@@ -37,3 +37,9 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Accessibility report
+        run: npm run check:a11y
+
+      - name: Validate feeds
+        run: npm run validate:feeds
