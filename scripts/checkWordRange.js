@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const yaml = require("js-yaml");
 
 let matter;
 try {
@@ -9,6 +10,11 @@ try {
 } catch (error) {
   matter = null;
 }
+
+const yamlEngine = {
+  parse: src => yaml.load(src, { schema: yaml.JSON_SCHEMA }),
+  stringify: obj => yaml.dump(obj, { schema: yaml.JSON_SCHEMA, lineWidth: 100 })
+};
 
 let advancedWordCount = null;
 try {
@@ -357,23 +363,51 @@ function listMarkdownFiles(fsModule = fs) {
   ];
 }
 
-function checkFiles(files, fsModule = fs) {
+function stringifyFrontMatter(doc, wordCountValue) {
+  if (!matter) {
+    throw new Error("gray-matter is required to write word_count; please install dependencies.");
+  }
+
+  const data = { ...doc.data, word_count: wordCountValue };
+  const content = doc.content || "";
+  return matter.stringify(content, data, { engines: { yaml: yamlEngine } });
+}
+
+function checkFiles(files, options = {}) {
+  const { fsModule = fs, write = false } = options;
   const errors = [];
+  const updates = [];
+
   for (const fp of files) {
     const raw = fsModule.readFileSync(fp, "utf8");
     const doc = parseFrontMatter(raw);
     const result = validateWordRange(doc.content, doc.data.word_range);
+
     if (!result.ok) {
       errors.push(formatError(fp, result));
     }
+
+    const hasWordCount = typeof doc.data.word_count === "number";
+    const wordCountMatches = hasWordCount && doc.data.word_count === result.wordCount;
+
+    if (!wordCountMatches) {
+      if (write) {
+        const rewritten = stringifyFrontMatter(doc, result.wordCount);
+        fsModule.writeFileSync(fp, rewritten, "utf8");
+        updates.push(fp);
+      } else {
+        errors.push(`${fp}: missing or stale word_count (expected ${result.wordCount})`);
+      }
+    }
   }
-  return errors;
+
+  return { errors, updates };
 }
 
 function parseFrontMatter(raw) {
   if (matter) {
     try {
-      return matter(raw);
+      return matter(raw, { engines: { yaml: yamlEngine } });
     } catch (error) {
       // Swallow and attempt the fallback parser below.
     }
@@ -382,19 +416,26 @@ function parseFrontMatter(raw) {
   return fallbackParseFrontMatter(raw);
 }
 
-function run(fsModule = fs) {
+function run(fsModule = fs, { write = false } = {}) {
   const files = listMarkdownFiles(fsModule);
-  const errors = checkFiles(files, fsModule);
+  const { errors, updates } = checkFiles(files, { fsModule, write });
+
+  if (updates.length) {
+    console.log(`Updated word_count for ${updates.length} file(s).`);
+  }
+
   if (errors.length) {
     console.error("Word range check failed:\n" + errors.join("\n"));
     return 1;
   }
+
   console.log("Word ranges OK");
   return 0;
 }
 
 if (require.main === module) {
-  process.exit(run());
+  const write = process.argv.includes("--write");
+  process.exit(run(fs, { write }));
 }
 
 module.exports = {

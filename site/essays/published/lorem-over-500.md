@@ -1,6 +1,6 @@
 ---
-title: "Lorem Ipsum Boundary Test"
-topic: "Automated lorem ipsum content for word range validation"
+title: Lorem Ipsum Boundary Test
+topic: Automated lorem ipsum content for word range validation
 author: lorem-boundary-tester
 coauthors: []
 acknowledgments: []
@@ -8,11 +8,12 @@ status: published
 started_at: 2024-06-01
 deadline_at: 2024-07-01
 initial_status: unfinished
-version: 1.0
+version: 1
 published_at: 2024-07-01
-word_range: "500-1000"
+word_range: 500-1000
 release_notes:
-  - "Initial publication as complete (v1.0)."
+  - Initial publication as complete (v1.0).
+word_count: 513
 ---
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Phasellus volutpat metus sit amet arcu feugiat, sit amet aliquet ipsum fermentum.
 
