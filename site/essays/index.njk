@@ -31,50 +31,83 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
     <div>
       <p class="eyebrow">Search & filter</p>
       <h3 class="card-title">Find an essay by topic, author, or length</h3>
-      <p class="muted">Search titles, topics, keywords, authors, and coauthors, then slice by length, completeness, or keyword. Sort results by publish date or deadline.</p>
+      <p class="muted">Search titles, topics, keywords, authors, and coauthors. Then tick boxes like you're browsing a shop to refine by length, publication state, authors, and keywords.</p>
     </div>
-    <div class="filters__controls">
-      <label class="filter">
-        <span>Search</span>
-        <input type="search" name="q" placeholder="Try 'deadlines' or 'publishing'" data-filter-search>
-      </label>
-      <label class="filter">
-        <span>Length bin</span>
-        <select data-filter-length>
-          <option value="">All lengths</option>
-          <option value="tiny">Tiny (100-500)</option>
-          <option value="minute">Minute (500-1000)</option>
-          <option value="short">Short (1000-1500)</option>
-        </select>
-      </label>
-      <label class="filter">
-        <span>Publication state</span>
-        <select data-filter-finished>
-          <option value="">Published & drafts</option>
-          <option value="complete">Published completed</option>
-          <option value="unfinished">Published unfinished</option>
-          <option value="draft">Drafts only</option>
-        </select>
-      </label>
-      <label class="filter">
-        <span>Author or coauthor</span>
-        <select data-filter-author>
-          <option value="">All authors</option>
-        </select>
-      </label>
-      <label class="filter">
-        <span>Keyword</span>
-        <select data-filter-keyword>
-          <option value="">All keywords</option>
-        </select>
-      </label>
-      <label class="filter">
-        <span>Sort</span>
-        <select data-filter-sort>
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
-        </select>
-      </label>
+    <div class="filters__grid">
+      <div class="filter-panel filter-panel--wide">
+        <p class="filter-panel__label">Search</p>
+        <p class="muted">Scan titles, topics, keywords, authors, and coauthors.</p>
+        <label class="filter">
+          <span class="visually-hidden">Search essays</span>
+          <input type="search" name="q" placeholder="Try 'deadlines' or 'publishing'" data-filter-search>
+        </label>
+      </div>
+
+      <div class="filter-panel">
+        <p class="filter-panel__label">Length</p>
+        <p class="muted">Pick any length bin.</p>
+        <div class="filter-options" data-filter-length-group>
+          <label class="filter-option">
+            <input type="checkbox" value="tiny">
+            <span>Tiny (100-500)</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="minute">
+            <span>Minute (500-1000)</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="short">
+            <span>Short (1000-1500)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="filter-panel">
+        <p class="filter-panel__label">Publication state</p>
+        <p class="muted">Toggle drafts and finished work.</p>
+        <div class="filter-options" data-filter-finished-group>
+          <label class="filter-option">
+            <input type="checkbox" value="complete">
+            <span>Published completed</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="unfinished">
+            <span>Published unfinished</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="draft">
+            <span>Drafts</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="filter-panel">
+        <p class="filter-panel__label">Authors & coauthors</p>
+        <p class="muted">Tick handles to include.</p>
+        <div class="filter-options" data-filter-author-group>
+          <p class="muted">Loading authors…</p>
+        </div>
+      </div>
+
+      <div class="filter-panel">
+        <p class="filter-panel__label">Keywords</p>
+        <p class="muted">Stack multiple keyword tags.</p>
+        <div class="filter-options" data-filter-keyword-group>
+          <p class="muted">Loading keywords…</p>
+        </div>
+      </div>
+
+      <div class="filter-panel">
+        <p class="filter-panel__label">Sort</p>
+        <p class="muted">Adjust the order.</p>
+        <label class="filter">
+          <span class="visually-hidden">Sort order</span>
+          <select data-filter-sort>
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+          </select>
+        </label>
+      </div>
     </div>
   </div>
 </section>
