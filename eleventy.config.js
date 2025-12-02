@@ -193,7 +193,7 @@ function wordRangeMeta(value) {
       titleClass: "title--magenta",
       icon: "square",
       palette: "magenta",
-      label: "Concise",
+      label: "Tiny",
     };
   }
 
@@ -203,7 +203,7 @@ function wordRangeMeta(value) {
       titleClass: "title--orange",
       icon: "triangle",
       palette: "orange",
-      label: "Mid-length",
+      label: "Minute",
     };
   }
 
@@ -213,7 +213,7 @@ function wordRangeMeta(value) {
       titleClass: "title--teal",
       icon: "circle",
       palette: "teal",
-      label: "Long-form",
+      label: "Short",
     };
   }
 
@@ -358,6 +358,21 @@ module.exports = function(eleventyConfig) {
       return [];
     }
     return value.split(delimiter);
+  });
+
+  eleventyConfig.addFilter("daysUntil", (value) => {
+    if (!value) return null;
+
+    const deadline = new Date(value);
+    if (Number.isNaN(deadline.getTime())) {
+      return null;
+    }
+
+    const MS_PER_DAY = 24 * 60 * 60 * 1000;
+    const diff = deadline.getTime() - Date.now();
+    const days = Math.ceil(diff / MS_PER_DAY);
+
+    return days < 0 ? 0 : days;
   });
 
   eleventyConfig.addCollection("snapshots", (collectionApi) => {

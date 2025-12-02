@@ -36,34 +36,34 @@ function wordRangeMeta(value) {
 
   if (average < 500) {
     return {
-      bin: "concise",
+      bin: "tiny",
       tone: "badge--magenta",
       titleClass: "title--magenta",
       icon: "square",
       palette: "magenta",
-      label: "Concise",
+      label: "Tiny",
     };
   }
 
   if (average < 1000) {
     return {
-      bin: "midlength",
+      bin: "minute",
       tone: "badge--orange",
       titleClass: "title--orange",
       icon: "triangle",
       palette: "orange",
-      label: "Mid-length",
+      label: "Minute",
     };
   }
 
   if (average < 1500) {
     return {
-      bin: "longform",
+      bin: "short",
       tone: "badge--teal",
       titleClass: "title--teal",
       icon: "circle",
       palette: "teal",
-      label: "Long-form",
+      label: "Short",
     };
   }
 
