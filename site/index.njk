@@ -29,23 +29,19 @@ description: "See what is shipping now, browse recent essays, and jump into the 
     </div>
   </div>
   <div class="hero__visual">
-    <div class="hero__image">
-      <img src="https://images.unsplash.com/photo-1461344577544-4e5dc9487184?auto=format&fit=crop&w=1080&q=80" alt="Pen furiously writing on a page">
-    </div>
-  </div>
-  <div class="hero__panel">
-    <div class="stat-grid">
-      <div class="stat">
-        <div class="stat__number">{{ published.length }}</div>
-        <div class="stat__label">Published</div>
+    <img class="hero__photo" src="https://images.unsplash.com/photo-1461344577544-4e5dc9487184?auto=format&fit=crop&w=1400&q=80" alt="Pen furiously writing on a page">
+    <div class="hero__stats">
+      <div class="hero__stat">
+        <span class="hero__stat-number">6</span>
+        <span class="hero__stat-label">Essays published</span>
       </div>
-      <div class="stat">
-        <div class="stat__number">{{ drafts.length }}</div>
-        <div class="stat__label">Proposed</div>
+      <div class="hero__stat">
+        <span class="hero__stat-number">4</span>
+        <span class="hero__stat-label">Ideas proposed</span>
       </div>
-      <div class="stat">
-        <div class="stat__number">{{ nextDeadlineDays if nextDeadlineDays is not null else "—" }}</div>
-        <div class="stat__label">Days until next publication</div>
+      <div class="hero__stat">
+        <span class="hero__stat-number">0</span>
+        <span class="hero__stat-label">Days until next publication</span>
       </div>
     </div>
   </div>
