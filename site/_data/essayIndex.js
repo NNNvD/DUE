@@ -77,6 +77,29 @@ function wordRangeMeta(value) {
   };
 }
 
+function normalizeVersion(raw, initialStatus) {
+  const asString = raw === undefined || raw === null ? "" : String(raw);
+  const parts = asString
+    .split(".")
+    .map((part) => parseInt(part, 10))
+    .filter((part) => Number.isFinite(part));
+
+  if (!parts.length) {
+    return initialStatus === "complete" ? "1.0.0" : "0.1.0";
+  }
+
+  while (parts.length < 3) {
+    parts.push(0);
+  }
+
+  return parts.slice(0, 3).join(".");
+}
+
+function timeStatus(initialStatus, status) {
+  if (status === "draft") return "draft";
+  return initialStatus === "complete" ? "finished-on-time" : "unfinished-on-time";
+}
+
 function loadEssays(status = "published") {
   const pattern = status === "draft"
     ? "site/essays/drafts/**/*.md"
@@ -99,6 +122,9 @@ function loadEssays(status = "published") {
     const dateValue = status === "published"
       ? new Date(constrained.published_at || 0).getTime()
       : new Date(constrained.deadline_at || 0).getTime();
+    const initialStatus = constrained.initial_status || null;
+    const normalizedVersion = normalizeVersion(constrained.version, initialStatus);
+    const timelineStatus = timeStatus(initialStatus, status);
 
     return {
       id: `${status}-${slug}`,
@@ -113,10 +139,11 @@ function loadEssays(status = "published") {
       description,
       url,
       release_notes: Array.isArray(constrained.release_notes) ? constrained.release_notes : [],
-      version: constrained.version || "1.0.0",
+      version: normalizedVersion,
       published_at: constrained.published_at || null,
       deadline_at: constrained.deadline_at || null,
-      initial_status: constrained.initial_status || null,
+      initial_status: initialStatus,
+      time_status: timelineStatus,
       word_range,
       word_count,
       lengthMeta,

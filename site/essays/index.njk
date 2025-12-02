@@ -26,67 +26,104 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
   </div>
 </section>
 
-<section class="card filters">
-  <div class="filters__header">
-    <div>
-      <p class="eyebrow">Search & filter</p>
-      <h3 class="card-title">Find an essay by topic, author, or length</h3>
-      <p class="muted">Search titles, topics, keywords, authors, and coauthors, then slice by length, completeness, or keyword. Sort results by publish date or deadline.</p>
-    </div>
-    <div class="filters__controls">
-      <label class="filter">
-        <span>Search</span>
-        <input type="search" name="q" placeholder="Try 'deadlines' or 'publishing'" data-filter-search>
-      </label>
-      <label class="filter">
-        <span>Length bin</span>
-        <select data-filter-length>
-          <option value="">All lengths</option>
-          <option value="tiny">Tiny (100-500)</option>
-          <option value="minute">Minute (500-1000)</option>
-          <option value="short">Short (1000-1500)</option>
-        </select>
-      </label>
-      <label class="filter">
-        <span>Publication state</span>
-        <select data-filter-finished>
-          <option value="">Published & drafts</option>
-          <option value="complete">Published completed</option>
-          <option value="unfinished">Published unfinished</option>
-          <option value="draft">Drafts only</option>
-        </select>
-      </label>
-      <label class="filter">
-        <span>Author or coauthor</span>
-        <select data-filter-author>
-          <option value="">All authors</option>
-        </select>
-      </label>
-      <label class="filter">
-        <span>Keyword</span>
-        <select data-filter-keyword>
-          <option value="">All keywords</option>
-        </select>
-      </label>
-      <label class="filter">
-        <span>Sort</span>
-        <select data-filter-sort>
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
-        </select>
-      </label>
-    </div>
-  </div>
-</section>
+<section class="essay-browser" data-search-interactive hidden data-base-url="{{ '/' | url }}">
+  <div class="essay-browser__grid">
+    <aside class="card filters filter-rail">
+      <div class="filters__header">
+        <div>
+          <p class="eyebrow">Search & filter</p>
+          <h3 class="card-title">Find an essay by topic, author, or length</h3>
+          <p class="muted">Search titles, topics, keywords, authors, and coauthors. Then tick boxes like you're browsing a shop to refine by length, publication timing, authors, and keywords.</p>
+        </div>
+        <div class="filters__grid">
+          <div class="filter-panel filter-panel--wide">
+            <p class="filter-panel__label">Search</p>
+            <p class="muted">Scan titles, topics, keywords, authors, and coauthors.</p>
+            <label class="filter">
+              <span class="visually-hidden">Search essays</span>
+              <input type="search" name="q" placeholder="Try 'deadlines' or 'publishing'" data-filter-search>
+            </label>
+          </div>
 
-<section class="stack" data-search-interactive hidden data-base-url="{{ '/' | url }}">
-  <div class="section-heading">
-    <p class="eyebrow">Interactive browser</p>
-    <h3>Filter and search every essay</h3>
-    <p class="muted">Results update instantly as you search. Drafts include a live countdown; published pieces carry their version and status.</p>
-  </div>
-  <div class="card-list" data-search-results>
-    <div class="card"><p>Loading the essay index…</p></div>
+          <div class="filter-panel">
+            <p class="filter-panel__label">Length</p>
+            <p class="muted">Pick any length bin.</p>
+            <div class="filter-options" data-filter-length-group>
+              <label class="filter-option">
+                <input type="checkbox" value="tiny">
+                <span>Tiny (100-500)</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" value="minute">
+                <span>Minute (500-1000)</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" value="short">
+                <span>Short (1000-1500)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="filter-panel">
+            <p class="filter-panel__label">Publication timing</p>
+            <p class="muted">Choose when essays were published.</p>
+            <div class="filter-options" data-filter-finished-group>
+              <label class="filter-option">
+                <input type="checkbox" value="finished-on-time">
+                <span>Finished on time</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" value="unfinished-on-time">
+                <span>Unfinished on time</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" value="draft">
+                <span>Drafts</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="filter-panel">
+            <p class="filter-panel__label">Authors & coauthors</p>
+            <p class="muted">Tick handles to include.</p>
+            <div class="filter-options" data-filter-author-group>
+              <p class="muted">Loading authors…</p>
+            </div>
+          </div>
+
+          <div class="filter-panel">
+            <p class="filter-panel__label">Keywords</p>
+            <p class="muted">Stack multiple keyword tags.</p>
+            <div class="filter-options" data-filter-keyword-group>
+              <p class="muted">Loading keywords…</p>
+            </div>
+          </div>
+
+          <div class="filter-panel">
+            <p class="filter-panel__label">Sort</p>
+            <p class="muted">Adjust the order.</p>
+            <label class="filter">
+              <span class="visually-hidden">Sort order</span>
+              <select data-filter-sort>
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="essay-browser__results stack">
+      <div class="section-heading">
+        <p class="eyebrow">Interactive browser</p>
+        <h3>Filter and search every essay</h3>
+        <p class="muted">Results update instantly as you search. Drafts include a live countdown; published pieces carry their version and publication timing.</p>
+      </div>
+      <div class="card-list" data-search-results>
+        <div class="card"><p>Loading the essay index…</p></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -118,15 +155,13 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
               {% endif %}
               <h4 class="card-title {{ length.titleClass }}"><a href="{{ post.url | url }}">{{ post.data.title }}</a></h4>
             </div>
-            <div class="meta">
-              <span class="badge badge--tone-info">v{{ post.data.version }}</span>
-              {% if post.data.initial_status == "complete" %}
-                <span class="badge badge--tone-success">Published completed</span>
-              {% else %}
-                <span class="badge badge--tone-warn">Published unfinished</span>
-              {% endif %}
-              {% if post.data.published_at %}<span>Published {{ post.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
-            </div>
+              {% set timingLabel %}{% if post.data.initial_status == 'complete' %}Finished on time{% else %}Unfinished on time{% endif %}{% endset %}
+              {% set timingClass %}{% if post.data.initial_status == 'complete' %}badge--tone-success{% else %}badge--tone-warn{% endif %}{% endset %}
+              <div class="meta">
+                <span class="badge badge--tone-info">v{{ post.data.version }}</span>
+                <span class="badge {{ timingClass }}">{{ timingLabel }}</span>
+                {% if post.data.published_at %}<span>Published {{ post.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+              </div>
           </header>
           <div class="meta">
             {% if post.data.author %}<span>By <strong>@{{ post.data.author }}</strong></span>{% endif %}

@@ -1,4 +1,3 @@
-import elasticlunr from "https://cdn.jsdelivr.net/npm/elasticlunr@0.9.6/elasticlunr.min.js";
 import { initializeCountdowns } from "./countdown.js";
 
 function parseData() {
@@ -12,26 +11,45 @@ function parseData() {
   }
 }
 
-function buildIndex(essays) {
-  const index = elasticlunr(function () {
-    this.setRef("id");
-    this.addField("title");
-    this.addField("topic");
-    this.addField("keywordsText");
-    this.addField("author");
-    this.addField("coauthorsText");
-    this.addField("summary");
-  });
+function formatVersion(raw) {
+  const parts = String(raw || "")
+    .split(".")
+    .map((part) => parseInt(part, 10))
+    .filter((part) => Number.isFinite(part));
 
-  for (const entry of essays) {
-    index.addDoc({
-      ...entry,
-      keywordsText: (entry.keywords || []).join(" "),
-      coauthorsText: (entry.coauthors || []).join(" "),
-    });
-  }
+  if (!parts.length) return "0.1.0";
+  while (parts.length < 3) parts.push(0);
+  return parts.slice(0, 3).join(".");
+}
 
-  return index;
+function publicationLabel(entry) {
+  if (entry.status === "draft") return "Draft";
+  return entry.time_status === "finished-on-time" || entry.initial_status === "complete"
+    ? "Finished on time"
+    : "Unfinished on time";
+}
+
+function matchesQuery(entry, query) {
+  const terms = query
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (!terms.length) return true;
+
+  const haystack = [
+    entry.title,
+    entry.topic,
+    (entry.keywords || []).join(" "),
+    entry.author,
+    (entry.coauthors || []).join(" "),
+    entry.summary,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return terms.every((term) => haystack.includes(term));
 }
 
 function formatDate(value) {
@@ -63,15 +81,15 @@ function renderBadges(entry) {
   const badges = [];
 
   if (entry.version) {
-    badges.push(`<span class="badge badge--tone-info">v${entry.version}</span>`);
+    badges.push(`<span class="badge badge--tone-info">v${formatVersion(entry.version)}</span>`);
   }
 
   if (entry.status === "published") {
-    if (entry.initial_status === "complete") {
-      badges.push('<span class="badge badge--tone-success">Published completed</span>');
-    } else {
-      badges.push('<span class="badge badge--tone-warn">Published unfinished</span>');
-    }
+    const label = publicationLabel(entry);
+    const tone = entry.time_status === "finished-on-time" || entry.initial_status === "complete"
+      ? "badge--tone-success"
+      : "badge--tone-warn";
+    badges.push(`<span class="badge ${tone}">${label}</span>`);
     if (entry.published_at) {
       badges.push(`<span>Published ${formatDate(entry.published_at)}</span>`);
     }
@@ -113,7 +131,7 @@ function renderCard(entry, baseUrl) {
   const href = `${baseUrl.replace(/\/$/, "")}${entry.url}`;
 
   return `
-    <article class="card list-card" data-essay-id="${entry.id}" data-status="${entry.status}" data-length-bin="${entry.lengthMeta?.bin || "unknown"}" data-finished="${entry.initial_status === "complete"}" data-author="${entry.author}" data-coauthors="${(entry.coauthors || []).join(",")}" data-keywords="${(entry.keywords || []).join(",")}" data-date="${entry.dateValue}" ${entry.deadline_at ? `data-deadline="${entry.deadline_at}"` : ""}>
+    <article class="card list-card" data-essay-id="${entry.id}" data-status="${entry.status}" data-length-bin="${entry.lengthMeta?.bin || "unknown"}" data-time-status="${entry.time_status || (entry.initial_status === "complete" ? "finished-on-time" : "unfinished-on-time")}" data-author="${entry.author}" data-coauthors="${(entry.coauthors || []).join(",")}" data-keywords="${(entry.keywords || []).join(",")}" data-date="${entry.dateValue}" ${entry.deadline_at ? `data-deadline="${entry.deadline_at}"` : ""}>
       <header class="list-card__header">
         <div class="stack">
           ${renderLengthChip(entry)}
@@ -129,57 +147,79 @@ function renderCard(entry, baseUrl) {
   `;
 }
 
-function populateSelect(select, values, label) {
-  if (!select) return;
+function buildCheckboxList(container, values, labelPrefix, emptyText) {
+  if (!container) return [];
+
   const unique = Array.from(new Set(values.filter(Boolean).sort((a, b) => a.localeCompare(b))));
-  select.innerHTML = `<option value="">All ${label}</option>`;
-  for (const value of unique) {
-    const option = document.createElement("option");
-    option.value = value;
-    option.textContent = value;
-    select.appendChild(option);
+  container.innerHTML = "";
+
+  if (!unique.length) {
+    container.innerHTML = `<p class="muted">${emptyText}</p>`;
+    return [];
   }
+
+  for (const value of unique) {
+    const id = `${labelPrefix}-${value.replace(/[^a-zA-Z0-9]+/g, "-")}`;
+    const label = document.createElement("label");
+    label.className = "filter-option";
+    label.setAttribute("for", id);
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = value;
+    input.id = id;
+
+    const text = document.createElement("span");
+    text.textContent = value;
+
+    label.appendChild(input);
+    label.appendChild(text);
+    container.appendChild(label);
+  }
+
+  return container.querySelectorAll("input[type='checkbox']");
+}
+
+function getCheckedValues(container) {
+  if (!container) return [];
+  return Array.from(container.querySelectorAll("input[type='checkbox']"))
+    .filter((input) => input.checked)
+    .map((input) => input.value);
 }
 
 function applyFilters({
   data,
-  index,
   query,
-  lengthBin,
-  finished,
-  author,
-  keyword,
+  lengthBins,
+  timeStatuses,
+  authors,
+  keywords,
   sort,
 }) {
   const normalizedQuery = query.trim();
-  let ranked = [];
+  const filtered = data.filter((entry) => {
+    if (!matchesQuery(entry, normalizedQuery)) return false;
 
-  if (normalizedQuery) {
-    ranked = index.search(normalizedQuery, {
-      fields: {
-        title: { boost: 3 },
-        topic: { boost: 2 },
-        keywordsText: { boost: 2 },
-        author: { boost: 1.5 },
-        coauthorsText: { boost: 1 },
-        summary: { boost: 1 },
-      },
-      expand: true,
-    }).map((match) => ({
-      score: match.score,
-      ...data.find((entry) => entry.id === match.ref),
-    }));
-  } else {
-    ranked = [...data];
-  }
+    if (lengthBins.length && !lengthBins.includes(entry.lengthMeta?.bin)) return false;
 
-  const filtered = ranked.filter((entry) => {
-    if (lengthBin && entry.lengthMeta?.bin !== lengthBin) return false;
-    if (finished === "complete" && entry.initial_status !== "complete") return false;
-    if (finished === "unfinished" && entry.initial_status !== "unfinished") return false;
-    if (finished === "draft" && entry.status !== "draft") return false;
-    if (author && entry.author !== author && !(entry.coauthors || []).includes(author)) return false;
-    if (keyword && !(entry.keywords || []).includes(keyword)) return false;
+    if (timeStatuses.length) {
+      const statusToken = entry.time_status || (entry.status === "draft"
+        ? "draft"
+        : entry.initial_status === "complete"
+          ? "finished-on-time"
+          : "unfinished-on-time");
+      if (!timeStatuses.includes(statusToken)) return false;
+    }
+
+    if (authors.length) {
+      const allAuthors = [entry.author, ...(entry.coauthors || [])].filter(Boolean);
+      if (!allAuthors.some((person) => authors.includes(person))) return false;
+    }
+
+    if (keywords.length) {
+      const entryKeywords = entry.keywords || [];
+      if (!keywords.some((keyword) => entryKeywords.includes(keyword))) return false;
+    }
     return true;
   });
 
@@ -209,37 +249,56 @@ function ready() {
   const data = parseData();
   if (!data.length) return;
 
-  const index = buildIndex(data);
   const interactive = document.querySelector("[data-search-interactive]");
   const fallback = document.querySelector("[data-search-fallback]");
   const resultsContainer = document.querySelector("[data-search-results]");
   const baseUrl = (interactive && interactive.getAttribute("data-base-url")) || "/";
 
   const searchInput = document.querySelector("[data-filter-search]");
-  const lengthSelect = document.querySelector("[data-filter-length]");
-  const finishedSelect = document.querySelector("[data-filter-finished]");
-  const authorSelect = document.querySelector("[data-filter-author]");
-  const keywordSelect = document.querySelector("[data-filter-keyword]");
+  const lengthGroup = document.querySelector("[data-filter-length-group]");
+  const finishedGroup = document.querySelector("[data-filter-finished-group]");
+  const authorGroup = document.querySelector("[data-filter-author-group]");
+  const keywordGroup = document.querySelector("[data-filter-keyword-group]");
   const sortSelect = document.querySelector("[data-filter-sort]");
 
-  populateSelect(authorSelect, data.flatMap((entry) => [entry.author, ...(entry.coauthors || [])]), "authors");
-  populateSelect(keywordSelect, data.flatMap((entry) => entry.keywords || []), "keywords");
+  const lengthCheckboxes = lengthGroup ? Array.from(lengthGroup.querySelectorAll("input[type='checkbox']")) : [];
+  const finishedCheckboxes = finishedGroup ? Array.from(finishedGroup.querySelectorAll("input[type='checkbox']")) : [];
+  const authorCheckboxes = buildCheckboxList(
+    authorGroup,
+    data.flatMap((entry) => [entry.author, ...(entry.coauthors || [])]),
+    "author",
+    "No authors listed yet."
+  );
+  const keywordCheckboxes = buildCheckboxList(
+    keywordGroup,
+    data.flatMap((entry) => entry.keywords || []),
+    "keyword",
+    "No keywords available yet."
+  );
 
   const run = () => {
     const matches = applyFilters({
       data,
-      index,
       query: searchInput?.value || "",
-      lengthBin: lengthSelect?.value || "",
-      finished: finishedSelect?.value || "",
-      author: authorSelect?.value || "",
-      keyword: keywordSelect?.value || "",
+      lengthBins: getCheckedValues(lengthGroup),
+      timeStatuses: getCheckedValues(finishedGroup),
+      authors: getCheckedValues(authorGroup),
+      keywords: getCheckedValues(keywordGroup),
       sort: sortSelect?.value || "newest",
     });
     renderResults(matches, resultsContainer, baseUrl);
   };
 
-  for (const element of [searchInput, lengthSelect, finishedSelect, authorSelect, keywordSelect, sortSelect]) {
+  const filterElements = [
+    searchInput,
+    sortSelect,
+    ...lengthCheckboxes,
+    ...finishedCheckboxes,
+    ...Array.from(authorCheckboxes || []),
+    ...Array.from(keywordCheckboxes || []),
+  ];
+
+  for (const element of filterElements) {
     if (!element) continue;
     element.addEventListener("input", run);
     element.addEventListener("change", run);

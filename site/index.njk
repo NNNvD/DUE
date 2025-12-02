@@ -96,15 +96,13 @@ description: "See what is shipping now, browse recent essays, and jump into the 
           </div>
         {% endif %}
         <h4 class="card-title {{ length.titleClass }}"><a href="{{ latest.url | url }}">{{ latest.data.title }}</a></h4>
-        <div class="meta">
-          <span class="badge badge--tone-info">v{{ latest.data.version }}</span>
-          {% if latest.data.initial_status == "complete" %}
-            <span class="badge badge--tone-success">Published completed</span>
-          {% else %}
-            <span class="badge badge--tone-warn">Published unfinished</span>
-          {% endif %}
-          {% if latest.data.published_at %}<span>Published {{ latest.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
-        </div>
+          {% set latestTimingLabel %}{% if latest.data.initial_status == 'complete' %}Finished on time{% else %}Unfinished on time{% endif %}{% endset %}
+          {% set latestTimingClass %}{% if latest.data.initial_status == 'complete' %}badge--tone-success{% else %}badge--tone-warn{% endif %}{% endset %}
+          <div class="meta">
+            <span class="badge badge--tone-info">v{{ latest.data.version }}</span>
+            <span class="badge {{ latestTimingClass }}">{{ latestTimingLabel }}</span>
+            {% if latest.data.published_at %}<span>Published {{ latest.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+          </div>
         <div class="meta">
           {% if latest.data.author %}<span>By <strong>@{{ latest.data.author }}</strong></span>{% endif %}
           {% if latest.data.topic %}<span>Topic: {{ latest.data.topic | shortWords(5) }}</span>{% endif %}

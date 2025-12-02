@@ -16,13 +16,11 @@ layout: base.njk
         <p class="eyebrow">Published essay</p>
         <h1 class="essay-title {{ length.titleClass }}">{{ title }}</h1>
       </div>
-      <div class="essay-badges">
+        <div class="essay-badges">
+        {% set timingLabel %}{% if initial_status == 'complete' %}Finished on time{% else %}Unfinished on time{% endif %}{% endset %}
+        {% set timingClass %}{% if initial_status == 'complete' %}badge--tone-success{% else %}badge--tone-warn{% endif %}{% endset %}
         <span class="badge badge--tone-info">Version {{ version }}</span>
-        {% if initial_status == "complete" %}
-          <span class="badge badge--tone-success">Published completed</span>
-        {% else %}
-          <span class="badge badge--tone-warn">Published unfinished</span>
-        {% endif %}
+        <span class="badge {{ timingClass }}">{{ timingLabel }}</span>
         {% if word_range %}
           <div class="length-chip" aria-label="Length: {{ word_range }} words">
             <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
