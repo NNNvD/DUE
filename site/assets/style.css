@@ -869,6 +869,37 @@ footer {
   gap: var(--space-lg);
 }
 
+.essay-browser {
+  margin-top: var(--space-xl);
+}
+
+.essay-browser__grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) 1fr;
+  gap: var(--space-xl);
+  align-items: flex-start;
+}
+
+.filter-rail {
+  position: sticky;
+  top: calc(var(--space-lg) + 24px);
+  align-self: flex-start;
+}
+
+.essay-browser__results .card-list {
+  margin-top: 0;
+}
+
+@media (max-width: 960px) {
+  .essay-browser__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-rail {
+    position: static;
+  }
+}
+
 .filters__header {
   display: flex;
   flex-direction: column;

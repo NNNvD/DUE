@@ -8,7 +8,7 @@ status: draft
 started_at: 2025-10-21
 deadline_at: 2025-11-20
 initial_status: unfinished
-version: 0.1
+version: 0.1.0
 word_range: 30-80
 release_notes: []
 word_count: 38
