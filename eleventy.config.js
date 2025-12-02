@@ -360,6 +360,21 @@ module.exports = function(eleventyConfig) {
     return value.split(delimiter);
   });
 
+  eleventyConfig.addFilter("daysUntil", (value) => {
+    if (!value) return null;
+
+    const deadline = new Date(value);
+    if (Number.isNaN(deadline.getTime())) {
+      return null;
+    }
+
+    const MS_PER_DAY = 24 * 60 * 60 * 1000;
+    const diff = deadline.getTime() - Date.now();
+    const days = Math.ceil(diff / MS_PER_DAY);
+
+    return days < 0 ? 0 : days;
+  });
+
   eleventyConfig.addCollection("snapshots", (collectionApi) => {
     return collectionApi
       .getFilteredByGlob("site/essays/snapshots/**/*.md")
