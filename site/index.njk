@@ -6,30 +6,31 @@ description: "See what is shipping now, browse recent essays, and jump into the 
 {% set drafts = collections.draftEssays %}
 {% set published = collections.publishedEssays %}
 {% set latest = published | first %}
+{% set nextDeadline = drafts | first %}
+{% set nextDeadlineDays = null %}
+{% if nextDeadline and nextDeadline.data.deadline_at %}
+{% set nextDeadlineDays = nextDeadline.data.deadline_at | daysUntil %}
+{% endif %}
 
 <section class="hero card spotlight">
   <div class="hero__copy">
     <p class="eyebrow">Deadline for Unfinished Essays</p>
-    <h2>Publish under pressure.</h2>
-    <p class="lede">One topic. Thirty days. Essays go live finished or not. Public readers can follow along and leave comments once an essay is published; authoring and edits happen in the backend.</p>
+    <h2>Propose. Panic. Publish.</h2>
+    <p class="lede">DUE is a collaborative platform for short-form essays written under pressure. Writers begin by proposing a topic, then have 30 days to complete an essay within a chosen word range—250–500, 500–1000, or 1000–1500 words. Once the deadline hits, the essay is published—finished or not.</p>
     <div class="cta-row">
       <a class="btn btn-primary" href="{{ '/essays/' | url }}">Browse essays</a>
       <a class="btn btn-secondary" href="{{ '/drafts/' | url }}">See draft schedule (read-only)</a>
       <a class="btn btn-ghost" href="{{ '/contribute/' | url }}">How commenting works</a>
     </div>
     <div class="legend-badges">
-      <span class="legend-badge magenta">Under 500 words</span>
-      <span class="legend-badge orange">500-1000 words</span>
-      <span class="legend-badge teal">1000-1500 words</span>
+      <span class="legend-badge legend-badge--square magenta">Tiny · 250–500 words</span>
+      <span class="legend-badge legend-badge--triangle orange">Minute · 500–1000 words</span>
+      <span class="legend-badge legend-badge--circle teal">Short · 1000–1500 words</span>
     </div>
   </div>
   <div class="hero__visual">
     <div class="hero__image">
       <img src="https://images.unsplash.com/photo-1461344577544-4e5dc9487184?auto=format&fit=crop&w=1080&q=80" alt="Pen furiously writing on a page">
-    </div>
-    <div class="hero__legend">
-      <strong>Color leads the way.</strong>
-      <p>Magenta badges mark quick reads, orange signals mid-length drafts, and teal highlights the long-form pushes.</p>
     </div>
   </div>
   <div class="hero__panel">
@@ -40,14 +41,13 @@ description: "See what is shipping now, browse recent essays, and jump into the 
       </div>
       <div class="stat">
         <div class="stat__number">{{ drafts.length }}</div>
-        <div class="stat__label">In progress</div>
+        <div class="stat__label">Proposed</div>
       </div>
       <div class="stat">
-        <div class="stat__number">30</div>
-        <div class="stat__label">days to ship</div>
+        <div class="stat__number">{{ nextDeadlineDays if nextDeadlineDays is not null else "—" }}</div>
+        <div class="stat__label">Days until next publication</div>
       </div>
     </div>
-    <p class="caption">Length badges stay consistent across the site so you can spot short, mid, and long reads at a glance.</p>
   </div>
 </section>
 
