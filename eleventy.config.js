@@ -193,7 +193,7 @@ function wordRangeMeta(value) {
       titleClass: "title--magenta",
       icon: "square",
       palette: "magenta",
-      label: "Concise",
+      label: "Tiny",
     };
   }
 
@@ -203,7 +203,7 @@ function wordRangeMeta(value) {
       titleClass: "title--orange",
       icon: "triangle",
       palette: "orange",
-      label: "Mid-length",
+      label: "Minute",
     };
   }
 
@@ -213,7 +213,7 @@ function wordRangeMeta(value) {
       titleClass: "title--teal",
       icon: "circle",
       palette: "teal",
-      label: "Long-form",
+      label: "Short",
     };
   }
 

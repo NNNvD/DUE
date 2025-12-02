@@ -9,7 +9,7 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
 <section class="page-header card">
   <p class="eyebrow">Library</p>
   <h2>Browse every essay</h2>
-  <p class="lede">Scan the full catalogue to see what's shipping next and what already launched. Length badges are magenta for concise pieces (<500 words), orange for mid-length (500-1000), and teal for deeper dives (1000-1500).</p>
+  <p class="lede">Scan the full catalogue to see what's shipping next and what already launched. Length badges map Tiny (100–500 words) to purple squares, Minute (500–1000) to orange triangles, and Short (1000–1500) to teal circles.</p>
   <div class="stat-grid">
     <div class="stat">
       <div class="stat__number">{{ published.length }}</div>
@@ -42,9 +42,9 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
         <span>Length bin</span>
         <select data-filter-length>
           <option value="">All lengths</option>
-          <option value="concise">Concise (250-500)</option>
-          <option value="midlength">Mid-length (500-1000)</option>
-          <option value="longform">Long-form (1000-1500)</option>
+          <option value="tiny">Tiny (100-500)</option>
+          <option value="minute">Minute (500-1000)</option>
+          <option value="short">Short (1000-1500)</option>
         </select>
       </label>
       <label class="filter">
