@@ -6,11 +6,6 @@ description: "See what is shipping now, browse recent essays, and jump into the 
 {% set drafts = collections.draftEssays %}
 {% set published = collections.publishedEssays %}
 {% set latest = published | first %}
-{% set nextDeadline = drafts | first %}
-{% set nextDeadlineDays = null %}
-{% if nextDeadline and nextDeadline.data.deadline_at %}
-{% set nextDeadlineDays = nextDeadline.data.deadline_at | daysUntil %}
-{% endif %}
 
 <section class="hero card spotlight">
   <div class="hero__copy">
