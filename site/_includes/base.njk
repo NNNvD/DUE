@@ -48,13 +48,16 @@
         <h1><a href="{{ "/" | url }}">{{ site.title }}</a></h1>
         <small>{{ site.tagline }}</small>
       </div>
+      {% set navLinks = [
+        { href: '/', label: 'Home' },
+        { href: '/essays/', label: 'Essays' },
+        { href: '/about/', label: 'About' },
+        { href: '/contribute/', label: 'Contribute', pill: true }
+      ] %}
       <nav aria-label="Primary navigation">
-        <a href="{{ "/" | url }}">Home</a>
-        <a href="{{ '/essays/' | url }}">Essays</a>
-        <a href="{{ '/drafts/' | url }}">Drafts (read-only)</a>
-        <a href="{{ '/about/' | url }}">About</a>
-        <a href="{{ '/style-guide/' | url }}">Style guide</a>
-        <a class="pill pill--outline" href="{{ '/contribute/' | url }}">Comments</a>
+        {% for link in navLinks %}
+          <a{% if link.pill %} class="pill pill--outline"{% endif %} href="{{ link.href | url }}">{{ link.label }}</a>
+        {% endfor %}
       </nav>
     </header>
     <main id="main-content">

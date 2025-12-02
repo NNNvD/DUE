@@ -6,22 +6,12 @@ description: "See what is shipping now, browse recent essays, and jump into the 
 {% set drafts = collections.draftEssays %}
 {% set published = collections.publishedEssays %}
 {% set latest = published | first %}
-{% set nextDeadline = drafts | first %}
-{% set nextDeadlineDays = null %}
-{% if nextDeadline and nextDeadline.data.deadline_at %}
-{% set nextDeadlineDays = nextDeadline.data.deadline_at | daysUntil %}
-{% endif %}
 
 <section class="hero card spotlight">
   <div class="hero__copy">
     <p class="eyebrow">Deadline for Unfinished Essays</p>
     <h2>Propose. Panic. Publish.</h2>
     <p class="lede">DUE is a collaborative platform for short-form essays written under pressure. Writers begin by proposing a topic, then have 30 days to complete an essay within a chosen word range—250–500, 500–1000, or 1000–1500 words. Once the deadline hits, the essay is published—finished or not.</p>
-    <div class="cta-row">
-      <a class="btn btn-primary" href="{{ '/essays/' | url }}">Browse essays</a>
-      <a class="btn btn-secondary" href="{{ '/drafts/' | url }}">See draft schedule (read-only)</a>
-      <a class="btn btn-ghost" href="{{ '/contribute/' | url }}">How commenting works</a>
-    </div>
     <div class="legend-badges">
       <span class="legend-badge legend-badge--square magenta">Tiny · 250–500 words</span>
       <span class="legend-badge legend-badge--triangle orange">Minute · 500–1000 words</span>
