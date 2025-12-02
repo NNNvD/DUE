@@ -129,26 +129,54 @@ function renderCard(entry, baseUrl) {
   `;
 }
 
-function populateSelect(select, values, label) {
-  if (!select) return;
+function buildCheckboxList(container, values, labelPrefix, emptyText) {
+  if (!container) return [];
+
   const unique = Array.from(new Set(values.filter(Boolean).sort((a, b) => a.localeCompare(b))));
-  select.innerHTML = `<option value="">All ${label}</option>`;
-  for (const value of unique) {
-    const option = document.createElement("option");
-    option.value = value;
-    option.textContent = value;
-    select.appendChild(option);
+  container.innerHTML = "";
+
+  if (!unique.length) {
+    container.innerHTML = `<p class="muted">${emptyText}</p>`;
+    return [];
   }
+
+  for (const value of unique) {
+    const id = `${labelPrefix}-${value.replace(/[^a-zA-Z0-9]+/g, "-")}`;
+    const label = document.createElement("label");
+    label.className = "filter-option";
+    label.setAttribute("for", id);
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = value;
+    input.id = id;
+
+    const text = document.createElement("span");
+    text.textContent = value;
+
+    label.appendChild(input);
+    label.appendChild(text);
+    container.appendChild(label);
+  }
+
+  return container.querySelectorAll("input[type='checkbox']");
+}
+
+function getCheckedValues(container) {
+  if (!container) return [];
+  return Array.from(container.querySelectorAll("input[type='checkbox']"))
+    .filter((input) => input.checked)
+    .map((input) => input.value);
 }
 
 function applyFilters({
   data,
   index,
   query,
-  lengthBin,
+  lengthBins,
   finished,
-  author,
-  keyword,
+  authors,
+  keywords,
   sort,
 }) {
   const normalizedQuery = query.trim();
@@ -174,12 +202,26 @@ function applyFilters({
   }
 
   const filtered = ranked.filter((entry) => {
-    if (lengthBin && entry.lengthMeta?.bin !== lengthBin) return false;
-    if (finished === "complete" && entry.initial_status !== "complete") return false;
-    if (finished === "unfinished" && entry.initial_status !== "unfinished") return false;
-    if (finished === "draft" && entry.status !== "draft") return false;
-    if (author && entry.author !== author && !(entry.coauthors || []).includes(author)) return false;
-    if (keyword && !(entry.keywords || []).includes(keyword)) return false;
+    if (lengthBins.length && !lengthBins.includes(entry.lengthMeta?.bin)) return false;
+
+    if (finished.length) {
+      const statusToken = entry.status === "draft"
+        ? "draft"
+        : entry.initial_status === "complete"
+          ? "complete"
+          : "unfinished";
+      if (!finished.includes(statusToken)) return false;
+    }
+
+    if (authors.length) {
+      const allAuthors = [entry.author, ...(entry.coauthors || [])].filter(Boolean);
+      if (!allAuthors.some((person) => authors.includes(person))) return false;
+    }
+
+    if (keywords.length) {
+      const entryKeywords = entry.keywords || [];
+      if (!keywords.some((keyword) => entryKeywords.includes(keyword))) return false;
+    }
     return true;
   });
 
@@ -216,30 +258,51 @@ function ready() {
   const baseUrl = (interactive && interactive.getAttribute("data-base-url")) || "/";
 
   const searchInput = document.querySelector("[data-filter-search]");
-  const lengthSelect = document.querySelector("[data-filter-length]");
-  const finishedSelect = document.querySelector("[data-filter-finished]");
-  const authorSelect = document.querySelector("[data-filter-author]");
-  const keywordSelect = document.querySelector("[data-filter-keyword]");
+  const lengthGroup = document.querySelector("[data-filter-length-group]");
+  const finishedGroup = document.querySelector("[data-filter-finished-group]");
+  const authorGroup = document.querySelector("[data-filter-author-group]");
+  const keywordGroup = document.querySelector("[data-filter-keyword-group]");
   const sortSelect = document.querySelector("[data-filter-sort]");
 
-  populateSelect(authorSelect, data.flatMap((entry) => [entry.author, ...(entry.coauthors || [])]), "authors");
-  populateSelect(keywordSelect, data.flatMap((entry) => entry.keywords || []), "keywords");
+  const lengthCheckboxes = lengthGroup ? Array.from(lengthGroup.querySelectorAll("input[type='checkbox']")) : [];
+  const finishedCheckboxes = finishedGroup ? Array.from(finishedGroup.querySelectorAll("input[type='checkbox']")) : [];
+  const authorCheckboxes = buildCheckboxList(
+    authorGroup,
+    data.flatMap((entry) => [entry.author, ...(entry.coauthors || [])]),
+    "author",
+    "No authors listed yet."
+  );
+  const keywordCheckboxes = buildCheckboxList(
+    keywordGroup,
+    data.flatMap((entry) => entry.keywords || []),
+    "keyword",
+    "No keywords available yet."
+  );
 
   const run = () => {
     const matches = applyFilters({
       data,
       index,
       query: searchInput?.value || "",
-      lengthBin: lengthSelect?.value || "",
-      finished: finishedSelect?.value || "",
-      author: authorSelect?.value || "",
-      keyword: keywordSelect?.value || "",
+      lengthBins: getCheckedValues(lengthGroup),
+      finished: getCheckedValues(finishedGroup),
+      authors: getCheckedValues(authorGroup),
+      keywords: getCheckedValues(keywordGroup),
       sort: sortSelect?.value || "newest",
     });
     renderResults(matches, resultsContainer, baseUrl);
   };
 
-  for (const element of [searchInput, lengthSelect, finishedSelect, authorSelect, keywordSelect, sortSelect]) {
+  const filterElements = [
+    searchInput,
+    sortSelect,
+    ...lengthCheckboxes,
+    ...finishedCheckboxes,
+    ...Array.from(authorCheckboxes || []),
+    ...Array.from(keywordCheckboxes || []),
+  ];
+
+  for (const element of filterElements) {
     if (!element) continue;
     element.addEventListener("input", run);
     element.addEventListener("change", run);
