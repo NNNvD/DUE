@@ -291,10 +291,28 @@ module.exports = function(eleventyConfig) {
     };
   };
 
+  const authorAliases = {
+    noahvandongen: "Noah van Dongen",
+  };
+
+  const formatAuthorName = (value) => {
+    if (!value) return "";
+    const normalized = String(value).replace(/^@/, "");
+    if (authorAliases[normalized]) return authorAliases[normalized];
+
+    const parts = normalized
+      .split(/[-_]/)
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1));
+
+    return parts.length ? parts.join(" ") : normalized;
+  };
+
   eleventyConfig.addFilter("date", (value, format = "yyyy-LL-dd") => {
     return formatDateValue(value, format);
   });
 
+  eleventyConfig.addFilter("authorName", formatAuthorName);
   eleventyConfig.addFilter("essayMeta", computeEssayMeta);
   eleventyConfig.addFilter("absoluteUrl", (value, siteData) => {
     return meta.absoluteUrl(value, siteData);
