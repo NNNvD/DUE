@@ -87,12 +87,8 @@ description: "See what is shipping now, browse recent essays, and jump into the 
       {% set length = latest.data.word_range | wordRangeMeta %}
       <div class="stack">
         {% if latest.data.word_range %}
-          <div class="length-chip" aria-label="Length: {{ latest.data.word_range }} words">
+          <div class="length-chip length-chip--icon-only" aria-label="Length indicator: {{ length.label }}">
             <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
-            <span class="length-chip__text">
-              <span>{{ latest.data.word_range }} words</span>
-              {% if latest.data.word_count %}<span aria-hidden="true">•</span><span>{{ latest.data.word_count }} words</span>{% endif %}
-            </span>
           </div>
         {% endif %}
         <h4 class="card-title {{ length.titleClass }}"><a href="{{ latest.url | url }}">{{ latest.data.title }}</a></h4>
@@ -104,15 +100,10 @@ description: "See what is shipping now, browse recent essays, and jump into the 
             {% if latest.data.published_at %}<span>Published {{ latest.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
           </div>
         <div class="meta">
-          {% if latest.data.author %}<span>By <strong>@{{ latest.data.author }}</strong></span>{% endif %}
+          {% if latest.data.word_count %}<span>{{ latest.data.word_count }} words</span>{% endif %}
+          {% if latest.data.author %}<span>By <strong>{{ latest.data.author | authorName }}</strong></span>{% endif %}
           {% if latest.data.topic %}<span>Topic: {{ latest.data.topic | shortWords(5) }}</span>{% endif %}
-          {% if latest.data.display_keywords and latest.data.display_keywords.length %}
-            <span>Keywords: {{ latest.data.display_keywords | join(", ") }}</span>
-          {% endif %}
         </div>
-        {% if latest.data.release_notes and latest.data.release_notes.length %}
-          <p class="muted"><strong>Latest:</strong> {{ latest.data.release_notes[0] }}</p>
-        {% endif %}
       </div>
     {% else %}
       <p>No essays published yet.</p>

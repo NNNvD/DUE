@@ -26,7 +26,7 @@ export function initializeCountdowns(root = document) {
 
     const days = Math.ceil(diff / MS_PER_DAY);
     const suffix = days === 1 ? "day" : "days";
-    badge.textContent = `${days} ${suffix} left`;
+    badge.textContent = `${days} ${suffix} until publication`;
     badge.setAttribute("aria-label", `Publishes in ${days} ${suffix} on ${label}`);
   }
 
@@ -45,8 +45,8 @@ export function initializeCountdowns(root = document) {
 
     const deadline = new Date(target);
     if (Number.isNaN(deadline.getTime())) {
-      display.textContent = `Publishes at ${target}`;
-      continue;
+      display.textContent = "Publication date pending.";
+      return;
     }
 
     const update = () => {
@@ -54,27 +54,17 @@ export function initializeCountdowns(root = document) {
       const diff = deadline.getTime() - now.getTime();
 
       if (diff <= 0) {
-        display.textContent = "Publishes at the deadline (any moment now).";
+        display.textContent = "Publishing now.";
         return;
       }
 
-      const totalSeconds = Math.floor(diff / 1000);
-      const days = Math.floor(totalSeconds / 86400);
-      const hours = Math.floor((totalSeconds % 86400) / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-
-      const parts = [];
-      if (days) parts.push(`${days}d`);
-      parts.push(`${hours.toString().padStart(2, "0")}h`);
-      parts.push(`${minutes.toString().padStart(2, "0")}m`);
-      parts.push(`${seconds.toString().padStart(2, "0")}s`);
-
-      display.textContent = `Publishes in ${parts.join(" ")}`;
+      const days = Math.max(0, Math.ceil(diff / MS_PER_DAY));
+      const suffix = days === 1 ? "day" : "days";
+      display.textContent = `${days} ${suffix} until publication`;
     };
 
     update();
-    setInterval(update, 1000);
+    setInterval(update, MS_PER_DAY / 12);
   }
 }
 
