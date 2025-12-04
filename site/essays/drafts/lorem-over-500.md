@@ -4,9 +4,10 @@ topic: Automated lorem ipsum content for word range validation
 author: lorem-boundary-tester
 coauthors: []
 acknowledgments: []
-status: draft
-started_at: 2024-06-01
-deadline_at: 2024-07-01
+status: proposed
+started_at: 2025-11-12
+deadline_at: 2025-12-12
+proposed_at: 2025-11-12
 initial_status: unfinished
 version: 0.1.0
 word_range: 500-1000

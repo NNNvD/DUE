@@ -46,7 +46,7 @@ export function initializeCountdowns(root = document) {
     const deadline = new Date(target);
     if (Number.isNaN(deadline.getTime())) {
       display.textContent = "Publication date pending.";
-      return;
+      continue;
     }
 
     const update = () => {

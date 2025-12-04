@@ -251,6 +251,14 @@ function filterEssayTemplates(collection = []) {
   });
 }
 
+function normalizeStatus(raw, fallback) {
+  const normalized = typeof raw === "string" ? raw.toLowerCase() : "";
+  if (["draft", "proposed", "published"].includes(normalized)) {
+    return normalized;
+  }
+  return fallback;
+}
+
 function loadEssaysByStatus(status = "published") {
   const pattern = status === "draft"
     ? "site/essays/drafts/**/*.md"
@@ -258,6 +266,7 @@ function loadEssaysByStatus(status = "published") {
 
   return fg.sync(pattern).map((file) => {
     const { data, content } = matter.read(file);
+    const normalizedStatus = normalizeStatus(data.status, status);
     const slug = (data.page && data.page.fileSlug) || data.slug || (file.split("/").pop() || "").replace(/\.md$/, "");
     const segment = status === "draft" ? "drafts" : "published";
     const url = `/essays/${segment}/${slug}/`;
@@ -268,7 +277,7 @@ function loadEssaysByStatus(status = "published") {
       url,
       data: {
         ...data,
-        status,
+        status: normalizedStatus,
         page: {
           ...(data.page || {}),
           url,
@@ -337,14 +346,16 @@ module.exports = function(eleventyConfig) {
   });
   const isPublishedEssay = (item = {}) => {
     const status = item.data && item.data.status;
+    const normalized = typeof status === "string" ? status.toLowerCase() : status;
     const inputPath = item.inputPath || "";
-    return status === "published" && inputPath.includes("/essays/published/");
+    return normalized === "published" && inputPath.includes("/essays/published/");
   };
 
   const isDraftEssay = (item = {}) => {
     const status = item.data && item.data.status;
+    const normalized = typeof status === "string" ? status.toLowerCase() : status;
     const inputPath = item.inputPath || "";
-    return status === "draft" && inputPath.includes("/essays/drafts/");
+    return ["draft", "proposed"].includes(normalized) && inputPath.includes("/essays/drafts/");
   };
 
   eleventyConfig.addCollection("publishedEssays", (collectionApi) => {
@@ -391,6 +402,34 @@ module.exports = function(eleventyConfig) {
     const days = Math.ceil(diff / MS_PER_DAY);
 
     return days < 0 ? 0 : days;
+  });
+
+  eleventyConfig.addFilter("whereStatus", (items, statuses) => {
+    const list = Array.isArray(items) ? items : [];
+    const accepted = (Array.isArray(statuses) ? statuses : [statuses])
+      .map((entry) => (typeof entry === "string" ? entry.toLowerCase() : ""))
+      .filter(Boolean);
+
+    if (!accepted.length) return list;
+    return list.filter((item) => accepted.includes((item?.data?.status || "").toLowerCase()));
+  });
+
+  eleventyConfig.addFilter("sortByDate", (items, path = "") => {
+    if (!Array.isArray(items)) return [];
+
+    const getValue = (obj, dottedPath) => {
+      return dottedPath.split(".").reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined), obj);
+    };
+
+    return [...items].sort((a, b) => {
+      const rawA = path ? getValue(a, path) : a;
+      const rawB = path ? getValue(b, path) : b;
+      const aDate = new Date(rawA);
+      const bDate = new Date(rawB);
+      const aValue = Number.isNaN(aDate.getTime()) ? Infinity : aDate.getTime();
+      const bValue = Number.isNaN(bDate.getTime()) ? Infinity : bDate.getTime();
+      return aValue - bValue;
+    });
   });
 
   eleventyConfig.addCollection("snapshots", (collectionApi) => {
