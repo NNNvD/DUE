@@ -95,7 +95,16 @@ function normalizeVersion(raw, initialStatus) {
   return parts.slice(0, 3).join(".");
 }
 
+function normalizeStatus(raw, fallback) {
+  const normalized = typeof raw === "string" ? raw.toLowerCase() : "";
+  if (["draft", "proposed", "published"].includes(normalized)) {
+    return normalized;
+  }
+  return fallback;
+}
+
 function timeStatus(initialStatus, status) {
+  if (status === "proposed") return "proposed";
   if (status === "draft") return "draft";
   return initialStatus === "complete" ? "finished-on-time" : "unfinished-on-time";
 }
@@ -107,6 +116,7 @@ function loadEssays(status = "published") {
 
   return fg.sync(pattern).map((file) => {
     const { data, content } = matter.read(file);
+    const normalizedStatus = normalizeStatus(data.status, status);
     const slug = (data.page && data.page.fileSlug) || data.slug || (file.split("/").pop() || "").replace(/\.md$/, "");
     const constrained = enforceTopicAndKeywords(data, { slug, inputPath: file });
     const segment = status === "draft" ? "drafts" : "published";
@@ -119,17 +129,17 @@ function loadEssays(status = "published") {
       page: { ...(data.page || {}), inputPath: file },
     });
     const word_count = typeof constrained.word_count === "number" ? constrained.word_count : wordCount(content || "");
-    const dateValue = status === "published"
+    const dateValue = normalizedStatus === "published"
       ? new Date(constrained.published_at || 0).getTime()
       : new Date(constrained.deadline_at || 0).getTime();
     const initialStatus = constrained.initial_status || null;
     const normalizedVersion = normalizeVersion(constrained.version, initialStatus);
-    const timelineStatus = timeStatus(initialStatus, status);
+    const timelineStatus = timeStatus(initialStatus, normalizedStatus);
 
     return {
-      id: `${status}-${slug}`,
+      id: `${normalizedStatus}-${slug}`,
       slug,
-      status,
+      status: normalizedStatus,
       title: constrained.title || slug,
       topic: constrained.topic || "",
       author: constrained.author || "",
