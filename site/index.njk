@@ -36,7 +36,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
       <div class="hero__stat" {% if nextDeadline %}data-deadline="{{ nextDeadline }}"{% endif %}>
         <span class="hero__stat-number" data-countdown>
           {% if daysUntilNext is not null %}
-            {{ daysUntilNext }} days until publication
+            {{ daysUntilNext }}
           {% else %}
             Publication date pending
           {% endif %}
