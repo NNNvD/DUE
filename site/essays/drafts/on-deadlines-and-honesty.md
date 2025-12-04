@@ -4,9 +4,10 @@ topic: The role of time pressure in intellectual clarity
 author: noahvandongen
 coauthors: []
 acknowledgments: []
-status: draft
-started_at: 2025-10-21
-deadline_at: 2025-11-20
+status: proposed
+started_at: 2025-11-05T00:00:00Z
+deadline_at: 2025-12-05T00:00:00Z
+proposed_at: 2025-11-05T00:00:00Z
 initial_status: unfinished
 version: 0.1.0
 word_range: 30-80
