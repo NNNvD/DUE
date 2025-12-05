@@ -613,6 +613,25 @@ main > .breadcrumbs {
   margin-bottom: var(--space-xs);
 }
 
+.list-card__title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.length-divider {
+  display: block;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.length-divider--magenta { background: var(--magenta); }
+.length-divider--orange { background: var(--orange); }
+.length-divider--teal { background: var(--teal); }
+.length-divider--muted { background: var(--border); }
+
 .meta {
   display: flex;
   flex-wrap: wrap;
@@ -1212,9 +1231,7 @@ footer {
 
 @media (min-width: 720px) {
   .list-card__header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: baseline;
+    align-items: flex-start;
   }
 
   .essay-header__row {

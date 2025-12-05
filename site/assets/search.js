@@ -40,7 +40,8 @@ function formatAuthorName(raw) {
 }
 
 function statusDisplay(entry) {
-  if (entry.status === "draft") {
+  const isDraftLike = entry.status === "draft" || entry.status === "proposed";
+  if (isDraftLike) {
     return { label: "Proposed", tone: "badge--tone-info" };
   }
 
@@ -83,19 +84,21 @@ function formatDate(value) {
   return `${year}-${month}-${day}`;
 }
 
-function renderLengthChip(entry) {
+function renderLengthIcon(entry) {
   if (!entry.word_range) return "";
   const iconClass = `length-icon length-icon--${entry.lengthMeta.icon} length-icon--${entry.lengthMeta.palette}`;
-  return `
-    <div class="length-chip length-chip--icon-only" aria-label="Length indicator: ${entry.lengthMeta.label}">
-      <span class="${iconClass}" aria-hidden="true"></span>
-    </div>
-  `;
+  return `<span class="${iconClass}" aria-hidden="true"></span>`;
+}
+
+function renderLengthDivider(entry) {
+  const palette = entry.lengthMeta?.palette || "muted";
+  return `<span class="length-divider length-divider--${palette}" aria-hidden="true"></span>`;
 }
 
 function renderBadges(entry) {
   const badges = [];
   const status = statusDisplay(entry);
+  const isDraftLike = entry.status === "draft" || entry.status === "proposed";
 
   if (entry.version) {
     badges.push(`<span class="badge badge--tone-info">v${formatVersion(entry.version)}</span>`);
@@ -103,15 +106,15 @@ function renderBadges(entry) {
 
   badges.push(`<span class="badge ${status.tone}">${status.label}</span>`);
 
-  if (entry.status !== "draft" && entry.published_at) {
+  if (!isDraftLike && entry.published_at) {
     badges.push(`<span>Published ${formatDate(entry.published_at)}</span>`);
   }
 
-  if (entry.status === "draft" && entry.deadline_at) {
+  if (isDraftLike && entry.deadline_at) {
     badges.push(`
       <span class="badge deadline-badge" data-deadline-badge="${entry.deadline_at}" data-deadline-label="${formatDate(entry.deadline_at)}" title="Publishes ${formatDate(entry.deadline_at)}"></span>
     `);
-  } else if (entry.status === "draft") {
+  } else if (isDraftLike) {
     badges.push('<span class="badge">Publication date pending</span>');
   }
 
@@ -128,31 +131,34 @@ function renderMeta(entry) {
     parts.push(`<span>By <strong>${authorName}</strong></span>`);
   }
   if (entry.topic) {
-    parts.push(`<span>Topic: ${entry.topic.split(/\s+/).slice(0, 5).join(" ")}</span>`);
+    const topic = entry.topic.split(/\s+/).slice(0, 5).join(" ");
+    parts.push(`<span>Topic: <strong>${topic}</strong></span>`);
   }
   return parts.join("");
 }
 
 function renderCard(entry, baseUrl) {
   const lengthClass = entry.lengthMeta?.titleClass || "";
+  const isDraftLike = entry.status === "draft" || entry.status === "proposed";
   const badges = renderBadges(entry);
   const meta = renderMeta(entry);
   const href = `${baseUrl.replace(/\/$/, "")}${entry.url}`;
-  const tracker = entry.status === "draft" && entry.deadline_at
+  const tracker = isDraftLike && entry.deadline_at
     ? `<p class="countdown" data-deadline="${entry.deadline_at}"><span data-countdown>Calculating days until publication…</span></p>`
     : "";
 
   return `
     <article class="card list-card" data-essay-id="${entry.id}" data-status="${entry.status}" data-length-bin="${entry.lengthMeta?.bin || "unknown"}" data-time-status="${entry.time_status || (entry.initial_status === "complete" ? "finished-on-time" : "unfinished-on-time")}" data-author="${entry.author}" data-coauthors="${(entry.coauthors || []).join(",")}" data-keywords="${(entry.keywords || []).join(",")}" data-date="${entry.dateValue}" ${entry.deadline_at ? `data-deadline="${entry.deadline_at}"` : ""}>
       <header class="list-card__header">
-        <div class="stack">
-          ${renderLengthChip(entry)}
+        <div class="list-card__title-row">
+          ${renderLengthIcon(entry)}
           <h4 class="card-title ${lengthClass}"><a href="${href}">${entry.title}</a></h4>
         </div>
-        <div class="meta">${badges}</div>
+        ${renderLengthDivider(entry)}
       </header>
-      <div class="meta">${meta}</div>
+      <div class="meta">${badges}</div>
       ${tracker}
+      <div class="meta meta--details">${meta}</div>
     </article>
   `;
 }
@@ -213,8 +219,8 @@ function applyFilters({
     if (lengthBins.length && !lengthBins.includes(entry.lengthMeta?.bin)) return false;
 
     if (timeStatuses.length) {
-      const statusToken = entry.time_status || (entry.status === "draft"
-        ? "draft"
+      const statusToken = entry.time_status || ((entry.status === "draft" || entry.status === "proposed")
+        ? entry.status
         : entry.initial_status === "complete"
           ? "finished-on-time"
           : "unfinished-on-time");
