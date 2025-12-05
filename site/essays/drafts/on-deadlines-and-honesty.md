@@ -17,3 +17,4 @@ Deadlines have a way of stripping away our favorite illusions. Without the luxur
 think.
 
 This essay explores how constraint clarifies intention, and why “good enough, now” often beats “perfect, never.”
+
