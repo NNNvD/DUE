@@ -1,9 +1,12 @@
 const fg = require("fast-glob");
 const matter = require("gray-matter");
 
+const fs = require("fs");
+const path = require("path");
 const meta = require("./meta");
 const { wordCount } = require("../../scripts/checkWordRange");
 const { enforceTopicAndKeywords } = require("../../scripts/topicKeywordConstraints");
+const { readAutopublishManifest } = require("../../scripts/autopublish");
 
 function normalizeWordRange(value) {
   if (!value) return null;
@@ -110,16 +113,34 @@ function timeStatus(initialStatus, status) {
 }
 
 function loadEssays(status = "published") {
-  const pattern = status === "draft"
+  const manifest = readAutopublishManifest();
+  const autopublished = Array.isArray(manifest.published) ? manifest.published : [];
+  const autopublishedSlugs = new Set(
+    autopublished
+      .map((entry) => entry && (entry.slug || path.basename(entry.source || "", path.extname(entry.source || ""))))
+      .filter(Boolean)
+  );
+  const autopublishedPaths = autopublished
+    .map((entry) => entry && entry.dest)
+    .filter((fp) => fp && fs.existsSync(fp));
+
+  const basePattern = status === "draft"
     ? "site/essays/drafts/**/*.md"
     : "site/essays/published/**/*.md";
 
-  return fg.sync(pattern).map((file) => {
+  const baseFiles = fg.sync(basePattern, { dot: true });
+  const files = status === "published"
+    ? [...baseFiles, ...autopublishedPaths]
+    : baseFiles.filter((fp) => !autopublishedSlugs.has(path.basename(fp, path.extname(fp))));
+
+  return files.map((file) => {
     const { data, content } = matter.read(file);
-    const normalizedStatus = normalizeStatus(data.status, status);
+    const normalizedStatus = autopublishedPaths.includes(file)
+      ? "published"
+      : normalizeStatus(data.status, status);
     const slug = (data.page && data.page.fileSlug) || data.slug || (file.split("/").pop() || "").replace(/\.md$/, "");
     const constrained = enforceTopicAndKeywords(data, { slug, inputPath: file });
-    const segment = status === "draft" ? "drafts" : "published";
+    const segment = normalizedStatus === "published" ? "published" : "drafts";
     const url = `/essays/${segment}/${slug}/`;
     const keywords = Array.isArray(constrained.keywords) ? constrained.keywords : [];
     const word_range = constrained.word_range || null;
