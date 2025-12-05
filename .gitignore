@@ -1,5 +1,7 @@
 node_modules/
 _site/
+autopublished/
+site/autopublished/
 .DS_Store
 site/.DS_Store
 site/essays/.DS_Store

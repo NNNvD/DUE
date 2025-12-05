@@ -332,9 +332,15 @@ function wordCount(md) {
 }
 
 function bounds(range) {
-  const [lo, hi] = (range || "250-500").split("-").map(Number);
-  const grace = Math.ceil(0.02 * hi);
-  return [lo, hi + grace];
+  const normalized = typeof range === "string" ? range : String(range || "250-500");
+  const parts = normalized.split("-").filter(Boolean);
+
+  const lo = Number(parts[0]);
+  const hi = parts.length > 1 ? Number(parts[1]) : lo;
+  const safeLo = Number.isFinite(lo) ? lo : 0;
+  const safeHi = Number.isFinite(hi) ? hi : safeLo;
+  const grace = Math.ceil(0.02 * safeHi);
+  return [safeLo, safeHi + grace];
 }
 
 function validateWordRange(md, range) {

@@ -9,7 +9,7 @@ started_at: 2025-10-21
 deadline_at: 2025-10-21
 initial_status: complete
 version: 1.0.0
-published_at: 2025-10-18
+published_at: 2025-09-15
 word_range: 25-75
 release_notes:
   - Initial publication as finished on time (v1.0.0).
