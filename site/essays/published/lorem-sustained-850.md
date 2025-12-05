@@ -9,7 +9,7 @@ started_at: 2024-06-10
 deadline_at: 2024-07-10
 initial_status: complete
 version: 1.0.0
-published_at: 2024-07-10
+published_at: 2025-08-29
 word_range: 500-1000
 release_notes:
   - First full publication at version 1.0.0 with extended placeholder prose.

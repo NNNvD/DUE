@@ -40,7 +40,8 @@ function formatAuthorName(raw) {
 }
 
 function statusDisplay(entry) {
-  if (entry.status === "draft") {
+  const isDraftLike = entry.status === "draft" || entry.status === "proposed";
+  if (isDraftLike) {
     return { label: "Proposed", tone: "badge--tone-info" };
   }
 
@@ -96,6 +97,7 @@ function renderLengthChip(entry) {
 function renderBadges(entry) {
   const badges = [];
   const status = statusDisplay(entry);
+  const isDraftLike = entry.status === "draft" || entry.status === "proposed";
 
   if (entry.version) {
     badges.push(`<span class="badge badge--tone-info">v${formatVersion(entry.version)}</span>`);
@@ -103,15 +105,15 @@ function renderBadges(entry) {
 
   badges.push(`<span class="badge ${status.tone}">${status.label}</span>`);
 
-  if (entry.status !== "draft" && entry.published_at) {
+  if (!isDraftLike && entry.published_at) {
     badges.push(`<span>Published ${formatDate(entry.published_at)}</span>`);
   }
 
-  if (entry.status === "draft" && entry.deadline_at) {
+  if (isDraftLike && entry.deadline_at) {
     badges.push(`
       <span class="badge deadline-badge" data-deadline-badge="${entry.deadline_at}" data-deadline-label="${formatDate(entry.deadline_at)}" title="Publishes ${formatDate(entry.deadline_at)}"></span>
     `);
-  } else if (entry.status === "draft") {
+  } else if (isDraftLike) {
     badges.push('<span class="badge">Publication date pending</span>');
   }
 
@@ -135,10 +137,11 @@ function renderMeta(entry) {
 
 function renderCard(entry, baseUrl) {
   const lengthClass = entry.lengthMeta?.titleClass || "";
+  const isDraftLike = entry.status === "draft" || entry.status === "proposed";
   const badges = renderBadges(entry);
   const meta = renderMeta(entry);
   const href = `${baseUrl.replace(/\/$/, "")}${entry.url}`;
-  const tracker = entry.status === "draft" && entry.deadline_at
+  const tracker = isDraftLike && entry.deadline_at
     ? `<p class="countdown" data-deadline="${entry.deadline_at}"><span data-countdown>Calculating days until publication…</span></p>`
     : "";
 
@@ -213,8 +216,8 @@ function applyFilters({
     if (lengthBins.length && !lengthBins.includes(entry.lengthMeta?.bin)) return false;
 
     if (timeStatuses.length) {
-      const statusToken = entry.time_status || (entry.status === "draft"
-        ? "draft"
+      const statusToken = entry.time_status || ((entry.status === "draft" || entry.status === "proposed")
+        ? entry.status
         : entry.initial_status === "complete"
           ? "finished-on-time"
           : "unfinished-on-time");
