@@ -5,9 +5,9 @@ author: noahvandongen
 coauthors: []
 acknowledgments: []
 status: proposed
-started_at: 2024-11-06T00:00:00Z
-deadline_at: 2024-12-05T00:00:00Z
-proposed_at: 2024-11-06T00:00:00Z
+started_at: 2025-11-06T00:00:00Z
+deadline_at: 2025-12-06T00:00:00Z
+proposed_at: 2025-11-06T00:00:00Z
 initial_status: unfinished
 version: 0.1.0
 word_range: 30-80

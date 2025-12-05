@@ -5,9 +5,9 @@ author: lorem-boundary-tester
 coauthors: []
 acknowledgments: []
 status: proposed
-started_at: 2025-11-12
-deadline_at: 2025-12-12
-proposed_at: 2025-11-12
+started_at: 2025-11-07
+deadline_at: 2025-12-07
+proposed_at: 2025-11-07
 initial_status: unfinished
 version: 0.1.0
 word_range: 500-1000
