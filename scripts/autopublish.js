@@ -44,12 +44,12 @@ function getDeadlineDate(data) {
   return dayjs.utc(`${value}T${hhmm}${seconds}${zone}`);
 }
 
-function publishFile(fp) {
+function publishFile(fp, now, options = {}) {
+  const { quiet = false } = options;
   const raw = fs.readFileSync(fp, "utf8");
   const doc = matter(raw);
   const d = doc.data;
 
-  const now = dayjs.utc();
   d.status = "published";
   d.version = d.initial_status === "complete" ? 1.0 : 0.1;
   d.published_at = now.format("YYYY-MM-DD");
@@ -61,24 +61,39 @@ function publishFile(fp) {
   fs.ensureDirSync(pubDir);
   fs.writeFileSync(dest, out, "utf8");
   fs.removeSync(fp);
-  console.log(`Published: ${path.basename(fp)} → v${d.version}`);
+  if (!quiet) {
+    console.log(`Published: ${path.basename(fp)} → v${d.version}`);
+  }
 
   try {
     const snap = writeSnapshot(dest, d, doc.content);
-    console.log(`Snapshot written: ${snap}`);
+    if (!quiet) {
+      console.log(`Snapshot written: ${snap}`);
+    }
   } catch (e) {
     console.warn("Snapshot failed:", e.message);
   }
 }
 
-glob.sync(`${draftsDir}/**/*.md`).forEach(fp => {
-  const raw = fs.readFileSync(fp, "utf8");
-  const doc = matter(raw);
-  const d = doc.data;
-  const deadline = getDeadlineDate(d);
-  if (!deadline) return;
+function runAutopublish(options = {}) {
+  const { quiet = false, referenceTime } = options;
+  const now = referenceTime ? dayjs.utc(referenceTime) : dayjs.utc();
 
-  if (dayjs.utc().isAfter(deadline)) {
-    publishFile(fp);
-  }
-});
+  glob.sync(`${draftsDir}/**/*.md`).forEach((fp) => {
+    const raw = fs.readFileSync(fp, "utf8");
+    const doc = matter(raw);
+    const d = doc.data;
+    const deadline = getDeadlineDate(d);
+    if (!deadline) return;
+
+    if (!now.isBefore(deadline)) {
+      publishFile(fp, now, { quiet });
+    }
+  });
+}
+
+if (require.main === module) {
+  runAutopublish();
+}
+
+module.exports = { runAutopublish };
