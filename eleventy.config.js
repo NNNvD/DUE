@@ -387,7 +387,9 @@ module.exports = function(eleventyConfig) {
     const status = item.data && item.data.status;
     const normalized = typeof status === "string" ? status.toLowerCase() : status;
     const inputPath = item.inputPath || "";
-    return normalized === "published" && inputPath.includes("/essays/published/");
+    const isCanonical = inputPath.includes("/essays/published/");
+    const isAutopublished = inputPath.includes("/autopublished/published/");
+    return normalized === "published" && (isCanonical || isAutopublished);
   };
 
   const isDraftEssay = (item = {}) => {
