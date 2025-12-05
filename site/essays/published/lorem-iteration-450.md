@@ -9,7 +9,7 @@ started_at: 2024-07-05
 deadline_at: 2024-07-20
 initial_status: unfinished
 version: 0.1.0
-published_at: 2024-07-20
+published_at: 2025-10-02
 word_range: 250-500
 release_notes:
   - Initial publication as version 0.1.0 with placeholder narrative text.

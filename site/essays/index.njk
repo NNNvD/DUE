@@ -143,26 +143,25 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
         <article class="card list-card">
           {% set length = post.data.word_range | wordRangeMeta %}
           <header class="list-card__header">
-            <div class="stack">
+            <div class="list-card__title-row">
               {% if post.data.word_range %}
-                <div class="length-chip length-chip--icon-only" aria-label="Length indicator: {{ length.label }}">
-                  <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
-                </div>
+                <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
               {% endif %}
               <h4 class="card-title {{ length.titleClass }}"><a href="{{ post.url | url }}">{{ post.data.title }}</a></h4>
             </div>
-            {% set timingLabel %}{% if post.data.initial_status == 'complete' %}Finished on time{% else %}Unfinished on time{% endif %}{% endset %}
-            {% set timingClass %}{% if post.data.initial_status == 'complete' %}badge--tone-success{% else %}badge--tone-warn{% endif %}{% endset %}
-            <div class="meta">
-              <span class="badge badge--tone-info">v{{ post.data.version }}</span>
-              <span class="badge {{ timingClass }}">{{ timingLabel }}</span>
-              {% if post.data.published_at %}<span>Published {{ post.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
-            </div>
+            <span class="length-divider length-divider--{{ length.palette | default('muted') }}" aria-hidden="true"></span>
           </header>
+          {% set timingLabel %}{% if post.data.initial_status == 'complete' %}Finished on time{% else %}Unfinished on time{% endif %}{% endset %}
+          {% set timingClass %}{% if post.data.initial_status == 'complete' %}badge--tone-success{% else %}badge--tone-warn{% endif %}{% endset %}
           <div class="meta">
+            <span class="badge badge--tone-info">v{{ post.data.version }}</span>
+            <span class="badge {{ timingClass }}">{{ timingLabel }}</span>
+            {% if post.data.published_at %}<span>Published {{ post.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+          </div>
+          <div class="meta meta--details">
             {% if post.data.word_count %}<span>{{ post.data.word_count }} words</span>{% endif %}
             {% if post.data.author %}<span>By <strong>{{ post.data.author | authorName }}</strong></span>{% endif %}
-            {% if post.data.topic %}<span>Topic: {{ post.data.topic }}</span>{% endif %}
+            {% if post.data.topic %}<span>Topic: <strong>{{ post.data.topic }}</strong></span>{% endif %}
           </div>
         </article>
       {% endfor %}
@@ -184,28 +183,27 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
         <article class="card list-card" data-deadline="{{ draft.data.deadline_at }}">
           {% set length = draft.data.word_range | wordRangeMeta %}
           <header class="list-card__header">
-            <div class="stack">
+            <div class="list-card__title-row">
               {% if draft.data.word_range %}
-                <div class="length-chip length-chip--icon-only" aria-label="Length indicator: {{ length.label }}">
-                  <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
-                </div>
+                <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
               {% endif %}
               <h4 class="card-title {{ length.titleClass }}">{{ draft.data.title }}</h4>
             </div>
-            <div class="meta">
-              <span class="badge badge--tone-info">v{{ draft.data.version }}</span>
-              <span class="badge badge--tone-info">Proposed</span>
-              {% if draft.data.deadline_at %}
-                <span class="badge deadline-badge" data-deadline-badge="{{ draft.data.deadline_at }}" data-deadline-label="{{ draft.data.deadline_at | date('yyyy-LL-dd') }}" title="Publishes {{ draft.data.deadline_at | date('yyyy-LL-dd') }}"></span>
-              {% else %}
-                <span class="badge">Publication date pending</span>
-              {% endif %}
-            </div>
+            <span class="length-divider length-divider--{{ length.palette | default('muted') }}" aria-hidden="true"></span>
           </header>
           <div class="meta">
+            <span class="badge badge--tone-info">v{{ draft.data.version }}</span>
+            <span class="badge badge--tone-info">Proposed</span>
+            {% if draft.data.deadline_at %}
+              <span class="badge deadline-badge" data-deadline-badge="{{ draft.data.deadline_at }}" data-deadline-label="{{ draft.data.deadline_at | date('yyyy-LL-dd') }}" title="Publishes {{ draft.data.deadline_at | date('yyyy-LL-dd') }}"></span>
+            {% else %}
+              <span class="badge">Publication date pending</span>
+            {% endif %}
+          </div>
+          <div class="meta meta--details">
             {% if draft.data.word_count %}<span>{{ draft.data.word_count }} words</span>{% endif %}
             {% if draft.data.author %}<span>By <strong>{{ draft.data.author | authorName }}</strong></span>{% endif %}
-            {% if draft.data.topic %}<span>Topic: {{ draft.data.topic }}</span>{% endif %}
+            {% if draft.data.topic %}<span>Topic: <strong>{{ draft.data.topic }}</strong></span>{% endif %}
           </div>
           {% if draft.data.deadline_at %}
             <p class="countdown" data-deadline="{{ draft.data.deadline_at }}"><span data-countdown>Tracking publication date…</span></p>
