@@ -10,8 +10,9 @@ const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
 const draftsDir = "site/essays/drafts";
-const pubDir = "site/essays/published";
-const { writeSnapshot } = require("./lib/snapshot");
+const autopublishRoot = "site/autopublished";
+const pubDir = path.join(autopublishRoot, "published");
+const manifestPath = path.join(autopublishRoot, "manifest.json");
 
 function getDeadlineDate(data) {
   const value = data.deadline_at;
@@ -44,41 +45,78 @@ function getDeadlineDate(data) {
   return dayjs.utc(`${value}T${hhmm}${seconds}${zone}`);
 }
 
-function publishFile(fp) {
+function publishFile(fp, now, options = {}) {
+  const { quiet = false } = options;
   const raw = fs.readFileSync(fp, "utf8");
   const doc = matter(raw);
   const d = doc.data;
+  const slug = path.basename(fp, path.extname(fp));
 
-  const now = dayjs.utc();
   d.status = "published";
   d.version = d.initial_status === "complete" ? 1.0 : 0.1;
   d.published_at = now.format("YYYY-MM-DD");
   d.release_notes = Array.isArray(d.release_notes) ? d.release_notes : [];
   d.release_notes.unshift(`Auto-published at deadline (${now.toISOString()}).`);
+  d.permalink = d.permalink || `/essays/published/${slug}/`;
 
   const out = matter.stringify(doc.content, d);
   const dest = path.join(pubDir, path.basename(fp));
   fs.ensureDirSync(pubDir);
   fs.writeFileSync(dest, out, "utf8");
-  fs.removeSync(fp);
-  console.log(`Published: ${path.basename(fp)} → v${d.version}`);
+  if (!quiet) {
+    console.log(`Prepared publication: ${slug} → v${d.version}`);
+  }
 
+  return { slug, source: fp, dest };
+}
+
+function readAutopublishManifest() {
+  if (!fs.existsSync(manifestPath)) return { published: [], generated_at: null };
   try {
-    const snap = writeSnapshot(dest, d, doc.content);
-    console.log(`Snapshot written: ${snap}`);
-  } catch (e) {
-    console.warn("Snapshot failed:", e.message);
+    return fs.readJsonSync(manifestPath);
+  } catch (err) {
+    console.warn("Unable to read autopublish manifest:", err.message);
+    return { published: [], generated_at: null };
   }
 }
 
-glob.sync(`${draftsDir}/**/*.md`).forEach(fp => {
-  const raw = fs.readFileSync(fp, "utf8");
-  const doc = matter(raw);
-  const d = doc.data;
-  const deadline = getDeadlineDate(d);
-  if (!deadline) return;
+function writeManifest(now, published) {
+  const manifest = {
+    generated_at: now.toISOString(),
+    published: published.map(({ slug, source, dest }) => ({ slug, source, dest })),
+  };
 
-  if (dayjs.utc().isAfter(deadline)) {
-    publishFile(fp);
-  }
-});
+  fs.ensureDirSync(autopublishRoot);
+  fs.writeJsonSync(manifestPath, manifest, { spaces: 2 });
+
+  return manifest;
+}
+
+function runAutopublish(options = {}) {
+  const { quiet = false, referenceTime } = options;
+  const now = referenceTime ? dayjs.utc(referenceTime) : dayjs.utc();
+  fs.removeSync(autopublishRoot);
+
+  const published = glob.sync(`${draftsDir}/**/*.md`).reduce((list, fp) => {
+    const raw = fs.readFileSync(fp, "utf8");
+    const doc = matter(raw);
+    const d = doc.data;
+    const deadline = getDeadlineDate(d);
+    if (!deadline) return list;
+
+    if (!now.isBefore(deadline)) {
+      const result = publishFile(fp, now, { quiet });
+      list.push(result);
+    }
+
+    return list;
+  }, []);
+
+  return writeManifest(now, published);
+}
+
+if (require.main === module) {
+  runAutopublish();
+}
+
+module.exports = { runAutopublish, readAutopublishManifest };
