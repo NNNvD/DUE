@@ -1,7 +1,9 @@
 const meta = require("./site/_data/meta");
 const fg = require("fast-glob");
 const matter = require("gray-matter");
-const { runAutopublish } = require("./scripts/autopublish");
+const fs = require("fs");
+const path = require("path");
+const { runAutopublish, readAutopublishManifest } = require("./scripts/autopublish");
 
 function formatDateValue(value, format = "yyyy-LL-dd") {
   if (!value) return "";
@@ -261,33 +263,60 @@ function normalizeStatus(raw, fallback) {
 }
 
 function loadEssaysByStatus(status = "published") {
+  const manifest = readAutopublishManifest();
+  const autopublished = Array.isArray(manifest.published) ? manifest.published : [];
+  const autopublishedSlugs = new Set(
+    autopublished
+      .map((entry) => entry && (entry.slug || path.basename(entry.source || "", path.extname(entry.source || ""))))
+      .filter(Boolean)
+  );
+
+  const autopublishedPaths = autopublished
+    .map((entry) => entry && entry.dest)
+    .filter((fp) => fp && fs.existsSync(fp));
+
   const pattern = status === "draft"
     ? "site/essays/drafts/**/*.md"
     : "site/essays/published/**/*.md";
 
-  return fg.sync(pattern).map((file) => {
-    const { data, content } = matter.read(file);
-    const normalizedStatus = normalizeStatus(data.status, status);
-    const slug = (data.page && data.page.fileSlug) || data.slug || (file.split("/").pop() || "").replace(/\.md$/, "");
-    const segment = status === "draft" ? "drafts" : "published";
-    const url = `/essays/${segment}/${slug}/`;
+  const files = fg.sync(pattern, { dot: true });
+  const resolved = status === "published" ? [...files, ...autopublishedPaths] : files;
 
-    return {
-      inputPath: file,
-      fileSlug: slug,
-      url,
-      data: {
-        ...data,
-        status: normalizedStatus,
-        page: {
-          ...(data.page || {}),
-          url,
-          fileSlug: slug,
+  return resolved
+    .map((file) => {
+      const { data, content } = matter.read(file);
+      const normalizedStatus = autopublishedPaths.includes(file)
+        ? "published"
+        : normalizeStatus(data.status, status);
+      const slug =
+        (data.page && data.page.fileSlug) ||
+        data.slug ||
+        (file.split("/").pop() || "").replace(/\.md$/, "");
+      const segment = normalizedStatus === "published" ? "published" : "drafts";
+      const url = `/essays/${segment}/${slug}/`;
+
+      return {
+        inputPath: file,
+        fileSlug: slug,
+        url,
+        data: {
+          ...data,
+          status: normalizedStatus,
+          page: {
+            ...(data.page || {}),
+            url,
+            fileSlug: slug,
+          },
         },
-      },
-      templateContent: content,
-    };
-  });
+        templateContent: content,
+      };
+    })
+    .filter((entry) => {
+      if (status === "draft" && autopublishedSlugs.has(entry.fileSlug)) {
+        return false;
+      }
+      return true;
+    });
 }
 
 module.exports = function(eleventyConfig) {
