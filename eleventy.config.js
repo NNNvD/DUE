@@ -282,7 +282,7 @@ function loadEssaysByStatus(status = "published") {
   const files = fg.sync(pattern, { dot: true });
   const resolved = status === "published" ? [...files, ...autopublishedPaths] : files;
 
-  return resolved
+  const entries = resolved
     .map((file) => {
       const { data, content } = matter.read(file);
       const normalizedStatus = autopublishedPaths.includes(file)
@@ -317,6 +317,31 @@ function loadEssaysByStatus(status = "published") {
       }
       return true;
     });
+
+  if (status !== "published") {
+    return entries;
+  }
+
+  const bySlug = new Map();
+
+  for (const entry of entries) {
+    const slug = entry.fileSlug || entry.data?.page?.fileSlug;
+    const key = slug || entry.inputPath;
+    const existing = bySlug.get(key);
+    if (!existing) {
+      bySlug.set(key, entry);
+      continue;
+    }
+
+    const existingCanonical = (existing.inputPath || "").includes("/essays/published/");
+    const currentCanonical = (entry.inputPath || "").includes("/essays/published/");
+
+    if (currentCanonical && !existingCanonical) {
+      bySlug.set(key, entry);
+    }
+  }
+
+  return Array.from(bySlug.values());
 }
 
 module.exports = function(eleventyConfig) {
