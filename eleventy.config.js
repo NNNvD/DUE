@@ -1,6 +1,9 @@
 const meta = require("./site/_data/meta");
 const fg = require("fast-glob");
 const matter = require("gray-matter");
+const fs = require("fs");
+const path = require("path");
+const { runAutopublish, readAutopublishManifest } = require("./scripts/autopublish");
 
 function formatDateValue(value, format = "yyyy-LL-dd") {
   if (!value) return "";
@@ -251,33 +254,94 @@ function filterEssayTemplates(collection = []) {
   });
 }
 
+function normalizeStatus(raw, fallback) {
+  const normalized = typeof raw === "string" ? raw.toLowerCase() : "";
+  if (["draft", "proposed", "published"].includes(normalized)) {
+    return normalized;
+  }
+  return fallback;
+}
+
 function loadEssaysByStatus(status = "published") {
+  const manifest = readAutopublishManifest();
+  const autopublished = Array.isArray(manifest.published) ? manifest.published : [];
+  const autopublishedSlugs = new Set(
+    autopublished
+      .map((entry) => entry && (entry.slug || path.basename(entry.source || "", path.extname(entry.source || ""))))
+      .filter(Boolean)
+  );
+
+  const autopublishedPaths = autopublished
+    .map((entry) => entry && entry.dest)
+    .filter((fp) => fp && fs.existsSync(fp));
+
   const pattern = status === "draft"
     ? "site/essays/drafts/**/*.md"
     : "site/essays/published/**/*.md";
 
-  return fg.sync(pattern).map((file) => {
-    const { data, content } = matter.read(file);
-    const slug = (data.page && data.page.fileSlug) || data.slug || (file.split("/").pop() || "").replace(/\.md$/, "");
-    const segment = status === "draft" ? "drafts" : "published";
-    const url = `/essays/${segment}/${slug}/`;
+  const files = fg.sync(pattern, { dot: true });
+  const resolved = status === "published" ? [...files, ...autopublishedPaths] : files;
 
-    return {
-      inputPath: file,
-      fileSlug: slug,
-      url,
-      data: {
-        ...data,
-        status,
-        page: {
-          ...(data.page || {}),
-          url,
-          fileSlug: slug,
+  const entries = resolved
+    .map((file) => {
+      const { data, content } = matter.read(file);
+      const normalizedStatus = autopublishedPaths.includes(file)
+        ? "published"
+        : normalizeStatus(data.status, status);
+      const slug =
+        (data.page && data.page.fileSlug) ||
+        data.slug ||
+        (file.split("/").pop() || "").replace(/\.md$/, "");
+      const segment = normalizedStatus === "published" ? "published" : "drafts";
+      const url = `/essays/${segment}/${slug}/`;
+
+      return {
+        inputPath: file,
+        fileSlug: slug,
+        url,
+        data: {
+          ...data,
+          status: normalizedStatus,
+          page: {
+            ...(data.page || {}),
+            url,
+            fileSlug: slug,
+          },
         },
-      },
-      templateContent: content,
-    };
-  });
+        templateContent: content,
+      };
+    })
+    .filter((entry) => {
+      if (status === "draft" && autopublishedSlugs.has(entry.fileSlug)) {
+        return false;
+      }
+      return true;
+    });
+
+  if (status !== "published") {
+    return entries;
+  }
+
+  const bySlug = new Map();
+
+  for (const entry of entries) {
+    const slug = entry.fileSlug || entry.data?.page?.fileSlug;
+    const key = slug || entry.inputPath;
+    const existing = bySlug.get(key);
+    if (!existing) {
+      bySlug.set(key, entry);
+      continue;
+    }
+
+    const existingCanonical = (existing.inputPath || "").includes("/essays/published/");
+    const currentCanonical = (entry.inputPath || "").includes("/essays/published/");
+
+    if (currentCanonical && !existingCanonical) {
+      bySlug.set(key, entry);
+    }
+  }
+
+  return Array.from(bySlug.values());
 }
 
 module.exports = function(eleventyConfig) {
@@ -312,6 +376,15 @@ module.exports = function(eleventyConfig) {
     return formatDateValue(value, format);
   });
 
+  eleventyConfig.on("eleventy.before", () => {
+    if (process.env.SKIP_AUTOPUBLISH) {
+      console.log("Skipping autopublish because SKIP_AUTOPUBLISH is set.");
+      return;
+    }
+
+    runAutopublish({ quiet: true });
+  });
+
   eleventyConfig.addFilter("authorName", formatAuthorName);
   eleventyConfig.addFilter("essayMeta", computeEssayMeta);
   eleventyConfig.addFilter("absoluteUrl", (value, siteData) => {
@@ -337,14 +410,18 @@ module.exports = function(eleventyConfig) {
   });
   const isPublishedEssay = (item = {}) => {
     const status = item.data && item.data.status;
+    const normalized = typeof status === "string" ? status.toLowerCase() : status;
     const inputPath = item.inputPath || "";
-    return status === "published" && inputPath.includes("/essays/published/");
+    const isCanonical = inputPath.includes("/essays/published/");
+    const isAutopublished = inputPath.includes("/autopublished/published/");
+    return normalized === "published" && (isCanonical || isAutopublished);
   };
 
   const isDraftEssay = (item = {}) => {
     const status = item.data && item.data.status;
+    const normalized = typeof status === "string" ? status.toLowerCase() : status;
     const inputPath = item.inputPath || "";
-    return status === "draft" && inputPath.includes("/essays/drafts/");
+    return ["draft", "proposed"].includes(normalized) && inputPath.includes("/essays/drafts/");
   };
 
   eleventyConfig.addCollection("publishedEssays", (collectionApi) => {
@@ -391,6 +468,34 @@ module.exports = function(eleventyConfig) {
     const days = Math.ceil(diff / MS_PER_DAY);
 
     return days < 0 ? 0 : days;
+  });
+
+  eleventyConfig.addFilter("whereStatus", (items, statuses) => {
+    const list = Array.isArray(items) ? items : [];
+    const accepted = (Array.isArray(statuses) ? statuses : [statuses])
+      .map((entry) => (typeof entry === "string" ? entry.toLowerCase() : ""))
+      .filter(Boolean);
+
+    if (!accepted.length) return list;
+    return list.filter((item) => accepted.includes((item?.data?.status || "").toLowerCase()));
+  });
+
+  eleventyConfig.addFilter("sortByDate", (items, path = "") => {
+    if (!Array.isArray(items)) return [];
+
+    const getValue = (obj, dottedPath) => {
+      return dottedPath.split(".").reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined), obj);
+    };
+
+    return [...items].sort((a, b) => {
+      const rawA = path ? getValue(a, path) : a;
+      const rawB = path ? getValue(b, path) : b;
+      const aDate = new Date(rawA);
+      const bDate = new Date(rawB);
+      const aValue = Number.isNaN(aDate.getTime()) ? Infinity : aDate.getTime();
+      const bValue = Number.isNaN(bDate.getTime()) ? Infinity : bDate.getTime();
+      return aValue - bValue;
+    });
   });
 
   eleventyConfig.addCollection("snapshots", (collectionApi) => {
