@@ -84,14 +84,15 @@ function formatDate(value) {
   return `${year}-${month}-${day}`;
 }
 
-function renderLengthChip(entry) {
+function renderLengthIcon(entry) {
   if (!entry.word_range) return "";
   const iconClass = `length-icon length-icon--${entry.lengthMeta.icon} length-icon--${entry.lengthMeta.palette}`;
-  return `
-    <div class="length-chip length-chip--icon-only" aria-label="Length indicator: ${entry.lengthMeta.label}">
-      <span class="${iconClass}" aria-hidden="true"></span>
-    </div>
-  `;
+  return `<span class="${iconClass}" aria-hidden="true"></span>`;
+}
+
+function renderLengthDivider(entry) {
+  const palette = entry.lengthMeta?.palette || "muted";
+  return `<span class="length-divider length-divider--${palette}" aria-hidden="true"></span>`;
 }
 
 function renderBadges(entry) {
@@ -130,7 +131,8 @@ function renderMeta(entry) {
     parts.push(`<span>By <strong>${authorName}</strong></span>`);
   }
   if (entry.topic) {
-    parts.push(`<span>Topic: ${entry.topic.split(/\s+/).slice(0, 5).join(" ")}</span>`);
+    const topic = entry.topic.split(/\s+/).slice(0, 5).join(" ");
+    parts.push(`<span>Topic: <strong>${topic}</strong></span>`);
   }
   return parts.join("");
 }
@@ -148,14 +150,15 @@ function renderCard(entry, baseUrl) {
   return `
     <article class="card list-card" data-essay-id="${entry.id}" data-status="${entry.status}" data-length-bin="${entry.lengthMeta?.bin || "unknown"}" data-time-status="${entry.time_status || (entry.initial_status === "complete" ? "finished-on-time" : "unfinished-on-time")}" data-author="${entry.author}" data-coauthors="${(entry.coauthors || []).join(",")}" data-keywords="${(entry.keywords || []).join(",")}" data-date="${entry.dateValue}" ${entry.deadline_at ? `data-deadline="${entry.deadline_at}"` : ""}>
       <header class="list-card__header">
-        <div class="stack">
-          ${renderLengthChip(entry)}
+        <div class="list-card__title-row">
+          ${renderLengthIcon(entry)}
           <h4 class="card-title ${lengthClass}"><a href="${href}">${entry.title}</a></h4>
         </div>
-        <div class="meta">${badges}</div>
+        ${renderLengthDivider(entry)}
       </header>
-      <div class="meta">${meta}</div>
+      <div class="meta">${badges}</div>
       ${tracker}
+      <div class="meta meta--details">${meta}</div>
     </article>
   `;
 }
