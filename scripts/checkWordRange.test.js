@@ -30,6 +30,6 @@ describe("validateWordRange", () => {
 describe("wordCount", () => {
   it("ignores fenced code and footnotes for counts", () => {
     const text = "```\ncode only\n```\nContent with a footnote[^1].\n\n[^1]: note";
-    expect(wordCount(text)).toBe(5);
+    expect(wordCount(text)).toBe(4);
   });
 });
