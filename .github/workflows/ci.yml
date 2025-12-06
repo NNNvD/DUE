@@ -8,6 +8,8 @@ on:
 jobs:
   build_and_checks:
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --trace-uncaught --unhandled-rejections=strict
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -15,31 +17,47 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 20.19.0
           cache: npm
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: |
+          set -euxo pipefail
+          npm install --no-audit --no-fund
 
       - name: Unit tests
-        run: npm test
+        run: |
+          set -euxo pipefail
+          npm test
       - name: Validate release notes
         if: github.event_name == 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/checkReleaseNotes.js
+        run: |
+          set -euxo pipefail
+          node scripts/checkReleaseNotes.js
 
       - name: Word range check
-        run: npm run check:words
+        run: |
+          set -euxo pipefail
+          npm run check:words
 
       - name: One active draft per author
-        run: node scripts/checkActiveDrafts.js
+        run: |
+          set -euxo pipefail
+          node scripts/checkActiveDrafts.js
 
       - name: Build
-        run: npm run build
+        run: |
+          set -euxo pipefail
+          npm run build
 
       - name: Accessibility report
-        run: npm run check:a11y
+        run: |
+          set -euxo pipefail
+          npm run check:a11y
 
       - name: Validate feeds
-        run: npm run validate:feeds
+        run: |
+          set -euxo pipefail
+          npm run validate:feeds

@@ -125,8 +125,8 @@ function loadEssays(status = "published") {
     .filter((fp) => fp && fs.existsSync(fp));
 
   const basePattern = status === "draft"
-    ? "site/essays/drafts/**/*.md"
-    : "site/essays/published/**/*.md";
+    ? "site/essays/drafts/**/*.{md,njk}"
+    : "site/essays/published/**/*.{md,njk}";
 
   const baseFiles = fg.sync(basePattern, { dot: true });
   const files = status === "published"
