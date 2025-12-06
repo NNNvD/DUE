@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const yaml = require("js-yaml");
+const { registerErrorHandlers } = require("./lib/registerErrorHandlers");
 
 let matter;
 try {
@@ -440,6 +441,7 @@ function run(fsModule = fs, { write = false } = {}) {
 }
 
 if (require.main === module) {
+  registerErrorHandlers("check:words");
   const write = process.argv.includes("--write");
   process.exit(run(fs, { write }));
 }

@@ -276,8 +276,8 @@ function loadEssaysByStatus(status = "published") {
     .filter((fp) => fp && fs.existsSync(fp));
 
   const pattern = status === "draft"
-    ? "site/essays/drafts/**/*.md"
-    : "site/essays/published/**/*.md";
+    ? "site/essays/drafts/**/*.{md,njk}"
+    : "site/essays/published/**/*.{md,njk}";
 
   const files = fg.sync(pattern, { dot: true });
   const resolved = status === "published" ? [...files, ...autopublishedPaths] : files;
@@ -292,6 +292,8 @@ function loadEssaysByStatus(status = "published") {
         (data.page && data.page.fileSlug) ||
         data.slug ||
         (file.split("/").pop() || "").replace(/\.md$/, "");
+      const fallbackTitle = slug || "Untitled essay";
+      const title = data.title || (data.page && data.page.title) || fallbackTitle;
       const segment = normalizedStatus === "published" ? "published" : "drafts";
       const url = `/essays/${segment}/${slug}/`;
 
@@ -301,11 +303,13 @@ function loadEssaysByStatus(status = "published") {
         url,
         data: {
           ...data,
+          title,
           status: normalizedStatus,
           page: {
             ...(data.page || {}),
             url,
             fileSlug: slug,
+            title,
           },
         },
         templateContent: content,

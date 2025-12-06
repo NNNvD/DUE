@@ -24,12 +24,13 @@ eleventyExcludeFromCollections: true
     <name>{{ site.title }}</name>
   </author>
   {% for entry in entries %}
+    {% set entryTitle = entry.data.title or (entry.data.page and entry.data.page.title) or entry.fileSlug or 'Untitled essay' %}
     {% set canonicalUrl = (entry.data.canonical or entry.url | url) | absoluteUrl(site) %}
     {% set releaseNotes = entry.data.release_notes or [] %}
     {% set latestReleaseNote = releaseNotes | first or meta.extractDescription(entry.data) %}
     {% set entryVersion = entry.data.version or '0.0' %}
     <entry>
-      <title>{{ entry.data.title }}</title>
+      <title>{{ entryTitle }}</title>
       <link href="{{ canonicalUrl }}" />
       <id>{{ canonicalUrl }}</id>
       {% if entry.data.published_at %}

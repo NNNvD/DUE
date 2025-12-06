@@ -1,5 +1,8 @@
+import { createRequire } from "module";
 import { describe, it, expect } from "vitest";
-import { bounds, validateWordRange, wordCount } from "./checkWordRange.js";
+
+const require = createRequire(import.meta.url);
+const { bounds, validateWordRange, wordCount } = require("./checkWordRange.js");
 
 describe("bounds", () => {
   it("expands a simple range with grace buffer", () => {

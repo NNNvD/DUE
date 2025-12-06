@@ -1,6 +1,9 @@
 const fs = require('fs');
+const { registerErrorHandlers } = require('./lib/registerErrorHandlers');
 
 const PLACEHOLDER_REGEX = /^(?:tbd|to be determined|todo|pending|n\/a|na|none|no release notes)$/i;
+
+registerErrorHandlers('checkReleaseNotes');
 
 function isPlaceholder(text) {
   return PLACEHOLDER_REGEX.test(text.trim());
