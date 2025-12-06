@@ -19,3 +19,10 @@
 - Align status/version semantics with existing workflows (`proposed/draft/published`, `0.1` vs. `1.0` rules) and ensure `npm run new`, autopublish, and word checks use the same fields as the CMS to avoid CI regressions.【F:essayWorkflow.md†L145-L253】【F:README.md†L29-L72】
 - Decide on hosting/auth (GitHub Pages + external OAuth vs. Netlify + Git Gateway) and document the choice in `README.md` alongside the admin paths so onboarding stays clear.【F:essayWorkflow.md†L256-L299】【F:README.md†L2-L23】
 - Wire the asset pipeline to serve Decap uploads (or reuse `site/assets/`) before enabling media uploads, ensuring URLs resolve in the built site.【F:essayWorkflow.md†L128-L199】【F:README.md†L6-L23】
+
+## Take on the proposed “delta” plan
+- The suggested collection roots (`site/essays/drafts/` and `site/essays/published/`) align with the Eleventy build and autopublish scripts, avoiding the breakage risk noted above.【F:essayWorkflow.md†L147-L253】【F:README.md†L6-L72】
+- Mirroring the full front matter (deadlines, credits, canonical URL, word_range buckets) in `admin/config.yml` would close the schema gap and keep CI checks intact.【F:essayWorkflow.md†L55-L239】【F:README.md†L35-L69】
+- Syncing Decap status/version options with `npm run new`, autopublish, and word-range enforcement resolves the workflow drift; also adjust `npm run new` to emit the same YAML Decap writes so both paths stay compatible.【F:essayWorkflow.md†L145-L253】【F:README.md†L29-L72】
+- Locking a hosting/auth choice (Netlify Identity/Git Gateway vs. GitHub Pages with external OAuth) and documenting `/admin` + roles in `README.md` will prevent surprises for maintainers and authors onboarding later.【F:essayWorkflow.md†L256-L299】【F:README.md†L2-L23】
+- Pointing media to the existing asset pipeline (or updating the build to copy Decap uploads) addresses the current upload-path mismatch before turning on media widgets.【F:essayWorkflow.md†L128-L199】【F:README.md†L6-L23】
