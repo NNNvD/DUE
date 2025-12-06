@@ -2,9 +2,12 @@ const fs = require("fs");
 const path = require("path");
 const yaml = require("js-yaml");
 const fg = require("fast-glob");
+const { registerErrorHandlers } = require("./lib/registerErrorHandlers");
 
 const COMMENTS_ROOT = path.join(process.cwd(), "data", "comments");
 const SKIP = process.env.COMMENTS_SKIP_PROMOTE === "1";
+
+registerErrorHandlers("promoteComments");
 
 function ensureDir(dirPath) {
   if (!fs.existsSync(dirPath)) {

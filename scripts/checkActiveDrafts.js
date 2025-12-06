@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const matter = require("gray-matter");
+const { registerErrorHandlers } = require("./lib/registerErrorHandlers");
 
 const draftsDir = "site/essays/drafts";
 
@@ -46,6 +47,7 @@ function run(dir = draftsDir, fsModule = fs) {
 }
 
 if (require.main === module) {
+  registerErrorHandlers("checkActiveDrafts");
   process.exit(run());
 }
 

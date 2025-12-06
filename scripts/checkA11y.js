@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const fg = require('fast-glob');
 const { parseDocument } = require('htmlparser2');
+const { registerErrorHandlers } = require('./lib/registerErrorHandlers');
 const {
   findAll,
   findOne,
@@ -9,6 +10,8 @@ const {
 } = require('domutils');
 
 const siteRoot = path.join(__dirname, '..', '_site');
+
+registerErrorHandlers('checkA11y');
 
 function requireBuildOutput() {
   if (!fs.existsSync(siteRoot)) {
