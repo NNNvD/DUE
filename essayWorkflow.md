@@ -1,98 +1,98 @@
-Here’s a concrete plan the Codex agent can implement to give you a Decap-CMS-powered `/admin` for DUE, plus what the end result should look like and what can go wrong.
+````markdown
+# DUE Essay Proposal & Writing Workflow (Decap CMS + Netlify Identity)
 
-I’ll assume:
+This document describes how to implement a Git-based, non-technical essay workflow for the DUE project using:
 
-* Your site code lives in a public GitHub repo (call it `<owner>/<repo>`).
-* Essays are (or will be) stored as Markdown files with YAML front matter in a folder we choose, e.g. `content/essays/`.
-* We’ll use **Decap CMS** (formerly Netlify CMS), a Git-based CMS that works with any static site generator and stores all content directly in Git. ([decapcms.org][1])
+- Decap CMS (`/admin` UI)
+- Netlify hosting
+- Netlify Identity (invite-only)
+- Netlify Git Gateway
 
-I’ll clearly mark which steps are for **Codex** (things that can be done inside the repo) and which are **manual** (Netlify / auth config).
-
----
-
-## 1. Target experience (for DUE authors)
-
-**Intended result**
-
-An author with little/no GitHub knowledge should be able to:
-
-1. Go to `https://<your-site-domain>/admin/`
-2. Log in (either with:
-
-   * GitHub, **or**
-   * an email/password via Netlify Identity / Git Gateway).
-3. See a list of “Essays” with:
-
-   * Title
-   * Status (draft / under review / published)
-   * Version (0.1 / 1.0 / etc.)
-   * Length category (100–500, 500–1000, 1000–1500)
-4. Click **“New Essay”**, fill in a form:
-
-   * Title
-   * Author
-   * Topic (max 5 words)
-   * Keywords (max 5)
-   * Length category (select)
-   * Version
-   * Status
-   * Body (Markdown editor with preview)
-5. Click **Save** → the CMS:
-
-   * Creates/updates a `.md` file in `content/essays/` with correct YAML.
-   * Commits and pushes to the GitHub repo.
-   * Your static site build runs and the essay appears/updates on the site.
-
-**Access control**
-
-* Only users with access to the repo (GitHub backend) or with Identity accounts you approve (Git Gateway backend) can edit essays.
-* This satisfies **“only members can start or edit essays”**.
+It is written as an implementation plan for a coding agent (Codex) plus some manual steps for a human operator.
 
 ---
 
-## 2. Front matter schema for DUE essays (what we standardize on)
+## 0. Goals and Constraints
 
-**Codex: use this as the canonical YAML schema.**
+- Multiple people can propose and update essays.
+- Some users are **not** GitHub-savvy.
+- Only **pre-approved** people can propose/write/edit essays.
+- All content remains in the GitHub repo as Markdown + YAML.
+- Solution is **free-tier friendly** (GitHub + Netlify + Decap CMS).
 
-Every essay Markdown file should start like:
+High-level architecture:
+
+1. **GitHub repo** remains the single source of truth for essays.
+2. **Decap CMS** provides a web-based editor at `/admin`.
+3. **Netlify Identity** controls who can log in (invite-only).
+4. **Git Gateway** allows only Identity users with certain roles (e.g. `due-author`) to commit to the repo.
+
+---
+
+## 1. Confirm and Document Current Essay Structure
+
+**Responsibility: Codex (read-only)**
+
+1. Inspect the repository to determine:
+   - Where essay files currently live (likely something like `site/essays/drafts/` and `site/essays/published/`).
+   - How essay metadata is stored (YAML front matter fields).
+   - How the site generator (Eleventy/Elementy) discovers and renders essay files.
+2. Create a short internal note (e.g. `docs/ESSAY_SCHEMA.md`) describing:
+   - Essay directories (drafts vs published).
+   - Front matter fields and their purpose (e.g. `title`, `author`, `coauthors`, `topic`, `keywords`, `word_range`, `status`, `version`, `started_at`, `deadline_at`, `release_notes`, etc.).
+   - Any constraints (e.g. allowed status values, word range buckets, semantic version format).
+
+This step is only for clarity and to avoid breaking existing behavior.
+
+---
+
+## 2. Define the Canonical Essay Front-Matter Schema
+
+**Responsibility: Codex**
+
+Based on current usage, standardize a front-matter schema. Example (adjust names/types to match actual repo):
 
 ```yaml
 ---
-title: "My Essay Title"
-date: 2025-12-06
-author: "Author Name"
+title: "Example Essay Title"
+author: "Primary Author"
+coauthors:
+  - "Coauthor One"
+  - "Coauthor Two"
 topic: "Short topic phrase"
 keywords:
   - keyword-one
   - keyword-two
-length_category: "100-500" # options: "100-500", "500-1000", "1000-1500"
-version: "0.1"             # semantic versioning, e.g. 0.1, 0.2, 1.0
-status: "draft"            # "draft", "under_review", "published"
-# optional, can be filled later or computed in build tooling
-word_count: 0
+word_range: "100-500"          # e.g. "100-500", "500-1000", "1000-1500"
+status: "draft"                # e.g. "proposed", "draft", "under_review", "published"
+version: "0.1.0"               # semantic version (e.g. 0.1.0, 1.0.0)
+started_at: "2025-12-06"
+deadline_at: "2025-12-31"
+initial_status: "proposed"     # if used by automation scripts
+release_notes: ""              # free-text description of changes
+word_count: 0                  # optional, can be computed
 ---
-Markdown body starts here…
-```
+Body in Markdown…
+````
 
-This gives you everything you previously said you wanted per essay:
+Tasks:
 
-* Author name
-* Exact number of words (field available; you can add an automated step later)
-* Topic (max 5 words)
-* Keywords (max 5)
-* Version
-* Length category (used to pick square/triangle/circle + magenta/orange/teal)
-* Status (for editorial workflow)
+1. Align this schema with:
+
+   * Existing scripts (`npm run new`, CI checks, autopublish).
+   * Existing templates.
+2. If fields like `topic`, `keywords`, `word_range`, `status`, `version` already exist, reuse their names.
+3. Only introduce new fields if they are backwards-compatible and documented.
 
 ---
 
-## 3. Add Decap CMS to the repo
+## 3. Add Decap CMS Admin Frontend
 
-### 3.1. Create `/admin/index.html`
+### 3.1 Add `/admin/index.html`
 
-**Responsibility: Codex (repo changes only)**
+**Responsibility: Codex**
 
-Add a new file: `admin/index.html`
+Create `admin/index.html` in the repo with:
 
 ```html
 <!doctype html>
@@ -103,71 +103,67 @@ Add a new file: `admin/index.html`
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
-    <!-- Decap CMS mount point -->
     <div id="nc-root"></div>
-
-    <!-- Load Decap CMS from CDN -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   </body>
 </html>
 ```
 
-**Intended result**
-
-* Visiting `/admin/` on the built site loads the Decap CMS UI shell.
-* It will then look for `admin/config.yml` to know how to connect and what collections to show. ([decapcms.org][1])
+This serves the Decap CMS UI at `/admin/` once the site is built and hosted.
 
 ---
 
-### 3.2. Create `admin/config.yml`
+### 3.2 Add `admin/config.yml` (Initial Version)
 
 **Responsibility: Codex**
 
-Create `admin/config.yml` with this structure (I’ll include placeholders where you/humans need to fill in real values).
+Create `admin/config.yml` describing:
+
+* The backend (temporarily placeholder, finalized after Netlify is set up).
+* Where essays are stored.
+* The fields corresponding to the essay schema.
+
+Initial version (backend configured for later Netlify Git Gateway):
 
 ```yaml
 backend:
-  # Option A: GitHub backend (requires GitHub login + auth setup)
-  name: github
-  repo: "<owner>/<repo>"       # e.g. "nnnvd/DUE"
-  branch: "main"               # or "master" or whatever default branch you use
-  # optional but recommended for performance
-  use_graphql: true
+  name: git-gateway
+  branch: "main"        # adjust if default branch differs
 
-# If you later use Git Gateway (Netlify Identity or custom), replace the backend with:
-# backend:
-#   name: git-gateway
-#   branch: "main"
+media_folder: "site/assets/uploads"   # adjust to match actual asset path
+public_folder: "/assets/uploads"
 
-media_folder: "static/uploads"     # where uploaded media files are stored in the repo
-public_folder: "/uploads"          # how those files are referenced in the built site
-
-publish_mode: editorial_workflow   # enables draft / review / publish workflow
+publish_mode: editorial_workflow
 
 collections:
-  - name: "essays"
-    label: "Essays"
-    label_singular: "Essay"
-    description: "Timed essays on DUE"
-    folder: "content/essays"
+  - name: "essays_drafts"
+    label: "Draft Essays"
+    label_singular: "Draft Essay"
+    description: "Draft and proposed essays"
+    folder: "site/essays/drafts"      # adjust to actual path
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    preview_path: "essays/{{slug}}"
-    summary: "{{title}} ({{status}} · v{{version}} · {{length_category}})"
+    summary: "{{title}} ({{status}} · v{{version}} · {{word_range}})"
+    editor:
+      preview: true
 
     fields:
       - label: "Title"
         name: "title"
         widget: "string"
 
-      - label: "Date"
-        name: "date"
-        widget: "datetime"
-        time_format: false
-
       - label: "Author"
         name: "author"
         widget: "string"
+
+      - label: "Coauthors"
+        name: "coauthors"
+        widget: "list"
+        field:
+          label: "Coauthor"
+          name: "coauthor"
+          widget: "string"
+        required: false
 
       - label: "Topic (max 5 words)"
         name: "topic"
@@ -188,320 +184,294 @@ collections:
         max: 5
         label_singular: "Keyword"
 
-      - label: "Length category"
-        name: "length_category"
+      - label: "Word range"
+        name: "word_range"
         widget: "select"
         options:
-          - { label: "Short (100–500 words)", value: "100-500" }
-          - { label: "Medium (500–1000 words)", value: "500-1000" }
-          - { label: "Long (1000–1500 words)", value: "1000-1500" }
-        default: "100-500"
-
-      - label: "Version"
-        name: "version"
-        widget: "string"
-        default: "0.1"
-        hint: "Semantic versioning, e.g. 0.1, 0.2, 1.0"
+          - { label: "100–500 words", value: "100-500" }
+          - { label: "500–1000 words", value: "500-1000" }
+          - { label: "1000–1500 words", value: "1000-1500" }
 
       - label: "Status"
         name: "status"
         widget: "select"
         options:
+          - { label: "Proposed", value: "proposed" }
           - { label: "Draft", value: "draft" }
-          - { label: "Under review", value: "under_review" }
+          - { label: "Under Review", value: "under_review" }
           - { label: "Published", value: "published" }
-        default: "draft"
+        default: "proposed"
+
+      - label: "Version"
+        name: "version"
+        widget: "string"
+        default: "0.1.0"
+        hint: "Semantic versioning, e.g. 0.1.0, 1.0.0"
+
+      - label: "Started at"
+        name: "started_at"
+        widget: "datetime"
+        time_format: false
+        required: false
+
+      - label: "Deadline at"
+        name: "deadline_at"
+        widget: "datetime"
+        time_format: false
+        required: false
+
+      - label: "Initial status"
+        name: "initial_status"
+        widget: "string"
+        required: false
+
+      - label: "Release notes"
+        name: "release_notes"
+        widget: "text"
+        required: false
 
       - label: "Word count (optional)"
         name: "word_count"
         widget: "number"
         required: false
-        hint: "Can be filled later or computed automatically."
 
       - label: "Body"
         name: "body"
         widget: "markdown"
 ```
 
-**Intended result**
-
-* Decap knows:
-
-  * How to connect to GitHub (`backend`).
-  * Where essays live in the repo (`folder: content/essays`).
-  * How to build filenames (`slug`).
-  * What fields to show and how to validate them (`fields`).
-
-Notes:
-
-* GitHub backend specifics & GraphQL option are documented here. ([decapcms.org][2])
-* `max` + `min` on the list widget enforce the 0–5 keywords constraint. ([decapcms.org][3])
+If there is also a published folder (e.g. `site/essays/published`), optionally add another collection (`essays_published`) pointing there, with the same fields.
 
 ---
 
-### 3.3. Ensure essays folder exists
+## 4. Ensure Site Generator Uses the Same Essay Schema
 
 **Responsibility: Codex**
 
-* If not present, create `content/essays/` in the repo.
-* Add a sample essay file so the CMS has something to show, e.g. `content/essays/example-essay.md` with the YAML schema above and a few paragraphs of dummy body text.
+1. Verify that existing templates/components that list and render essays:
 
-**Intended result**
+   * Read front matter fields defined above.
+   * Map `word_range` to the visual length symbol (square/triangle/circle + magenta/orange/teal).
+   * Display `topic`, `keywords`, `version`, `status`, `author`, `coauthors` as needed.
+2. Update logic if necessary to:
 
-* When Decap loads, it lists at least one essay.
-* The front-end/Elementy build can already render essays from this folder (Codex may need to align whatever Elementy currently uses to this structure).
+   * Treat `status` consistently across the system (Decap, scripts, templates).
+   * Distinguish between drafts and published essays using either:
 
----
-
-## 4. Authentication & hosting (where the “hard part” is)
-
-You cannot complete *all* of this purely from code in the repo — some pieces must be configured in the hosting environment because GitHub OAuth and/or Identity require a server component. GitHub itself explicitly requires a server for OAuth flows. ([decapcms.org][2])
-
-### Option A (recommended eventually): host with Netlify + Git Gateway
-
-**Manual (human, not Codex-only):**
-
-1. Connect your GitHub repo to **Netlify** and enable automatic deploys.
-2. Turn on **Netlify Identity** and **Git Gateway** as per Decap docs. ([decapcms.org][4])
-3. In `admin/config.yml`, switch the backend to:
-
-   ```yaml
-   backend:
-     name: git-gateway
-     branch: "main"
-   ```
-
-**Result**
-
-* Authors log in via an email/password (Identity) or magic link, no GitHub account required.
-* You control who may edit essays in the Netlify dashboard.
-* Decap commits to your GitHub repo via Git Gateway.
-
-### Option B: stay on GitHub Pages with GitHub backend
-
-**Concept**
-
-* Keep hosting on GitHub Pages.
-* Use Decap **GitHub backend** with a **separate OAuth client** (either Netlify-auth-based or a custom external OAuth service). ([Stack Overflow][5])
-
-**Manual steps (human)**
-
-1. Choose an OAuth provider for Decap:
-
-   * E.g. deploy `decap-cms-github-backend` or a similar OAuth service on a platform like Render/Vercel. ([GitHub][6])
-2. Configure that service with your GitHub OAuth app (client ID/secret, callback URL, etc.).
-3. In `admin/config.yml`, add the `base_url` and `auth_endpoint` pointing to that OAuth service (as per the Decap “External OAuth Clients” docs).
-
-**Result**
-
-* Editors log in with GitHub accounts.
-* They must have push access to your repo to edit content. ([decapcms.org][2])
+     * The folder location (draft vs published), and/or
+     * The `status` value.
 
 ---
 
-## 5. How Codex should integrate this with the existing DUE site
-
-These are repo-only tasks Codex can safely perform.
-
-### 5.1. Align the site generator with `content/essays/`
-
-* If DUE already has an essay list page and detail pages:
-
-  * Update the templates / generator config to read essays from `content/essays/` and the fields in the new front matter.
-* Map your **length symbols** (square/triangle/circle and colors) directly to `length_category`:
-
-  * `100-500` → square + magenta (#bb47f5)
-  * `500-1000` → triangle + orange (#f7ad45)
-  * `1000-1500` → circle + teal (#0d9488)
-* Use `topic`, `keywords`, `status`, and `version` wherever relevant in the UI (card lists, filters, essay header, etc.).
-
-### 5.2. Add a simple README section for maintainers
+## 5. Integrate with Existing CLI and CI Workflows
 
 **Responsibility: Codex**
 
-In `README.md`, add a “DUE Admin / Decap CMS” section, e.g.:
+1. Inspect scripts such as `npm run new` and any CI checks related to essays.
+2. Adjust them so that:
 
-```markdown
-## DUE Admin (Decap CMS)
+   * `npm run new` creates a new essay file with front matter matching the schema used by Decap.
+   * CI checks (word ranges, version increments, release notes) operate on the same fields Decap manages.
+3. Ensure that both:
 
-We use [Decap CMS](https://decapcms.org/) as a Git-based CMS for essays.
+   * Essays created via CLI, and
+   * Essays created via `/admin`
+     are fully compatible and indistinguishable to the site build and CI.
 
-- Admin UI: `/admin/`
-- Config: `admin/config.yml`
-- Essays folder: `content/essays/`
+---
 
-Each essay is a Markdown file with YAML front matter using the schema described in `admin/config.yml`.
+## 6. Deploy the Site to Netlify
 
-Authentication backend:
-- For Netlify + Git Gateway, set `backend.name: git-gateway`.
-- For GitHub backend with custom OAuth, set `backend.name: github` and configure the OAuth service as described in the Decap docs.
+**Responsibility: Human operator (not Codex-only)**
+
+1. Create a Netlify account (if not already).
+2. In Netlify:
+
+   * **Add new site from Git**.
+   * Connect to the DUE GitHub repo.
+   * Set build command and publish directory according to the existing setup (e.g. `npm run build` and `dist/` or similar).
+3. Confirm that:
+
+   * The main site builds and serves correctly.
+   * `/admin/` loads the Decap UI shell (though login will not work yet).
+
+Once Netlify is the primary hosting, GitHub Pages can be disabled or left as backup, depending on preference.
+
+---
+
+## 7. Enable Netlify Identity (Invite-Only)
+
+**Responsibility: Human operator**
+
+1. In Netlify site settings:
+
+   * Go to **Identity**.
+   * Click **Enable Identity**.
+2. Under Identity settings:
+
+   * Set **Registration preferences** to **Invite only**.
+3. Optionally configure:
+
+   * Allowed external providers (Google, GitHub) if desired.
+4. This ensures that only invited users can register and log in.
+
+---
+
+## 8. Enable Git Gateway and Restrict by Role
+
+**Responsibility: Human operator**
+
+1. In the same Netlify site:
+
+   * Under **Identity → Services**, enable **Git Gateway**.
+2. In Git Gateway settings:
+
+   * Set the **Git provider** to GitHub and authorize Netlify.
+   * Configure **Roles** so that only specific Identity roles can access Git Gateway, e.g.:
+
+     * `due-author,due-editor`
+3. This enforces:
+
+   * Only Identity users with at least one of these roles can commit via Git Gateway.
+
+---
+
+## 9. Assign Roles to Pre-Approved Users
+
+**Responsibility: Human operator**
+
+For each person who should be able to propose/write essays:
+
+1. Go to **Identity → Users** in Netlify.
+2. Click **Invite users**:
+
+   * Enter their email address.
+3. After they accept the invite and appear as a user:
+
+   * Open their user details.
+   * Assign the role(s) needed:
+
+     * `due-author` for regular essayists.
+     * `due-editor` for people who can also do editorial review.
+
+Users without these roles:
+
+* Can be invited for other purposes (e.g. reading restricted content if ever needed), but
+* Cannot commit any content via Decap CMS.
+
+---
+
+## 10. Finalize Decap Backend Configuration
+
+**Responsibility: Codex**
+
+Update `admin/config.yml` `backend` block to match the Netlify setup:
+
+```yaml
+backend:
+  name: git-gateway
+  branch: "main"    # adjust if necessary
 ```
 
-**Intended result**
+No `repo:` field is required for Git Gateway; Netlify knows the repo linked to the site.
 
-* Any future human or agent immediately understands where to look and how things hang together.
+Confirm that:
 
----
-
-## 6. Risks, pitfalls, and how to avoid them
-
-### 6.1. Authentication won’t work “by magic”
-
-**Risk**
-
-* Adding `admin/index.html` + `config.yml` is not enough for login to work. Decap **requires** a working backend with auth:
-
-  * Netlify Git Gateway, or
-  * GitHub backend with a configured OAuth server. ([decapcms.org][1])
-
-**Mitigation**
-
-* Treat the hosting/auth setup as a small separate task:
-
-  * Decide early: “We will use Netlify+Git Gateway” **or** “We will host a GitHub OAuth backend.”
-  * Document which backend is chosen in `README.md` and `config.yml`.
+* `publish_mode: editorial_workflow` is set (if you want the draft/review/publish flow).
+* `media_folder` and `public_folder` paths match the asset structure used by the site.
 
 ---
 
-### 6.2. Editors must have proper permissions
+## 11. Editorial Workflow Behavior
 
-**Risk**
+With `publish_mode: editorial_workflow`:
 
-* With GitHub backend, only users with **push access to the repo** can edit. ([decapcms.org][2])
-* If you meant “members” in a looser sense (e.g. email addresses not in your GitHub org), this might be too strict.
+* When an author clicks **Save**:
 
-**Mitigation**
+  * Decap creates/updates a draft (backed by a branch/PR in Git).
+* When an editor clicks **Publish**:
 
-* If you want non-GitHub-savvy authors who *don’t* need repo access:
+  * Decap merges the change into the main branch.
 
-  * Prefer **Netlify Identity + Git Gateway**.
-* If “members” = “people with repo write access,” GitHub backend is fine.
+**Additional safeguard (optional, GitHub side):**
 
----
+* Enable branch protection on `main`:
 
-### 6.3. Directory / path mismatch
+  * Require at least one approving review for PRs.
+  * Limit who can push directly.
+* This ensures:
 
-**Risk**
+  * Even if an Identity user has the correct role, final merging behavior can still be controlled at the GitHub level if desired.
 
-* If the SSG or Elementy currently expects essays somewhere else (e.g. `_posts/` or a different folder), just dropping files in `content/essays/` may not show anything.
-
-**Mitigation**
-
-* Codex should:
-
-  * Find where essays are currently stored and rendered.
-  * Either:
-
-    * Point Decap’s `folder:` to that existing location, or
-    * Move templates to use `content/essays/` and migrate any existing essays into that folder.
+Codex does not configure branch protection; this is done in the GitHub repo settings by a repo admin.
 
 ---
 
-### 6.4. Merge conflicts & parallel editing
+## 12. Testing the End-to-End Flow
 
-**Risk**
+**Responsibility: Codex + Human**
 
-* If someone edits an essay directly in Git (CLI or GitHub web) while another edits in the CMS, you may get merge conflicts.
+1. As site owner (with `due-editor` role):
 
-**Mitigation**
+   * Log in to `/admin/`.
+   * Create a new test essay in the drafts collection.
+   * Ensure that:
 
-* For now, keep a simple habit:
+     * A new Markdown file appears in the correct drafts folder.
+     * Front matter fields are correct.
+     * The site build passes CI and the essay appears (if intended to be visible).
+2. Invite a second user (test account) as `due-author`:
 
-  * Encourage members to use `/admin/` as the primary editing mechanism.
-  * If conflicts occur, resolve them manually in Git and then reload CMS.
+   * Verify they can log in, create/edit essays.
+   * Verify they cannot modify anything outside the allowed collections.
+3. Invite a user with **no** roles:
 
----
-
-### 6.5. YAML schema drift
-
-**Risk**
-
-* If you later change field names or types in `config.yml` but don’t update:
-
-  * Existing files’ front matter, or
-  * The site templates,
-
-  then things can break or disappear from lists.
-
-**Mitigation**
-
-* Treat `admin/config.yml` as the **source of truth** for essay metadata.
-* When changing schema:
-
-  1. Update templates.
-  2. Run a scripted migration (Codex can write a small script) to adjust old front matter.
-  3. Only then update `config.yml`.
+   * Verify they can log in (if invited) but **cannot** use the CMS to commit changes.
 
 ---
 
-### 6.6. GitHub API rate limits (rare for you, but good to know)
+## 13. Documentation for Future Contributors
 
-**Risk**
+**Responsibility: Codex**
 
-* Very large sites (10k+ entries) can hit GitHub API rate limits for Decap operations. ([decapcms.org][7])
+Add a section to `README.md`, for example:
 
-**Mitigation**
+```markdown
+## Essay workflow (Decap CMS + Netlify Identity)
 
-* For DUE’s scale this is unlikely to matter.
-* If it ever does, options include:
+- Admin UI is available at `/admin/`.
+- We use [Decap CMS] as a Git-based CMS for essay editing.
+- Authentication is handled via Netlify Identity (invite-only).
+- Write access to the repo via CMS is restricted to Identity users with roles:
+  - `due-author` (can propose and edit essays).
+  - `due-editor` (edit + review/publish).
 
-  * Caching, GraphQL mode (`use_graphql: true`), or moving to Git Gateway.
+Essays are stored as Markdown files with YAML front matter in:
+
+- Drafts: `site/essays/drafts/`
+- Published: `site/essays/published/` (if used)
+
+Front-matter schema and field meanings are documented in `docs/ESSAY_SCHEMA.md`.
+
+For CLI-based creation, use:
+
+- `npm run new` (creates a new draft essay file matching the same schema as Decap).
+```
+
+This ensures that both humans and future agents can understand and extend the system.
 
 ---
 
-### 6.7. Media paths and your bundler
+## 14. Summary
 
-**Risk**
+After completing the above steps:
 
-* If the SSG doesn’t know about `static/uploads` / `/uploads`, images uploaded in Decap may not show up correctly.
+* Only **invited** Identity users with roles (`due-author`, `due-editor`) can propose or update essays.
+* They interact solely with a user-friendly `/admin` interface (Decap CMS).
+* All essay content and metadata remain in the GitHub repo as Markdown + YAML.
+* The existing DUE site build and CI logic continue to work, with Decap acting as a thin UI on top of the current architecture.
 
-**Mitigation**
+```
 
-* Codex should:
-
-  * Ensure that `static/uploads` (or whatever `media_folder` you choose) is served as `/uploads`.
-  * Adjust the SSG config so those paths survive the build.
-
----
-
-## 7. What Codex should concretely do next
-
-If you want this to be “prompt-ready” for the coding agent, the high-level todo is:
-
-1. **Add Decap files**
-
-   * Create `admin/index.html` as above.
-   * Create `admin/config.yml` with the essay collection and backend stub.
-   * Create `content/essays/` and a sample essay.
-
-2. **Wire the generator**
-
-   * Make sure DUE’s front-end reads essays from `content/essays/` and uses:
-
-     * `topic`, `keywords`, `length_category`, `version`, `status`, `author`.
-   * Map `length_category` → length symbols/colors.
-
-3. **Document it**
-
-   * Add a “DUE Admin” section to `README.md` with:
-
-     * Where admin lives.
-     * Which backend is intended (GitHub or Git Gateway).
-     * A short note on how to add/edit essays.
-
-4. **Coordinate with you on hosting/auth**
-
-   * You (or whoever handles infrastructure) then:
-
-     * Either move hosting to Netlify and enable Identity + Git Gateway,
-     * Or set up GitHub OAuth / external backend for GitHub Pages.
-
-Once those are in place, authors can just go to `/admin/` and start writing essays with a form instead of touching Git at all.
-
-[1]: https://decapcms.org/docs/intro/ "Overview | Decap CMS | Open-Source Content Management System"
-[2]: https://decapcms.org/docs/github-backend/ "GitHub | Decap CMS | Open-Source Content Management System"
-[3]: https://decapcms.org/docs/widgets/list/ "List | Decap CMS | Open-Source Content Management System"
-[4]: https://decapcms.org/docs/git-gateway-backend/ "Git Gateway | Decap CMS | Open-Source Content Management System"
-[5]: https://stackoverflow.com/questions/79009410/can-i-use-decap-cms-on-github-pages-without-hosting-the-site-on-netlify?utm_source=chatgpt.com "Can I use decap CMS on Github pages without hosting ..."
-[6]: https://github.com/njfamirm/decap-cms-github-backend?utm_source=chatgpt.com "njfamirm/decap-cms-github-backend"
-[7]: https://decapcms.org/blog/git-based-cms-definition-features-best-practices/?utm_source=chatgpt.com "Git-Based CMS: Definition, Features, Best Practices"
+::contentReference[oaicite:0]{index=0}
+```
