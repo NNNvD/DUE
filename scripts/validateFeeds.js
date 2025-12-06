@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { registerErrorHandlers } = require("./lib/registerErrorHandlers");
+const loadEssayIndex = require("../site/_data/essayIndex");
 
 const root = path.join(__dirname, "..", "_site", "feeds");
 const xmlPath = path.join(root, "feed.xml");
@@ -16,6 +17,21 @@ function assert(condition, message) {
 
 function ensureFileExists(filePath) {
   assert(fs.existsSync(filePath), `Expected ${filePath} to exist. Did you run \"npm run build\"?`);
+}
+
+function formatJsonParseError(jsonContent, error) {
+  const match = error && typeof error.message === "string" && error.message.match(/position\s+(\d+)/i);
+  const position = match ? parseInt(match[1], 10) : null;
+
+  if (!Number.isFinite(position)) {
+    return error.message;
+  }
+
+  const start = Math.max(0, position - 40);
+  const end = Math.min(jsonContent.length, position + 40);
+  const excerpt = jsonContent.slice(start, end).replace(/\s+/g, " ");
+
+  return `${error.message} (around: ${excerpt})`;
 }
 
 function isWellFormedXml(xml) {
@@ -55,7 +71,14 @@ function validateXmlFeed(filePath) {
 
 function validateJsonFeed(filePath) {
   const jsonContent = fs.readFileSync(filePath, "utf8");
-  const feed = JSON.parse(jsonContent);
+  let feed;
+
+  try {
+    feed = JSON.parse(jsonContent);
+  } catch (error) {
+    const message = formatJsonParseError(jsonContent, error);
+    throw new Error(`Unable to parse ${filePath}: ${message}`);
+  }
   assert(Array.isArray(feed.items), "Feed JSON must include an items array.");
   feed.items.forEach((item, index) => {
     assert(item.title, `Feed item #${index + 1} is missing a title.`);
@@ -65,6 +88,18 @@ function validateJsonFeed(filePath) {
   });
 }
 
+function validateSourceMetadata() {
+  const essays = loadEssayIndex();
+  const published = essays.filter((entry) => entry && entry.status === "published");
+  const missingTitle = published.filter((entry) => !entry.title);
+
+  assert(
+    missingTitle.length === 0,
+    `Published essays are missing titles: ${missingTitle.map((entry) => entry.slug || "unknown-slug").join(", ")}`
+  );
+}
+
+validateSourceMetadata();
 ensureFileExists(xmlPath);
 ensureFileExists(jsonPath);
 validateXmlFeed(xmlPath);

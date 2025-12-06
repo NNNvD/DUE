@@ -14,6 +14,7 @@ eleventyExcludeFromCollections: true
   "description": {{ site.tagline | dump }},
   "items": [
     {% for post in posts %}
+      {% set title = post.data.title or (post.data.page and post.data.page.title) or post.fileSlug or 'Untitled essay' %}
       {% set releaseNotes = post.data.release_notes or [] %}
       {% set releaseNote = releaseNotes | first or meta.extractDescription(post.data) %}
       {% set contentText = releaseNote or '' %}
@@ -22,7 +23,7 @@ eleventyExcludeFromCollections: true
       {
         "id": {{ canonicalUrl | dump }},
         "url": {{ canonicalUrl | dump }},
-        "title": {{ post.data.title | dump }},
+        "title": {{ title | dump }},
         "date_published": {{ post.data.published_at | dump }},
         "version": {{ version | dump }},
         "content_text": {{ contentText | dump }}

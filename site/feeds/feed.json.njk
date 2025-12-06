@@ -13,6 +13,7 @@ eleventyExcludeFromCollections: true
   "feed_url": {{ feedUrl | dump | safe }},
   "items": [
     {% for entry in entries %}
+      {% set entryTitle = entry.data.title or (entry.data.page and entry.data.page.title) or entry.fileSlug or 'Untitled essay' %}
       {% set canonicalUrl = (entry.data.canonical or entry.url | url) | absoluteUrl(site) %}
       {% set releaseNotes = entry.data.release_notes or [] %}
       {% set latestReleaseNote = releaseNotes | first or meta.extractDescription(entry.data) %}
@@ -20,7 +21,7 @@ eleventyExcludeFromCollections: true
       {
         "id": {{ canonicalUrl | dump | safe }},
         "url": {{ canonicalUrl | dump | safe }},
-        "title": {{ entry.data.title | dump | safe }},
+        "title": {{ entryTitle | dump | safe }},
         "date_published": {{ (entry.data.published_at or null) | dump | safe }},
         "version": {{ entryVersion | dump | safe }},
         "content_text": {{ latestReleaseNote | dump | safe }}

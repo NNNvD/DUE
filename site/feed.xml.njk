@@ -22,12 +22,13 @@ eleventyExcludeFromCollections: true
     </lastBuildDate>
     <generator>Eleventy</generator>
     {% for post in entries %}
+      {% set postTitle = post.data.title or (post.data.page and post.data.page.title) or post.fileSlug or 'Untitled essay' %}
       {% set releaseNotes = post.data.release_notes or [] %}
       {% set releaseNote = releaseNotes | first or meta.extractDescription(post.data) %}
       {% set canonicalUrl = (post.data.canonical or post.url | url) | absoluteUrl(site) %}
       {% set version = post.data.version or '0.0' %}
       <item>
-        <title>{{ post.data.title }}</title>
+        <title>{{ postTitle }}</title>
         <link>{{ canonicalUrl }}</link>
         <guid isPermaLink="true">{{ canonicalUrl }}</guid>
         {% if post.data.published_at %}<pubDate>{{ post.data.published_at | rssDate }}</pubDate>{% endif %}
