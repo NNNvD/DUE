@@ -3,7 +3,7 @@ const fs = require("fs-extra");
 const path = require("path");
 const matter = require("gray-matter");
 const dayjs = require("dayjs");
-const glob = require("glob");
+const fg = require("fast-glob");
 
 const utc = require("dayjs/plugin/utc");
 
@@ -97,7 +97,9 @@ function runAutopublish(options = {}) {
   const now = referenceTime ? dayjs.utc(referenceTime) : dayjs.utc();
   fs.removeSync(autopublishRoot);
 
-  const published = glob.sync(`${draftsDir}/**/*.md`).reduce((list, fp) => {
+  const draftFiles = fg.sync(`${draftsDir}/**/*.md`, { dot: false });
+
+  const published = draftFiles.reduce((list, fp) => {
     const raw = fs.readFileSync(fp, "utf8");
     const doc = matter(raw);
     const d = doc.data;
