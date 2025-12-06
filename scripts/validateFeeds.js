@@ -1,9 +1,12 @@
 const fs = require("fs");
 const path = require("path");
+const { registerErrorHandlers } = require("./lib/registerErrorHandlers");
 
 const root = path.join(__dirname, "..", "_site", "feeds");
 const xmlPath = path.join(root, "feed.xml");
 const jsonPath = path.join(root, "feed.json");
+
+registerErrorHandlers("validateFeeds");
 
 function assert(condition, message) {
   if (!condition) {
