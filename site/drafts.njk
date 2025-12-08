@@ -7,8 +7,8 @@ description: "All essays in draft mode ordered by publish date."
 
 <section class="page-header card">
   <p class="eyebrow">Draft schedule</p>
-  <h2>What is publishing next</h2>
-  <p class="lede">Every draft is listed by its publish date so you can track upcoming releases. Drafts are read-only; comments open once an essay is published.</p>
+  <h2>What’s publishing next</h2>
+  <p class="lede">Every active draft is listed by its publish date so you can see where help is needed most—ideally before the deadline hits.</p>
 </section>
 
 {% if drafts.length %}
@@ -35,7 +35,7 @@ description: "All essays in draft mode ordered by publish date."
                   class="badge deadline-badge"
                   data-deadline-badge="{{ draft.data.deadline_at }}"
                   data-deadline-label="{{ draft.data.deadline_at | date('yyyy-LL-dd') }}"
-                  title="Publishes {{ draft.data.deadline_at | date('yyyy-LL-dd') }}"
+                  title="Publishes on {{ draft.data.deadline_at | date('yyyy-LL-dd') }}"
                 ></span>
               {% else %}
                 <span class="badge">Publication date pending</span>
