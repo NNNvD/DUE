@@ -17,6 +17,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # Prefer the secret; fall back to a repository variable if the secret is not set.
+      DECAP_OAUTH_BASE: ${{ secrets.DECAP_OAUTH_BASE || vars.DECAP_OAUTH_BASE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

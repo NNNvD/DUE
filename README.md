@@ -34,6 +34,23 @@ npm run new
 
 The script prompts for title, topic, author, key dates, word range, and slug, then writes a new Markdown file to `site/essays/drafts/`.
 
+## Decap CMS (/admin)
+- The `/admin` route loads Decap CMS configured for GitHub Pages. Content stays under `site/essays/drafts/` and `site/essays/published/`. The Eleventy build passthroughs `/admin` so the CMS is available at `https://your-username.github.io/DUE/admin/` after a deploy.
+- Backend: GitHub with an external OAuth provider (e.g., deploy [`netlify-cms-github-oauth-provider`](https://github.com/joeattardi/netlify-cms-github-oauth-provider)).
+  1. Deploy the provider (Netlify/Vercel/etc.) and set its `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET`, `OAUTH_CLIENT_ID`/`OAUTH_CLIENT_SECRET`, and `BASE_URL` env vars.
+2. Add a repository **secret** named `DECAP_OAUTH_BASE` (ending in `/api/auth`). If you prefer repository variables, add `DECAP_OAUTH_BASE` as a variable instead; the Pages workflow will use the secret first and fall back to the variable. The `/api/auth` proxy uses this value to know where to redirect the login request.
+  3. Keep `admin/config.yml` pointing at `https://nnnvd.github.io/DUE` with `auth_endpoint: /api/auth`; the proxy page will forward the request to `DECAP_OAUTH_BASE` and Decap will continue the login flow there.
+- Access: Only GitHub users with write access to the repo can log in. There are no public sign-ups.
+- Media: Decap uploads save to `site/assets/uploads` and publish at `/DUE/assets/uploads`. If you rename the repo or change the Pages base path, update `public_folder` accordingly.
+- Editorial workflow: Decap keeps drafts in-place; autopublish and CI still enforce status/word-range rules. Refresh `word_count` with `npm run check:words -- --write` after edits.
+
+### Start a new essay from the frontend
+1. Visit `/admin/` on the deployed site and sign in with your GitHub account through the configured OAuth backend (only repo collaborators are allowed).
+2. In the **Draft essays** collection, click **New Draft essay**.
+3. Fill in the required fields to match the front matter schema (title, topic, author, status, dates, word range, etc.).
+4. Save the entry; Decap commits the new Markdown file to `site/essays/drafts/` using the slug you choose.
+5. Run `npm run check:words -- --write` locally (or in CI) to populate `word_count` before publishing.
+
 ## Content model (front matter)
 ```yaml
 ---
@@ -42,9 +59,11 @@ topic: "Proposed topic"
 author: yourhandle
 coauthors: []             # GitHub handles or { user, since_version }
 acknowledgments: []       # list of { user, note, since_version }
-status: draft             # draft|published
+keywords: []              # up to 5 keywords
+status: draft             # proposed|draft|published
 started_at: YYYY-MM-DD
 deadline_at: YYYY-MM-DD
+proposed_at: YYYY-MM-DD      # optional. Set automatically when created via CLI
 deadline_at_time: HH:MM      # optional. Defaults to 00:00 UTC if omitted.
 initial_status: unfinished   # complete|unfinished (for first publish)
 version: 0.1                 # 1.0 if complete at first publish else 0.1

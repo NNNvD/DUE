@@ -11,6 +11,9 @@ dayjs.extend(customParseFormat);
 
 const draftsDir = path.join(__dirname, "..", "site", "essays", "drafts");
 
+const STATUS_OPTIONS = ["proposed", "draft", "published"];
+const WORD_RANGE_OPTIONS = ["250-500", "500-1000", "1000-1500"];
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -81,6 +84,19 @@ async function main() {
   const title = await ask("Title", { required: true });
   const topic = await ask("Topic", { required: true });
 
+  const keywordsRaw = await ask("Keywords (comma-separated, up to 5)", {
+    required: false,
+    validate: value => {
+      if (!value) return true;
+      const entries = value.split(",").map(item => item.trim()).filter(Boolean);
+      if (entries.length > 5) return "Please provide 5 or fewer keywords.";
+      return true;
+    },
+  });
+  const keywords = keywordsRaw
+    ? keywordsRaw.split(",").map(entry => entry.trim()).filter(Boolean).slice(0, 5)
+    : [];
+
   const defaultAuthor = process.env.GIT_AUTHOR_NAME || process.env.USER || "";
   const author = await ask("Author", { required: true, defaultValue: defaultAuthor });
 
@@ -98,6 +114,19 @@ async function main() {
     validate: ensureIsoDate,
   });
 
+  const deadlineTime = await ask("Deadline time (HH:MM or HH:MM:SS, optional)", { required: false });
+
+  const status = await ask("Status (proposed|draft|published)", {
+    defaultValue: "proposed",
+    required: true,
+    validate: value => {
+      if (!STATUS_OPTIONS.includes(value)) {
+        return "Choose one of: proposed, draft, published.";
+      }
+      return true;
+    },
+  });
+
   const initialStatus = await ask("Initial status (complete|unfinished)", {
     defaultValue: "unfinished",
     required: true,
@@ -113,7 +142,7 @@ async function main() {
     defaultValue: "500-1000",
     required: true,
     validate: value => {
-      if (!["250-500", "500-1000", "1000-1500"].includes(value)) {
+      if (!WORD_RANGE_OPTIONS.includes(value)) {
         return "Choose one of: 250-500, 500-1000, 1000-1500.";
       }
       return true;
@@ -138,18 +167,24 @@ async function main() {
     console.log(`Slug '${slug}' already exists. Using '${finalSlug}' instead.`);
   }
 
+  const normalizedStatus = status.toLowerCase();
+  const version = initialStatus === "complete" ? "1.0.0" : "0.1.0";
   const frontMatter = {
     title,
     topic,
+    keywords,
     author,
     coauthors: [],
     acknowledgments: [],
-    status: "draft",
+    status: normalizedStatus,
     started_at: startedAt,
+    proposed_at: dayjs().format("YYYY-MM-DD"),
     deadline_at: deadlineAt,
+    deadline_at_time: deadlineTime || undefined,
     initial_status: initialStatus,
-    version: initialStatus === "complete" ? 1.0 : 0.1,
+    version,
     word_range: wordRange,
+    word_count: 0,
     release_notes: [],
   };
 
