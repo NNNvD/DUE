@@ -15,9 +15,10 @@ description: "See what is shipping now, browse recent essays, and jump into the 
   <div class="hero__copy">
     <p class="eyebrow">Deadline for Unfinished Essays</p>
     <h2>Propose. Panic. Publish.</h2>
-    <p class="lede">DUE is a collaborative platform for short-form essays written under pressure. Writers begin by proposing a topic, then have 30 days to complete an essay within a chosen word range—250–500, 500–1000, or 1000–1500 words. Once the deadline hits, the essay is published—finished or not.</p>
+    <p class="lede">DUE is a collaborative platform for short-form essays written under pressure. Writers propose a topic, choose a word range—Tiny (100–500 words), Minute (500–1000), or Short (1000–1500)—and have 30 days to deliver. When the deadline hits, the essay goes live, finished or not.</p>
+    <p class="muted">Purple squares mark Tiny essays, orange triangles Minute essays, and teal circles Short essays.</p>
     <div class="legend-badges">
-      <span class="legend-badge legend-badge--square magenta">Tiny · 250–500 words</span>
+      <span class="legend-badge legend-badge--square magenta">Tiny · 100–500 words</span>
       <span class="legend-badge legend-badge--triangle orange">Minute · 500–1000 words</span>
       <span class="legend-badge legend-badge--circle teal">Short · 1000–1500 words</span>
     </div>
@@ -58,7 +59,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
     <div class="section-heading">
       <p class="eyebrow">Now writing</p>
       <h3>In progress</h3>
-      <p>Deadlines arrive fast—track what is coming next. Drafts are view-only until they publish.</p>
+      <p>Deadlines arrive fast—here’s what is currently being drafted. Drafts are read-only until they publish.</p>
     </div>
     {% if drafts.length %}
       {% set active = drafts[0] %}
@@ -66,11 +67,11 @@ description: "See what is shipping now, browse recent essays, and jump into the 
         <div class="meta">
           {% if active.data.word_range %}<span class="badge {{ active.data.word_range | wordRangeTone }}">{{ active.data.word_range }} words</span>{% endif %}
           {% if active.data.started_at %}<span>Started {{ active.data.started_at | date("yyyy-LL-dd") }}</span>{% endif %}
-          {% if active.data.deadline_at %}<span>Publishes {{ active.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
+          {% if active.data.deadline_at %}<span>Publishes on {{ active.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
         </div>
         <h4 class="card-title">{{ active.data.title }}</h4>
         {% if active.data.topic %}<p class="muted"><strong>Topic:</strong> {{ active.data.topic }}</p>{% endif %}
-        <p class="countdown"><span data-countdown>{% if active.data.deadline_at %}Publishes at {{ active.data.deadline_at | date("yyyy-LL-dd") }}{% else %}Deadline not yet scheduled.{% endif %}</span></p>
+        <p class="countdown"><span data-countdown>{% if active.data.deadline_at %}Publishes on {{ active.data.deadline_at | date("yyyy-LL-dd") }}{% else %}Deadline not yet scheduled.{% endif %}</span></p>
       </div>
       {% if drafts.length > 1 %}
         <div class="divider"></div>
@@ -81,7 +82,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
               {% if not loop.first %}
               <li>
                 <span class="draft-title">{{ draft.data.title }}</span>
-                {% if draft.data.deadline_at %}<span class="muted"> — publishes {{ draft.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
+                {% if draft.data.deadline_at %}<span class="muted"> — publishing on {{ draft.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
               </li>
               {% endif %}
             {% endfor %}
@@ -97,7 +98,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
     <div class="section-heading">
       <p class="eyebrow">Latest release</p>
       <h3>Most recently published</h3>
-      <p>Catch up on what just shipped before the next round of edits.</p>
+      <p>Catch the latest release before the next round of edits.</p>
     </div>
     {% if latest %}
       {% set length = latest.data.word_range | wordRangeMeta %}
@@ -130,7 +131,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
 <section class="card">
   <div class="section-heading">
     <p class="eyebrow">Explore</p>
-    <h3>Keep reading and commenting</h3>
+    <h3>Keep reading and contributing</h3>
   </div>
   <div class="card-grid">
     <div class="card panel">
@@ -148,7 +149,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
     <div class="card panel">
       <p class="eyebrow">Backstory</p>
       <h4 class="card-title">About DUE</h4>
-      <p class="muted">Learn how deadlines, acknowledgments, and the comment policy shape the project.</p>
+      <p class="muted">Learn how deadlines, credits, and feedback shape the project.</p>
       <a class="inline-link" href="{{ '/about/' | url }}">Read the story →</a>
     </div>
   </div>
