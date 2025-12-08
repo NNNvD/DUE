@@ -44,6 +44,13 @@ The script prompts for title, topic, author, key dates, word range, and slug, th
 - Media: Decap uploads save to `site/assets/uploads` and publish at `/DUE/assets/uploads`. If you rename the repo or change the Pages base path, update `public_folder` accordingly.
 - Editorial workflow: Decap keeps drafts in-place; autopublish and CI still enforce status/word-range rules. Refresh `word_count` with `npm run check:words -- --write` after edits.
 
+### Start a new essay from the frontend
+1. Visit `/admin/` on the deployed site and sign in with your GitHub account through the configured OAuth backend (only repo collaborators are allowed).
+2. In the **Draft essays** collection, click **New Draft essay**.
+3. Fill in the required fields to match the front matter schema (title, topic, author, status, dates, word range, etc.).
+4. Save the entry; Decap commits the new Markdown file to `site/essays/drafts/` using the slug you choose.
+5. Run `npm run check:words -- --write` locally (or in CI) to populate `word_count` before publishing.
+
 ## Content model (front matter)
 ```yaml
 ---
