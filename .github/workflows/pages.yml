@@ -17,6 +17,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DECAP_OAUTH_BASE: ${{ secrets.DECAP_OAUTH_BASE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
