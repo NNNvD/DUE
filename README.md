@@ -35,7 +35,7 @@ npm run new
 The script prompts for title, topic, author, key dates, word range, and slug, then writes a new Markdown file to `site/essays/drafts/`.
 
 ## Decap CMS (/admin)
-- The `/admin` route loads Decap CMS configured for GitHub Pages. Content stays under `site/essays/drafts/` and `site/essays/published/`.
+- The `/admin` route loads Decap CMS configured for GitHub Pages. Content stays under `site/essays/drafts/` and `site/essays/published/`. The Eleventy build passthroughs `/admin` so the CMS is available at `https://your-username.github.io/DUE/admin/` after a deploy.
 - Backend: GitHub with an external OAuth provider (e.g., deploy [`netlify-cms-github-oauth-provider`](https://github.com/joeattardi/netlify-cms-github-oauth-provider)).
   1. Create a GitHub OAuth app with callback `${BASE_URL}/callback` for your deployed provider (Netlify/Vercel/etc.).
   2. Set the provider’s `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET`, `OAUTH_CLIENT_ID`/`OAUTH_CLIENT_SECRET`, and `BASE_URL` env vars.
