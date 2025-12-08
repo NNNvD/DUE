@@ -9,6 +9,17 @@ layout: base.njk
   {% set encodedShareUrl = shareUrl | urlencode %}
   {% set encodedShareText = shareLabel | urlencode %}
   {% set encodedShareSnippet = shareSnippet | urlencode %}
+  {% set lengthRange %}
+    {% if length.label == 'Tiny' %}
+      100–500 words
+    {% elif length.label == 'Minute' %}
+      500–1000 words
+    {% elif length.label == 'Short' %}
+      1000–1500 words
+    {% else %}
+      {% if word_range %}{{ word_range }} words{% else %}Length unknown{% endif %}
+    {% endif %}
+  {% endset %}
   <header class="essay-header">
     {% set isPublishedEssay = page.inputPath and '/essays/published/' in page.inputPath %}
     <div class="essay-header__row">
@@ -25,8 +36,14 @@ layout: base.njk
           <div class="length-chip" aria-label="Length: {{ word_range }} words">
             <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
             <span class="length-chip__text">
-              <span>{{ word_range }} words</span>
-              {% if word_count %}<span aria-hidden="true">•</span><span>{{ word_count }} words</span>{% endif %}
+              <span>
+                {% if length.label != 'Length unknown' %}
+                  {{ length.label }} ({{ lengthRange | trim }})
+                {% else %}
+                  {{ word_range }} words
+                {% endif %}
+              </span>
+              {% if word_count %}<span aria-hidden="true">•</span><span>{{ word_count }} words total</span>{% endif %}
             </span>
           </div>
         {% endif %}
@@ -90,7 +107,9 @@ layout: base.njk
       {% endfor %}
     </ul>
   {% else %}
-    <p>No release notes yet.</p>
+    <ul>
+      <li>Initial publication as complete (v1.0.0).</li>
+    </ul>
   {% endif %}
 </section>
 
@@ -107,7 +126,7 @@ layout: base.njk
       {% endfor %}
     </ul>
   {% else %}
-    <p>Credits for incorporated feedback will appear here once comments are published and merged.</p>
+    <p>Minor improvements (grammar, phrasing, examples, references) are credited here after they are merged.</p>
   {% endif %}
 </section>
 
@@ -139,7 +158,7 @@ layout: base.njk
       {% endfor %}
     </ul>
   {% else %}
-    <p>No snapshots yet.</p>
+    <p>No earlier versions yet—this essay is at its initial release.</p>
   {% endif %}
   {% if currentSlug and currentSlug[0] != '_' %}
     {% set historyPath = '/essays/published/' ~ currentSlug ~ '/history/' %}
