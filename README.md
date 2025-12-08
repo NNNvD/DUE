@@ -37,10 +37,9 @@ The script prompts for title, topic, author, key dates, word range, and slug, th
 ## Decap CMS (/admin)
 - The `/admin` route loads Decap CMS configured for GitHub Pages. Content stays under `site/essays/drafts/` and `site/essays/published/`. The Eleventy build passthroughs `/admin` so the CMS is available at `https://your-username.github.io/DUE/admin/` after a deploy.
 - Backend: GitHub with an external OAuth provider (e.g., deploy [`netlify-cms-github-oauth-provider`](https://github.com/joeattardi/netlify-cms-github-oauth-provider)).
-  1. Create a GitHub OAuth app with callback `${BASE_URL}/callback` for your deployed provider (Netlify/Vercel/etc.).
-  2. Set the provider’s `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET`, `OAUTH_CLIENT_ID`/`OAUTH_CLIENT_SECRET`, and `BASE_URL` env vars.
-  3. Update `admin/config.yml` with your repo slug, `base_url` (the provider URL), and `auth_endpoint` (default `/api/auth`).
-     - The config now points to `https://nnnvd.github.io/DUE` so the domain resolves instead of throwing an `NXDOMAIN` error, but you still need to set it to your deployed OAuth host for login to succeed.
+  1. Deploy the provider (Netlify/Vercel/etc.) and set its `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET`, `OAUTH_CLIENT_ID`/`OAUTH_CLIENT_SECRET`, and `BASE_URL` env vars.
+  2. Add `DECAP_OAUTH_BASE` (ending in `/api/auth`) as an environment variable in your Pages/Actions build so the `/api/auth` proxy knows where to redirect the login request.
+  3. Keep `admin/config.yml` pointing at `https://nnnvd.github.io/DUE` with `auth_endpoint: /api/auth`; the proxy page will forward the request to `DECAP_OAUTH_BASE` and Decap will continue the login flow there.
 - Access: Only GitHub users with write access to the repo can log in. There are no public sign-ups.
 - Media: Decap uploads save to `site/assets/uploads` and publish at `/DUE/assets/uploads`. If you rename the repo or change the Pages base path, update `public_folder` accordingly.
 - Editorial workflow: Decap keeps drafts in-place; autopublish and CI still enforce status/word-range rules. Refresh `word_count` with `npm run check:words -- --write` after edits.
