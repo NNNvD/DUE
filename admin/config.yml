@@ -1,0 +1,158 @@
+backend:
+  name: github
+  branch: main
+  repo: nnnvd/DUE
+  # GitHub OAuth provider for Decap CMS. Leave this pointed at the site base;
+  # /api/auth renders a proxy page that forwards to the provider URL set in the
+  # DECAP_OAUTH_BASE environment variable (ending in /api/auth).
+  base_url: https://nnnvd.github.io/DUE
+  auth_endpoint: /api/auth
+media_folder: site/assets/uploads
+public_folder: /DUE/assets/uploads
+local_backend: true
+publish_mode: editorial_workflow
+site_url: https://your-username.github.io/DUE/
+collections:
+  - name: drafts
+    label: Draft essays
+    label_singular: Draft essay
+    folder: site/essays/drafts
+    create: true
+    slug: "{{slug}}"
+    preview_path: "essays/drafts/{{slug}}/"
+    editor:
+      preview: false
+    fields:
+      - { label: Title, name: title, widget: string, required: true }
+      - { label: Topic, name: topic, widget: string, required: true, hint: "Keep the topic to ~5 words." }
+      - label: Keywords
+        name: keywords
+        widget: list
+        summary: "Keyword: {{fields.item}}"
+        field: { label: Keyword, name: item, widget: string, hint: "Up to 5 keywords", pattern: ["^.{0,100}$", "Keyword must be under 100 characters"] }
+        allow_add: true
+        max: 5
+        required: false
+      - { label: Author, name: author, widget: string, required: true }
+      - label: Coauthors
+        name: coauthors
+        widget: list
+        summary: "@{{fields.user}}"
+        collapsed: true
+        fields:
+          - { label: User, name: user, widget: string, required: true, hint: "GitHub handle or name" }
+          - { label: Note, name: note, widget: string, required: false }
+          - { label: Since version, name: since_version, widget: string, required: false, hint: "e.g. 0.1.0" }
+        required: false
+      - label: Acknowledgments
+        name: acknowledgments
+        widget: list
+        summary: "@{{fields.user}}"
+        collapsed: true
+        fields:
+          - { label: User, name: user, widget: string, required: true, hint: "GitHub handle or name" }
+          - { label: Note, name: note, widget: string, required: false }
+          - { label: Since version, name: since_version, widget: string, required: false, hint: "e.g. 0.1.0" }
+        required: false
+      - label: Status
+        name: status
+        widget: select
+        options:
+          - { label: Proposed, value: proposed }
+          - { label: Draft, value: draft }
+          - { label: Published, value: published }
+        default: proposed
+      - label: Initial status
+        name: initial_status
+        widget: select
+        options:
+          - { label: Unfinished, value: unfinished }
+          - { label: Complete, value: complete }
+        default: unfinished
+      - { label: Started at, name: started_at, widget: datetime, format: "YYYY-MM-DD", required: true }
+      - { label: Proposed at, name: proposed_at, widget: datetime, format: "YYYY-MM-DD", required: false }
+      - { label: Deadline at, name: deadline_at, widget: datetime, format: "YYYY-MM-DD", required: true }
+      - { label: Deadline time, name: deadline_at_time, widget: string, required: false, hint: "HH:MM or HH:MM:SS (optionally with timezone offset)" }
+      - { label: Published at, name: published_at, widget: datetime, format: "YYYY-MM-DD", required: false }
+      - label: Version
+        name: version
+        widget: string
+        pattern:
+          - "^\\d+\\.\\d+(\\.\\d+)?$"
+          - "Use semantic versioning (e.g. 0.1.0 or 1.0.0)."
+        default: "0.1.0"
+      - label: Word range
+        name: word_range
+        widget: select
+        options:
+          - { label: "250-500", value: "250-500" }
+          - { label: "500-1000", value: "500-1000" }
+          - { label: "1000-1500", value: "1000-1500" }
+        default: "500-1000"
+      - { label: Word count, name: word_count, widget: number, required: false, hint: "Run npm run check:words -- --write to refresh." }
+      - label: Release notes
+        name: release_notes
+        widget: list
+        allow_add: true
+        field: { label: Note, name: note, widget: string }
+        required: false
+      - { label: Canonical URL, name: canonical_url, widget: string, required: false }
+      - { label: Social image, name: social_image, widget: string, required: false, hint: "Path relative to /assets/ (e.g. /assets/img/social.png)" }
+      - { label: Permalink override, name: permalink, widget: string, required: false }
+      - { label: Body, name: body, widget: markdown }
+  - name: published
+    label: Published essays
+    folder: site/essays/published
+    create: false
+    slug: "{{slug}}"
+    editor:
+      preview: false
+    fields:
+      - { label: Title, name: title, widget: string, required: true }
+      - { label: Topic, name: topic, widget: string, required: true }
+      - { label: Keywords, name: keywords, widget: list, field: { label: Keyword, name: item, widget: string }, allow_add: true, max: 5, required: false }
+      - { label: Author, name: author, widget: string, required: true }
+      - label: Coauthors
+        name: coauthors
+        widget: list
+        summary: "@{{fields.user}}"
+        collapsed: true
+        fields:
+          - { label: User, name: user, widget: string, required: true, hint: "GitHub handle or name" }
+          - { label: Note, name: note, widget: string, required: false }
+          - { label: Since version, name: since_version, widget: string, required: false }
+      - label: Acknowledgments
+        name: acknowledgments
+        widget: list
+        summary: "@{{fields.user}}"
+        collapsed: true
+        fields:
+          - { label: User, name: user, widget: string, required: true, hint: "GitHub handle or name" }
+          - { label: Note, name: note, widget: string, required: false }
+          - { label: Since version, name: since_version, widget: string, required: false }
+      - { label: Status, name: status, widget: select, options: [proposed, draft, published], default: published }
+      - { label: Initial status, name: initial_status, widget: select, options: [unfinished, complete], default: unfinished }
+      - { label: Started at, name: started_at, widget: datetime, format: "YYYY-MM-DD", required: true }
+      - { label: Proposed at, name: proposed_at, widget: datetime, format: "YYYY-MM-DD", required: false }
+      - { label: Deadline at, name: deadline_at, widget: datetime, format: "YYYY-MM-DD", required: true }
+      - { label: Deadline time, name: deadline_at_time, widget: string, required: false }
+      - { label: Published at, name: published_at, widget: datetime, format: "YYYY-MM-DD", required: true }
+      - label: Version
+        name: version
+        widget: string
+        pattern:
+          - "^\\d+\\.\\d+(\\.\\d+)?$"
+          - "Use semantic versioning (e.g. 0.1.0 or 1.0.0)."
+        default: "1.0.0"
+      - { label: Word range, name: word_range, widget: select, options: ["250-500", "500-1000", "1000-1500"], default: "500-1000" }
+      - { label: Word count, name: word_count, widget: number, required: false }
+      - label: Release notes
+        name: release_notes
+        widget: list
+        allow_add: true
+        field: { label: Note, name: note, widget: string }
+        required: false
+      - { label: Canonical URL, name: canonical_url, widget: string, required: false }
+      - { label: Social image, name: social_image, widget: string, required: false }
+      - { label: Permalink override, name: permalink, widget: string, required: false }
+      - { label: Body, name: body, widget: markdown }

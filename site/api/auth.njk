@@ -1,0 +1,57 @@
+---
+permalink: api/auth/index.html
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redirecting to Decap OAuth</title>
+    <link rel="icon" href="/DUE/favicon.ico" />
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+        padding: 2rem;
+        max-width: 40rem;
+        margin: 0 auto;
+      }
+      .card {
+        border: 1px solid #d0d7de;
+        border-radius: 8px;
+        padding: 1.5rem;
+        background: #f8fafc;
+      }
+      code {
+        background: #eef2f6;
+        padding: 0.1rem 0.35rem;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>Redirecting to the GitHub login…</h1>
+      <p id="status">Sending you to the configured Decap OAuth backend.</p>
+      <p>
+        If nothing happens, confirm <code>DECAP_OAUTH_BASE</code> is set to your live
+        OAuth provider (e.g. <code>https://your-oauth-host.example.com/api/auth</code>) and reload.
+      </p>
+    </main>
+    <script>
+      (function () {
+        const target = "{{ decap.oauth_base | default('') }}".trim();
+        const status = document.getElementById("status");
+        if (!target) {
+          status.textContent = "Missing DECAP_OAUTH_BASE. Set it to the deployed OAuth host (ending in /api/auth).";
+          return;
+        }
+        const query = window.location.search || "";
+        const separator = target.endsWith("/") ? "" : "/";
+        const redirectTo = `${target}${query ? query : ""}`;
+        status.textContent = "Redirecting…";
+        window.location.replace(redirectTo);
+      })();
+    </script>
+  </body>
+</html>
