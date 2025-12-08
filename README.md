@@ -34,6 +34,16 @@ npm run new
 
 The script prompts for title, topic, author, key dates, word range, and slug, then writes a new Markdown file to `site/essays/drafts/`.
 
+## Decap CMS (/admin)
+- The `/admin` route loads Decap CMS configured for GitHub Pages. Content stays under `site/essays/drafts/` and `site/essays/published/`.
+- Backend: GitHub with an external OAuth provider (e.g., deploy [`netlify-cms-github-oauth-provider`](https://github.com/joeattardi/netlify-cms-github-oauth-provider)).
+  1. Create a GitHub OAuth app with callback `${BASE_URL}/callback` for your deployed provider (Netlify/Vercel/etc.).
+  2. Set the provider’s `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET`, `OAUTH_CLIENT_ID`/`OAUTH_CLIENT_SECRET`, and `BASE_URL` env vars.
+  3. Update `admin/config.yml` with your repo slug, `base_url` (the provider URL), and `auth_endpoint` (default `/api/auth`).
+- Access: Only GitHub users with write access to the repo can log in. There are no public sign-ups.
+- Media: Decap uploads save to `site/assets/uploads` and publish at `/DUE/assets/uploads`. If you rename the repo or change the Pages base path, update `public_folder` accordingly.
+- Editorial workflow: Decap keeps drafts in-place; autopublish and CI still enforce status/word-range rules. Refresh `word_count` with `npm run check:words -- --write` after edits.
+
 ## Content model (front matter)
 ```yaml
 ---
@@ -42,9 +52,11 @@ topic: "Proposed topic"
 author: yourhandle
 coauthors: []             # GitHub handles or { user, since_version }
 acknowledgments: []       # list of { user, note, since_version }
-status: draft             # draft|published
+keywords: []              # up to 5 keywords
+status: draft             # proposed|draft|published
 started_at: YYYY-MM-DD
 deadline_at: YYYY-MM-DD
+proposed_at: YYYY-MM-DD      # optional. Set automatically when created via CLI
 deadline_at_time: HH:MM      # optional. Defaults to 00:00 UTC if omitted.
 initial_status: unfinished   # complete|unfinished (for first publish)
 version: 0.1                 # 1.0 if complete at first publish else 0.1
