@@ -551,6 +551,9 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "site/assets": "assets" });
   eleventyConfig.addWatchTarget("site/assets");
 
+  // Expose Decap CMS at /admin for GitHub Pages deployments
+  eleventyConfig.addPassthroughCopy("admin");
+
   // Allow custom domain via site/CNAME passthrough (optional)
   try {
     eleventyConfig.addPassthroughCopy("CNAME");

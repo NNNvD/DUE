@@ -17,9 +17,21 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # Prefer the secret; fall back to a repository variable if the secret is not set.
+      DECAP_OAUTH_BASE: ${{ secrets.DECAP_OAUTH_BASE || vars.DECAP_OAUTH_BASE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Note Decap OAuth base
+        run: |
+          echo "DECAP_OAUTH_BASE=${DECAP_OAUTH_BASE:-}" >> "$GITHUB_ENV"
+          if [ -z "${DECAP_OAUTH_BASE:-}" ]; then
+            echo "::warning::DECAP_OAUTH_BASE is not set. Decap login will show a missing OAuth host until you configure it." >&2
+          else
+            echo "Using DECAP_OAUTH_BASE=${DECAP_OAUTH_BASE}"
+          fi
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -31,6 +43,10 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: Build site
+        env:
+          # Forward to Eleventy and the Decap data helper in case the job env is not inherited automatically.
+          DECAP_OAUTH_BASE: ${{ env.DECAP_OAUTH_BASE }}
+          GITHUB_PAGES_DECAP_OAUTH_BASE: ${{ env.DECAP_OAUTH_BASE }}
         run: npm run build
 
       - name: Upload artifact
