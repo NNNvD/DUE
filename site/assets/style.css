@@ -609,8 +609,10 @@ main > .breadcrumbs {
 .length-divider {
   display: block;
   width: 100%;
-  height: 4px;
+  height: 6px;
   border-radius: 999px;
+  margin: var(--space-3xs) 0;
+  flex-shrink: 0;
   background: var(--border);
 }
 
