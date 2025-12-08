@@ -16,6 +16,18 @@ permalink: api/auth/index.html
         max-width: 40rem;
         margin: 0 auto;
       }
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 0;
+        padding: 8px 12px;
+        background: #000;
+        color: #fff;
+        text-decoration: none;
+      }
+      .skip-link:focus {
+        top: 0;
+      }
       .card {
         border: 1px solid #d0d7de;
         border-radius: 8px;
@@ -30,7 +42,8 @@ permalink: api/auth/index.html
     </style>
   </head>
   <body>
-    <main class="card">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <main id="main-content" class="card" role="main">
       <h1>Redirecting to the GitHub login…</h1>
       <p id="status">Sending you to the configured Decap OAuth backend.</p>
       <p>
