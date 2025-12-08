@@ -9,6 +9,7 @@
     "check:words": "node scripts/checkWordRange.js",
     "check:a11y": "node scripts/checkA11y.js",
     "autopublish": "node scripts/autopublish.js",
+    "new": "node scripts/newDraft.js",
     "bump": "node scripts/bumpVersionAndCredit.js",
     "test": "vitest",
     "lint:md": "node scripts/lintMarkdown.js",
