@@ -24,13 +24,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Ensure Decap OAuth base is configured
+      - name: Note Decap OAuth base
         run: |
           if [ -z "${DECAP_OAUTH_BASE:-}" ]; then
-            echo "DECAP_OAUTH_BASE is required for Decap CMS login. Set it as a secret or repository variable." >&2
-            exit 1
+            echo "::warning::DECAP_OAUTH_BASE is not set. Decap login will show a missing OAuth host until you configure it." >&2
+          else
+            echo "DECAP_OAUTH_BASE=${DECAP_OAUTH_BASE}" >> "$GITHUB_ENV"
           fi
-          echo "DECAP_OAUTH_BASE=${DECAP_OAUTH_BASE}" >> "$GITHUB_ENV"
 
       - name: Setup Node
         uses: actions/setup-node@v4
