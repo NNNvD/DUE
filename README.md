@@ -40,6 +40,7 @@ The script prompts for title, topic, author, key dates, word range, and slug, th
   1. Create a GitHub OAuth app with callback `${BASE_URL}/callback` for your deployed provider (Netlify/Vercel/etc.).
   2. Set the provider’s `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET`, `OAUTH_CLIENT_ID`/`OAUTH_CLIENT_SECRET`, and `BASE_URL` env vars.
   3. Update `admin/config.yml` with your repo slug, `base_url` (the provider URL), and `auth_endpoint` (default `/api/auth`).
+     - The config now points to `https://nnnvd.github.io/DUE` so the domain resolves instead of throwing an `NXDOMAIN` error, but you still need to set it to your deployed OAuth host for login to succeed.
 - Access: Only GitHub users with write access to the repo can log in. There are no public sign-ups.
 - Media: Decap uploads save to `site/assets/uploads` and publish at `/DUE/assets/uploads`. If you rename the repo or change the Pages base path, update `public_folder` accordingly.
 - Editorial workflow: Decap keeps drafts in-place; autopublish and CI still enforce status/word-range rules. Refresh `word_count` with `npm run check:words -- --write` after edits.

@@ -1,8 +1,12 @@
 backend:
   name: github
   branch: main
-  repo: your-username/DUE
-  base_url: https://your-oauth-host.example.com
+  repo: nnnvd/DUE
+  # Hosted GitHub OAuth provider for Decap CMS. Update this to the URL where you
+  # deploy https://github.com/joeatardi/netlify-cms-github-oauth-provider (or a
+  # compatible service). Leaving the default example host will fail with
+  # NXDOMAIN when logging in from https://nnnvd.github.io/DUE/admin/.
+  base_url: https://nnnvd.github.io/DUE
   auth_endpoint: /api/auth
 media_folder: site/assets/uploads
 public_folder: /DUE/assets/uploads
