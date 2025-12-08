@@ -112,7 +112,7 @@ function renderBadges(entry) {
 
   if (isDraftLike && entry.deadline_at) {
     badges.push(`
-      <span class="badge deadline-badge" data-deadline-badge="${entry.deadline_at}" data-deadline-label="${formatDate(entry.deadline_at)}" title="Publishes ${formatDate(entry.deadline_at)}"></span>
+      <span class="badge deadline-badge" data-deadline-badge="${entry.deadline_at}" data-deadline-label="${formatDate(entry.deadline_at)}" title="Publishes on ${formatDate(entry.deadline_at)}"></span>
     `);
   } else if (isDraftLike) {
     badges.push('<span class="badge">Publication date pending</span>');
