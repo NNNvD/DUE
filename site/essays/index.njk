@@ -9,7 +9,7 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
 <section class="page-header card">
   <p class="eyebrow">Library</p>
   <h2>Browse every essay</h2>
-  <p class="lede">Scan the full catalogue to see what's shipping next and what already launched. Length badges map Tiny to purple squares, Minute to orange triangles, and Short to teal circles.</p>
+  <p class="lede">Scan the full catalogue to see what’s shipping next and what has already launched. Length badges use purple squares for Tiny essays (100–500 words), orange triangles for Minute essays (500–1000 words), and teal circles for Short essays (1000–1500 words).</p>
   <div class="stat-grid">
     <div class="stat">
       <div class="stat__number">{{ published.length }}</div>
@@ -47,19 +47,19 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
 
           <div class="filter-panel">
             <p class="filter-panel__label">Length</p>
-            <p class="muted">Pick any length bin.</p>
+            <p class="muted">Pick any length band.</p>
             <div class="filter-options" data-filter-length-group>
               <label class="filter-option">
                 <input type="checkbox" value="tiny">
-                <span>Tiny</span>
+                <span>Tiny (100–500 words)</span>
               </label>
               <label class="filter-option">
                 <input type="checkbox" value="minute">
-                <span>Minute</span>
+                <span>Minute (500–1000 words)</span>
               </label>
               <label class="filter-option">
                 <input type="checkbox" value="short">
-                <span>Short</span>
+                <span>Short (1000–1500 words)</span>
               </label>
             </div>
           </div>
@@ -135,7 +135,7 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
   <div class="section-heading">
     <p class="eyebrow">Published</p>
     <h3>Latest releases</h3>
-    <p class="muted">Newest first, including version and release notes.</p>
+    <p class="muted">The newest essays first, with version numbers and release notes.</p>
   </div>
   {% if published.length %}
     <div class="card-list">
@@ -195,7 +195,7 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
             <span class="badge badge--tone-info">v{{ draft.data.version }}</span>
             <span class="badge badge--tone-info">Proposed</span>
             {% if draft.data.deadline_at %}
-              <span class="badge deadline-badge" data-deadline-badge="{{ draft.data.deadline_at }}" data-deadline-label="{{ draft.data.deadline_at | date('yyyy-LL-dd') }}" title="Publishes {{ draft.data.deadline_at | date('yyyy-LL-dd') }}"></span>
+              <span class="badge deadline-badge" data-deadline-badge="{{ draft.data.deadline_at }}" data-deadline-label="{{ draft.data.deadline_at | date('yyyy-LL-dd') }}" title="Publishes on {{ draft.data.deadline_at | date('yyyy-LL-dd') }}"></span>
             {% else %}
               <span class="badge">Publication date pending</span>
             {% endif %}
