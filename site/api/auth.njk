@@ -50,18 +50,65 @@ permalink: api/auth/index.html
         If nothing happens, confirm <code>DECAP_OAUTH_BASE</code> is set to your live
         OAuth provider (e.g. <code>https://your-oauth-host.example.com/api/auth</code>) and reload.
       </p>
+      <details id="manual-config" hidden>
+        <summary>Set an OAuth host manually</summary>
+        <p>
+          If you need to test before the build has a configured value, enter the OAuth
+          base URL here. It will be stored in your browser and used as a fallback.
+        </p>
+        <form id="oauth-form">
+          <label for="oauth-base">OAuth base URL (must end in <code>/api/auth</code>)</label>
+          <input id="oauth-base" name="oauth-base" type="url" autocomplete="off" required style="width: 100%; margin: 0.5rem 0" />
+          <button type="submit">Save and continue</button>
+        </form>
+      </details>
     </main>
     <script>
       (function () {
-        const target = "{{ decap.oauth_base | default('') }}".trim();
         const status = document.getElementById("status");
+        const details = document.getElementById("manual-config");
+        const form = document.getElementById("oauth-form");
+        const input = document.getElementById("oauth-base");
+
+        const buildValue = "{{ decap.oauth_base | default('') }}".trim();
+        const params = new URLSearchParams(window.location.search || "");
+        const queryValue = (params.get("oauth_base") || "").trim();
+        const storedValue = (window.localStorage && window.localStorage.getItem("decap_oauth_base")) || "";
+
+        // Persist a manual override from the query string for future visits.
+        if (queryValue) {
+          try {
+            localStorage.setItem("decap_oauth_base", queryValue);
+          } catch (error) {
+            console.warn("Unable to store oauth_base override", error);
+          }
+          params.delete("oauth_base");
+        }
+
+        const target = queryValue || buildValue || storedValue;
+
         if (!target) {
-          status.textContent = "Missing DECAP_OAUTH_BASE. Set it to the deployed OAuth host (ending in /api/auth).";
+          status.textContent =
+            "Missing DECAP_OAUTH_BASE. Set it to the deployed OAuth host (ending in /api/auth).";
+          details.hidden = false;
+
+          form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const manual = input.value.trim();
+            if (!manual) return;
+            try {
+              localStorage.setItem("decap_oauth_base", manual);
+            } catch (error) {
+              console.warn("Unable to store manual OAuth base", error);
+            }
+            status.textContent = "Redirecting…";
+            window.location.replace(manual);
+          });
           return;
         }
-        const query = window.location.search || "";
-        const separator = target.endsWith("/") ? "" : "/";
-        const redirectTo = `${target}${query ? query : ""}`;
+
+        const remaining = params.toString();
+        const redirectTo = `${target}${remaining ? `?${remaining}` : ""}`;
         status.textContent = "Redirecting…";
         window.location.replace(redirectTo);
       })();
