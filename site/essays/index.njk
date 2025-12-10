@@ -149,7 +149,6 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
               {% endif %}
               <h4 class="card-title {{ length.titleClass }}"><a href="{{ post.url | url }}">{{ post.data.title }}</a></h4>
             </div>
-            <span class="length-divider length-divider--{{ length.palette | default('muted') }}" aria-hidden="true"></span>
           </header>
           {% set timingLabel %}{% if post.data.initial_status == 'complete' %}Finished on time{% else %}Unfinished on time{% endif %}{% endset %}
           {% set timingClass %}{% if post.data.initial_status == 'complete' %}badge--tone-success{% else %}badge--tone-warn{% endif %}{% endset %}
@@ -189,7 +188,6 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
               {% endif %}
               <h4 class="card-title {{ length.titleClass }}">{{ draft.data.title }}</h4>
             </div>
-            <span class="length-divider length-divider--{{ length.palette | default('muted') }}" aria-hidden="true"></span>
           </header>
           <div class="meta">
             <span class="badge badge--tone-info">v{{ draft.data.version }}</span>

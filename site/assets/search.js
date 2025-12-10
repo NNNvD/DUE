@@ -90,11 +90,6 @@ function renderLengthIcon(entry) {
   return `<span class="${iconClass}" aria-hidden="true"></span>`;
 }
 
-function renderLengthDivider(entry) {
-  const palette = entry.lengthMeta?.palette || "muted";
-  return `<span class="length-divider length-divider--${palette}" aria-hidden="true"></span>`;
-}
-
 function renderBadges(entry) {
   const badges = [];
   const status = statusDisplay(entry);
@@ -154,7 +149,6 @@ function renderCard(entry, baseUrl) {
           ${renderLengthIcon(entry)}
           <h4 class="card-title ${lengthClass}"><a href="${href}">${entry.title}</a></h4>
         </div>
-        ${renderLengthDivider(entry)}
       </header>
       <div class="meta">${badges}</div>
       ${tracker}
