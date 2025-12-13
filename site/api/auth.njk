@@ -47,14 +47,17 @@ permalink: api/auth/index.html
       <h1>Redirecting to the GitHub login…</h1>
       <p id="status">Sending you to the configured Decap OAuth backend.</p>
       <p>
-        If nothing happens, confirm <code>DECAP_OAUTH_BASE</code> is set to your live
-        OAuth provider (e.g. <code>https://your-oauth-host.example.com/api/auth</code>) and reload.
+        Seeing this screen is normal if the site was built without a
+        <code>DECAP_OAUTH_BASE</code> value. That variable should point at your deployed
+        OAuth provider&apos;s <code>/api/auth</code> endpoint (for example,
+        <code>https://your-oauth-host.example.com/api/auth</code>).
       </p>
       <details id="manual-config" hidden>
         <summary>Set an OAuth host manually</summary>
         <p>
-          If you need to test before the build has a configured value, enter the OAuth
-          base URL here. It will be stored in your browser and used as a fallback.
+          If you need to test before the build has that value, enter the OAuth base
+          URL from your deployed provider. It will be stored in your browser and used
+          as a fallback until a build supplies <code>DECAP_OAUTH_BASE</code>.
         </p>
         <form id="oauth-form">
           <label for="oauth-base">OAuth base URL (must end in <code>/api/auth</code>)</label>
