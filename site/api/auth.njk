@@ -52,6 +52,14 @@ permalink: api/auth/index.html
         OAuth provider&apos;s <code>/api/auth</code> endpoint (for example,
         <code>https://your-oauth-host.example.com/api/auth</code>).
       </p>
+      <p>
+        If the OAuth popup reaches a callback page that says
+        &ldquo;Authorized, closing&hellip;&rdquo; without completing the login, redeploy your
+        OAuth provider so its allowed origins include the live admin URL (for example,
+        <code>https://nnnvd.github.io/DUE/admin</code>) and confirm
+        <code>DECAP_OAUTH_BASE</code> matches that host. Then retry the Decap login to let
+        the callback close itself and hand control back to the CMS.
+      </p>
       <details id="manual-config" hidden>
         <summary>Set an OAuth host manually</summary>
         <p>
