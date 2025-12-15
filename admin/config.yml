@@ -11,7 +11,7 @@ media_folder: site/assets/uploads
 public_folder: /DUE/assets/uploads
 local_backend: true
 publish_mode: editorial_workflow
-site_url: https://your-username.github.io/DUE/
+site_url: https://nnnvd.github.io/DUE/
 collections:
   - name: drafts
     label: Draft essays
