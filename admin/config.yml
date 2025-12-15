@@ -2,11 +2,9 @@ backend:
   name: github
   branch: main
   repo: nnnvd/DUE
-  # GitHub OAuth provider for Decap CMS. Leave this pointed at the site base;
-  # /api/auth renders a proxy page that forwards to the provider URL set in the
-  # DECAP_OAUTH_BASE environment variable (ending in /api/auth).
-  base_url: https://nnnvd.github.io/DUE
-  auth_endpoint: /api/auth
+  # Sveltia CMS authenticates through a Cloudflare Worker proxy. Replace this
+  # placeholder with the deployed Worker URL once available.
+  base_url: https://due-cms-auth.<your-subdomain>.workers.dev
 media_folder: site/assets/uploads
 public_folder: /DUE/assets/uploads
 local_backend: true

@@ -11,7 +11,7 @@ const oauthBase = found?.value || "";
 
 if (!oauthBase) {
   console.warn(
-    "Decap OAuth base is empty. Set DECAP_OAUTH_BASE (or ELEVENTY_DECAP_OAUTH_BASE) so /api/auth redirects correctly."
+    "Legacy Decap OAuth base is empty. Set DECAP_OAUTH_BASE (or ELEVENTY_DECAP_OAUTH_BASE) only if you need the /api/auth rollback page."
   );
 }
 

@@ -34,22 +34,26 @@ npm run new
 
 The script prompts for title, topic, author, key dates, word range, and slug, then writes a new Markdown file to `site/essays/drafts/`.
 
-## Decap CMS (/admin)
-- The `/admin` route loads Decap CMS configured for GitHub Pages. Content stays under `site/essays/drafts/` and `site/essays/published/`. The Eleventy build passthroughs `/admin` so the CMS is available at `https://your-username.github.io/DUE/admin/` after a deploy.
-- Backend: GitHub with an external OAuth provider (e.g., deploy [`netlify-cms-github-oauth-provider`](https://github.com/joeattardi/netlify-cms-github-oauth-provider)).
-  1. Deploy the provider (Netlify/Vercel/etc.) and set its `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET`, `OAUTH_CLIENT_ID`/`OAUTH_CLIENT_SECRET`, and `BASE_URL` env vars.
-2. Add a repository **secret** named `DECAP_OAUTH_BASE` (ending in `/api/auth`). If you prefer repository variables, add `DECAP_OAUTH_BASE` as a variable instead; the Pages workflow will use the secret first and fall back to the variable. The `/api/auth` proxy uses this value to know where to redirect the login request. Builds will still succeed without it, but Decap login will show a missing OAuth host until you set this value. When you see that prompt, paste the OAuth provider&apos;s deployed URL ending in `/api/auth` (the same host you configure as the provider&apos;s `BASE_URL`). The workflow also exports `GITHUB_PAGES_DECAP_OAUTH_BASE` for Eleventy, and the `/api/auth` page falls back to a manual browser override if neither value is present at build time.
-  3. Keep `admin/config.yml` pointing at `https://nnnvd.github.io/DUE` with `auth_endpoint: /api/auth`; the proxy page will forward the request to `DECAP_OAUTH_BASE` (or the fallback override) and Decap will continue the login flow there. If you need to test before the build has the environment variable, load `/api/auth?oauth_base=https://your-oauth-host.example.com/api/auth` or enter the URL in the page’s manual override box; it will store the value locally and reuse it until cleared.
-  4. If the OAuth popup reaches a callback page that says "Authorized, closing…" and never completes the login, redeploy the OAuth provider with its allowed origins set to the live admin URL (e.g., `https://nnnvd.github.io/DUE/admin`) and with `BASE_URL` matching the URL you paste into the `/api/auth` prompt. Then retry the Decap login so the callback can message the opener and close.
+## CMS (/admin)
+- The `/admin` route now loads **Sveltia CMS** for GitHub Pages. Content stays under `site/essays/drafts/` and `site/essays/published/`. The Eleventy build passthroughs `/admin` so the CMS is available at `https://your-username.github.io/DUE/admin/` after a deploy.
+- Backend: GitHub with a Cloudflare Worker OAuth proxy from [`sveltia/sveltia-cms-auth`](https://github.com/sveltia/sveltia-cms-auth). Configure `admin/config.yml` with the Worker URL via `backend.base_url` (placeholder included in-repo).
+- Setup checklist (outside this repo):
+  1. Create a Cloudflare account (free tier is fine).
+  2. Deploy the Sveltia authenticator worker (`sveltia/sveltia-cms-auth`).
+  3. Create a GitHub OAuth App and point the callback to the Worker’s callback endpoint (per authenticator docs).
+  4. Set Worker secrets for the GitHub client ID/secret (and optionally restrict allowed origins to `nnnvd.github.io`).
+  5. Paste the deployed Worker URL into `admin/config.yml` as `backend.base_url`.
 - Access: Only GitHub users with write access to the repo can log in. There are no public sign-ups.
-- Media: Decap uploads save to `site/assets/uploads` and publish at `/DUE/assets/uploads`. If you rename the repo or change the Pages base path, update `public_folder` accordingly.
-- Editorial workflow: Decap keeps drafts in-place; autopublish and CI still enforce status/word-range rules. Refresh `word_count` with `npm run check:words -- --write` after edits.
+- Media: CMS uploads save to `site/assets/uploads` and publish at `/DUE/assets/uploads`. If you rename the repo or change the Pages base path, update `public_folder` accordingly.
+- Editorial workflow: Drafts and published essays stay in place; autopublish and CI still enforce status/word-range rules. Refresh `word_count` with `npm run check:words -- --write` after edits.
+
+> Legacy: The Decap `/api/auth` helper page remains for rollback but is no longer used when Sveltia is configured with a Cloudflare Worker.
 
 ### Start a new essay from the frontend
 1. Visit `/admin/` on the deployed site and sign in with your GitHub account through the configured OAuth backend (only repo collaborators are allowed).
 2. In the **Draft essays** collection, click **New Draft essay**.
 3. Fill in the required fields to match the front matter schema (title, topic, author, status, dates, word range, etc.).
-4. Save the entry; Decap commits the new Markdown file to `site/essays/drafts/` using the slug you choose.
+4. Save the entry; Sveltia commits the new Markdown file to `site/essays/drafts/` using the slug you choose.
 5. Run `npm run check:words -- --write` locally (or in CI) to populate `word_count` before publishing.
 
 ## Content model (front matter)
