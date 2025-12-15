@@ -1,7 +1,7 @@
 
 # DUE — Starter (Eleventy + GitHub Pages)
 
-This is a minimal starter for **DUE — Deadline for Unfinished Essays**, designed to run entirely on **GitHub Pages** with **GitHub Actions** for automation. Public participation is **comments-only**; drafting and edits happen in the backend.
+This is the minimal starter for **DUE — Deadline for Unfinished Essays**, designed to run entirely on **GitHub Pages** with **GitHub Actions** for automation. Public participation is **comments-only**; drafting and edits happen in the backend.
 
 ## What you get
 - Static site with **Eleventy (11ty)** rendering essays from Markdown.
