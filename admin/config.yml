@@ -4,7 +4,7 @@ backend:
   repo: nnnvd/DUE
   # Sveltia CMS authenticates through a Cloudflare Worker proxy. Replace this
   # placeholder with the deployed Worker URL once available.
-  base_url: https://due-cms-auth.<your-subdomain>.workers.dev
+  base_url: https://sveltia-cms-auth.n-djaye.workers.dev/
 media_folder: site/assets/uploads
 public_folder: /DUE/assets/uploads
 local_backend: true
