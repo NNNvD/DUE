@@ -58,26 +58,23 @@ collections:
         default: draft
       - label: Initial status
         name: initial_status
-        widget: select
-        options:
-          - { label: Unfinished, value: unfinished }
-          - { label: Complete, value: complete }
+        widget: hidden
         default: unfinished
       - label: Started at
         name: started_at
-        widget: datetime
-        format: "YYYY-MM-DD"
+        widget: hidden
         default: "{{now}}"
         required: true
-        readonly: true
-      - { label: Proposed at, name: proposed_at, widget: datetime, format: "YYYY-MM-DD", required: false }
+      - label: Proposed at
+        name: proposed_at
+        widget: hidden
+        default: "{{now}}"
+        required: false
       - label: Deadline at
         name: deadline_at
-        widget: datetime
-        format: "YYYY-MM-DD"
-        default: "{{now | add: 30, 'days'}}"
+        widget: hidden
+        default: "{{now | add: '30 days'}}"
         required: true
-        readonly: true
       - { label: Deadline time, name: deadline_at_time, widget: string, required: false, hint: "HH:MM or HH:MM:SS (optionally with timezone offset)" }
       - { label: Published at, name: published_at, widget: datetime, format: "YYYY-MM-DD", required: false }
       - label: Version

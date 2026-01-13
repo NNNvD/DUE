@@ -90,16 +90,7 @@ async function main() {
   const deadlineAt = dayjs().add(30, "day").format("YYYY-MM-DD");
   const deadlineTime = await ask("Deadline time (HH:MM or HH:MM:SS, optional)", { required: false });
 
-  const initialStatus = await ask("Initial status (complete|unfinished)", {
-    defaultValue: "unfinished",
-    required: true,
-    validate: value => {
-      if (!["complete", "unfinished"].includes(value)) {
-        return "Enter either 'complete' or 'unfinished'.";
-      }
-      return true;
-    },
-  });
+  const initialStatus = "unfinished";
 
   const baseSlug = slugify(title);
   const slug = await ask("Slug", {
@@ -120,7 +111,7 @@ async function main() {
   }
 
   const normalizedStatus = "draft";
-  const version = initialStatus === "complete" ? "1.0.0" : "0.1.0";
+  const version = "0.1.0";
   const wordRange = "500-1000";
   const frontMatter = {
     title,
