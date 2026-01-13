@@ -100,6 +100,9 @@ function normalizeVersion(raw, initialStatus) {
 
 function normalizeStatus(raw, fallback) {
   const normalized = typeof raw === "string" ? raw.toLowerCase() : "";
+  if (fallback === "draft" && normalized === "published") {
+    return "draft";
+  }
   if (["draft", "proposed", "published"].includes(normalized)) {
     return normalized;
   }
