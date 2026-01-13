@@ -14,7 +14,7 @@ deadline_at_time: ''
 published_at: ''
 version: 0.1.0
 word_range: 1000-1500
-word_count: null
+word_count: 1229
 release_notes: []
 canonical_url: ''
 social_image: ''
