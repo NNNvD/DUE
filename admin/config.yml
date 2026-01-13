@@ -56,27 +56,11 @@ collections:
         name: status
         widget: hidden
         default: draft
-      - label: Initial status
-        name: initial_status
-        widget: hidden
-        default: unfinished
       - label: Started at
         name: started_at
         widget: hidden
         default: "{{now}}"
         required: true
-      - label: Proposed at
-        name: proposed_at
-        widget: hidden
-        default: "{{now}}"
-        required: false
-      - label: Deadline at
-        name: deadline_at
-        widget: hidden
-        default: "{{now | add: '30 days'}}"
-        required: true
-      - { label: Deadline time, name: deadline_at_time, widget: string, required: false, hint: "HH:MM or HH:MM:SS (optionally with timezone offset)" }
-      - { label: Published at, name: published_at, widget: datetime, format: "YYYY-MM-DD", required: false }
       - label: Version
         name: version
         widget: hidden
@@ -85,16 +69,12 @@ collections:
         name: word_range
         widget: hidden
         default: "500-1000"
-      - { label: Word count, name: word_count, widget: number, required: false, hint: "Run npm run check:words -- --write to refresh." }
       - label: Release notes
         name: release_notes
         widget: list
         allow_add: true
         field: { label: Note, name: note, widget: string }
         required: false
-      - { label: Canonical URL, name: canonical_url, widget: string, required: false }
-      - { label: Social image, name: social_image, widget: string, required: false, hint: "Path relative to /assets/ (e.g. /assets/img/social.png)" }
-      - { label: Permalink override, name: permalink, widget: string, required: false }
       - { label: Body, name: body, widget: markdown }
   - name: published
     label: Published essays
