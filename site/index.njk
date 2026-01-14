@@ -5,7 +5,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
 ---
 {% set drafts = collections.draftEssays %}
 {% set published = collections.publishedEssays %}
-{% set proposals = drafts | whereStatus('proposed') %}
+{% set proposals = drafts | whereStatus(['proposed', 'draft']) %}
 {% set latest = published | first %}
 {% set nextProposed = proposals | sortByDate('data.deadline_at') | first %}
 {% set nextDeadline = nextProposed and nextProposed.data.deadline_at %}

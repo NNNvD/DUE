@@ -241,6 +241,9 @@ function filterEssayTemplates(collection = []) {
 
     const inputPath = item.inputPath || "";
     const fileSlug = item.fileSlug || "";
+    const data = item.data || {};
+    const hasPagination = data.pagination;
+    const hasStatus = typeof data.status === "string" && data.status.trim().length > 0;
 
     if (fileSlug.startsWith("_")) {
       return false;
@@ -250,12 +253,19 @@ function filterEssayTemplates(collection = []) {
       return false;
     }
 
+    if (hasPagination || !hasStatus) {
+      return false;
+    }
+
     return true;
   });
 }
 
 function normalizeStatus(raw, fallback) {
   const normalized = typeof raw === "string" ? raw.toLowerCase() : "";
+  if (fallback === "draft" && normalized === "published") {
+    return "draft";
+  }
   if (["draft", "proposed", "published"].includes(normalized)) {
     return normalized;
   }

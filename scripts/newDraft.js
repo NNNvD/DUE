@@ -5,14 +5,8 @@ const path = require("path");
 const readline = require("node:readline");
 const yaml = require("js-yaml");
 const dayjs = require("dayjs");
-const customParseFormat = require("dayjs/plugin/customParseFormat");
-
-dayjs.extend(customParseFormat);
 
 const draftsDir = path.join(__dirname, "..", "site", "essays", "drafts");
-
-const STATUS_OPTIONS = ["proposed", "draft", "published"];
-const WORD_RANGE_OPTIONS = ["250-500", "500-1000", "1000-1500"];
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -70,14 +64,6 @@ function ensureUniqueSlug(baseSlug) {
   return candidate;
 }
 
-function ensureIsoDate(value) {
-  if (!value) return "Please enter a date.";
-  if (!dayjs(value, "YYYY-MM-DD", true).isValid()) {
-    return "Use ISO format YYYY-MM-DD.";
-  }
-  return true;
-}
-
 async function main() {
   console.log("\nCreate a new draft\n===================\n");
 
@@ -100,54 +86,9 @@ async function main() {
   const defaultAuthor = process.env.GIT_AUTHOR_NAME || process.env.USER || "";
   const author = await ask("Author", { required: true, defaultValue: defaultAuthor });
 
-  const startedDefault = dayjs().format("YYYY-MM-DD");
-  const startedAt = await ask("Started at (YYYY-MM-DD)", {
-    defaultValue: startedDefault,
-    required: true,
-    validate: ensureIsoDate,
-  });
-
-  const deadlineDefault = dayjs(startedAt, "YYYY-MM-DD").add(30, "day").format("YYYY-MM-DD");
-  const deadlineAt = await ask("Deadline at (YYYY-MM-DD)", {
-    defaultValue: deadlineDefault,
-    required: true,
-    validate: ensureIsoDate,
-  });
-
-  const deadlineTime = await ask("Deadline time (HH:MM or HH:MM:SS, optional)", { required: false });
-
-  const status = await ask("Status (proposed|draft|published)", {
-    defaultValue: "proposed",
-    required: true,
-    validate: value => {
-      if (!STATUS_OPTIONS.includes(value)) {
-        return "Choose one of: proposed, draft, published.";
-      }
-      return true;
-    },
-  });
-
-  const initialStatus = await ask("Initial status (complete|unfinished)", {
-    defaultValue: "unfinished",
-    required: true,
-    validate: value => {
-      if (!["complete", "unfinished"].includes(value)) {
-        return "Enter either 'complete' or 'unfinished'.";
-      }
-      return true;
-    },
-  });
-
-  const wordRange = await ask("Word range (250-500|500-1000|1000-1500)", {
-    defaultValue: "500-1000",
-    required: true,
-    validate: value => {
-      if (!WORD_RANGE_OPTIONS.includes(value)) {
-        return "Choose one of: 250-500, 500-1000, 1000-1500.";
-      }
-      return true;
-    },
-  });
+  const startedAt = dayjs().format("YYYY-MM-DD");
+  const deadlineAt = dayjs().add(30, "day").format("YYYY-MM-DD");
+  const initialStatus = "unfinished";
 
   const baseSlug = slugify(title);
   const slug = await ask("Slug", {
@@ -167,8 +108,9 @@ async function main() {
     console.log(`Slug '${slug}' already exists. Using '${finalSlug}' instead.`);
   }
 
-  const normalizedStatus = status.toLowerCase();
-  const version = initialStatus === "complete" ? "1.0.0" : "0.1.0";
+  const normalizedStatus = "proposed";
+  const version = "0.1.0";
+  const wordRange = "500-1000";
   const frontMatter = {
     title,
     topic,
@@ -180,7 +122,6 @@ async function main() {
     started_at: startedAt,
     proposed_at: dayjs().format("YYYY-MM-DD"),
     deadline_at: deadlineAt,
-    deadline_at_time: deadlineTime || undefined,
     initial_status: initialStatus,
     version,
     word_range: wordRange,
