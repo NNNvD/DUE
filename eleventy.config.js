@@ -241,12 +241,19 @@ function filterEssayTemplates(collection = []) {
 
     const inputPath = item.inputPath || "";
     const fileSlug = item.fileSlug || "";
+    const data = item.data || {};
+    const hasPagination = data.pagination;
+    const hasStatus = typeof data.status === "string" && data.status.trim().length > 0;
 
     if (fileSlug.startsWith("_")) {
       return false;
     }
 
     if (inputPath.includes("/_templates/")) {
+      return false;
+    }
+
+    if (hasPagination || !hasStatus) {
       return false;
     }
 

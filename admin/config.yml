@@ -55,11 +55,20 @@ collections:
       - label: Status
         name: status
         widget: hidden
-        default: draft
+        default: proposed
+      - label: Initial status
+        name: initial_status
+        widget: hidden
+        default: unfinished
       - label: Started at
         name: started_at
         widget: hidden
         default: "{{now}}"
+        required: true
+      - label: Deadline at
+        name: deadline_at
+        widget: hidden
+        default: "{{now | add: 30, 'days'}}"
         required: true
       - label: Version
         name: version

@@ -88,8 +88,6 @@ async function main() {
 
   const startedAt = dayjs().format("YYYY-MM-DD");
   const deadlineAt = dayjs().add(30, "day").format("YYYY-MM-DD");
-  const deadlineTime = await ask("Deadline time (HH:MM or HH:MM:SS, optional)", { required: false });
-
   const initialStatus = "unfinished";
 
   const baseSlug = slugify(title);
@@ -110,7 +108,7 @@ async function main() {
     console.log(`Slug '${slug}' already exists. Using '${finalSlug}' instead.`);
   }
 
-  const normalizedStatus = "draft";
+  const normalizedStatus = "proposed";
   const version = "0.1.0";
   const wordRange = "500-1000";
   const frontMatter = {
@@ -124,7 +122,6 @@ async function main() {
     started_at: startedAt,
     proposed_at: dayjs().format("YYYY-MM-DD"),
     deadline_at: deadlineAt,
-    deadline_at_time: deadlineTime || undefined,
     initial_status: initialStatus,
     version,
     word_range: wordRange,
