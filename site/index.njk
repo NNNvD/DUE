@@ -10,6 +10,8 @@ description: "See what is shipping now, browse recent essays, and jump into the 
 {% set nextProposed = proposals | sortByDate('data.deadline_at') | first %}
 {% set nextDeadline = nextProposed and nextProposed.data.deadline_at %}
 {% set daysUntilNext = nextDeadline | daysUntil %}
+{% set publishedCount = essayStats.published %}
+{% set ideasCount = essayStats.drafts %}
 
 <section class="hero card spotlight">
   <div class="hero__copy">
@@ -27,11 +29,11 @@ description: "See what is shipping now, browse recent essays, and jump into the 
      <img class="hero__photo" src="{{ '/assets/uploads/front-hero.png' | url }}" alt="Colorful painting of a person writing at a desk">
     <div class="hero__stats">
       <div class="hero__stat">
-        <span class="hero__stat-number">{{ published.length }}</span>
+        <span class="hero__stat-number">{{ publishedCount }}</span>
         <span class="hero__stat-label">Essays published</span>
       </div>
       <div class="hero__stat">
-        <span class="hero__stat-number">{{ proposals.length }}</span>
+        <span class="hero__stat-number">{{ ideasCount }}</span>
         <span class="hero__stat-label">Ideas proposed</span>
       </div>
       <div class="hero__stat" {% if nextDeadline %}data-deadline="{{ nextDeadline }}"{% endif %}>

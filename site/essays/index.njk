@@ -5,6 +5,9 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
 ---
 {% set published = collections.publishedEssays %}
 {% set drafts = collections.draftEssays %}
+{% set publishedCount = essayStats.published %}
+{% set draftCount = essayStats.drafts %}
+{% set totalCount = publishedCount + draftCount %}
 
 <section class="page-header card">
   <p class="eyebrow">Library</p>
@@ -12,15 +15,15 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
   <p class="lede">Scan the full catalogue to see what’s shipping next and what has already launched. Length badges use purple squares for Tiny essays (100–500 words), orange triangles for Minute essays (500–1000 words), and teal circles for Short essays (1000–1500 words).</p>
   <div class="stat-grid">
     <div class="stat">
-      <div class="stat__number">{{ published.length }}</div>
+      <div class="stat__number">{{ publishedCount }}</div>
       <div class="stat__label">Published</div>
     </div>
     <div class="stat">
-      <div class="stat__number">{{ drafts.length }}</div>
+      <div class="stat__number">{{ draftCount }}</div>
       <div class="stat__label">Drafts</div>
     </div>
     <div class="stat">
-      <div class="stat__number">{{ (published.length + drafts.length) }}</div>
+      <div class="stat__number">{{ totalCount }}</div>
       <div class="stat__label">Total essays</div>
     </div>
   </div>
