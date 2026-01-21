@@ -378,12 +378,14 @@ function loadEssaysByStatus(status = "published") {
 
 module.exports = function(eleventyConfig) {
   const parseVersion = (value) => {
-    const parts = String(value || "0.0").split(".");
+    const parts = String(value || "0.0.0").split(".");
     const major = parseInt(parts[0], 10);
     const minor = parseInt(parts[1] || "0", 10);
+    const patch = parseInt(parts[2] || "0", 10);
     return {
       major: Number.isFinite(major) ? major : 0,
-      minor: Number.isFinite(minor) ? minor : 0
+      minor: Number.isFinite(minor) ? minor : 0,
+      patch: Number.isFinite(patch) ? patch : 0
     };
   };
 
@@ -550,7 +552,11 @@ module.exports = function(eleventyConfig) {
           return bVersion.major - aVersion.major;
         }
 
-        return bVersion.minor - aVersion.minor;
+        if (bVersion.minor !== aVersion.minor) {
+          return bVersion.minor - aVersion.minor;
+        }
+
+        return bVersion.patch - aVersion.patch;
       });
   });
 

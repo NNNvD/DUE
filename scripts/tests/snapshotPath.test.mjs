@@ -7,7 +7,7 @@ const { writeSnapshot } = snapshot;
 const slug = "__test-essay";
 const sourcePath = path.join("site", "essays", "published", `${slug}.md`);
 const snapshotDir = path.join("site", "essays", "snapshots", slug);
-const expectedPath = path.join(snapshotDir, "v2.3.md");
+const expectedPath = path.join(snapshotDir, "v2.3.0.md");
 
 beforeEach(() => {
   fs.removeSync(snapshotDir);
@@ -31,6 +31,6 @@ describe("writeSnapshot", () => {
     expect(snapshotPath).toBe(expectedPath);
     expect(fs.pathExistsSync(expectedPath)).toBe(true);
     expect(written).toContain("layout: snapshot.njk");
-    expect(written).toContain("permalink: /essays/published/__test-essay/v2.3/");
+    expect(written).toContain("permalink: /essays/published/__test-essay/v2.3.0/");
   });
 });
