@@ -63,6 +63,10 @@ function applyContribution(data = {}, { intent, user }) {
   return { data: updated, note, version };
 }
 
+function bump(version, isMajor) {
+  return bumpVersion(version, isMajor ? "major" : "minor");
+}
+
 function processFile(fp, intent, user, fsModule = fs) {
   const raw = fsModule.readFileSync(fp, "utf8");
   const doc = matter(raw);
