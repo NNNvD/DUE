@@ -22,8 +22,27 @@ function applyTopicKeywordConstraints(data = {}) {
   return constrained;
 }
 
+function resolvePermalink(data = {}) {
+  const inputPath = data?.page?.inputPath || "";
+  const isEssay = inputPath.includes("/essays/published/") || inputPath.includes("/essays/drafts/");
+  if (!isEssay) return data.permalink;
+  if (!inputPath.endsWith(".md")) return data.permalink;
+  if (data.pagination) return data.permalink;
+  if (data.permalink === false) return false;
+
+  if (typeof data.permalink === "string" && data.permalink.trim()) {
+    return data.permalink;
+  }
+
+  const slug = data?.page?.fileSlug || data.slug;
+  if (!slug) return data.permalink;
+  const segment = inputPath.includes("/essays/published/") ? "published" : "drafts";
+  return `/essays/${segment}/${slug}/`;
+}
+
 module.exports = {
   eleventyComputed: {
+    permalink: (data) => resolvePermalink(data),
     topic: (data) => applyTopicKeywordConstraints(data).topic,
     keywords: (data) => applyTopicKeywordConstraints(data).keywords,
     canonical: (data) => meta.buildCanonicalUrl(data),
