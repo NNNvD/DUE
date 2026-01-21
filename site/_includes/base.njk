@@ -66,7 +66,7 @@
       {% set stemParts = pathStem | split('/') %}
       {% set lastSegment = '' %}
       {% for part in stemParts %}
-        {% if part and part != 'index' %}
+        {% if part and part != 'index' and part != 'published' and part != 'drafts' %}
           {% set lastSegment = part %}
         {% endif %}
       {% endfor %}
@@ -79,11 +79,14 @@
             {% for part in stemParts %}
               {% if part and part != 'index' %}
                 {% set accumulated = accumulated + '/' + part %}
+                {% set isSkippable = part == 'published' or part == 'drafts' %}
                 {% set label = part | replace('-', ' ') | replace('_', ' ') | capitalize %}
-                {% if part != lastSegment %}
-                  <li><a href="{{ (accumulated + '/') | url }}">{{ label }}</a></li>
-                {% else %}
-                  <li aria-current="page">{{ label }}</li>
+                {% if not isSkippable %}
+                  {% if part != lastSegment %}
+                    <li><a href="{{ (accumulated + '/') | url }}">{{ label }}</a></li>
+                  {% else %}
+                    <li aria-current="page">{{ label }}</li>
+                  {% endif %}
                 {% endif %}
               {% endif %}
             {% endfor %}
