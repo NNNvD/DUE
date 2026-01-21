@@ -85,8 +85,9 @@ function formatDate(value) {
 }
 
 function renderLengthIcon(entry) {
-  if (!entry.word_range) return "";
-  const iconClass = `length-icon length-icon--${entry.lengthMeta.icon} length-icon--${entry.lengthMeta.palette}`;
+  const meta = entry.lengthMeta || {};
+  if (!entry.word_range || !meta.icon || !meta.palette) return "";
+  const iconClass = `length-icon length-icon--${meta.icon} length-icon--${meta.palette}`;
   return `<span class="${iconClass}" aria-hidden="true"></span>`;
 }
 
@@ -257,8 +258,6 @@ function renderResults(matches, container, baseUrl) {
 
 function ready() {
   const data = parseData();
-  if (!data.length) return;
-
   const interactive = document.querySelector("[data-search-interactive]");
   const fallback = document.querySelector("[data-search-fallback]");
   const resultsContainer = document.querySelector("[data-search-results]");
@@ -285,6 +284,19 @@ function ready() {
     "keyword",
     "No keywords available yet."
   );
+
+  if (!data.length) {
+    if (interactive) {
+      interactive.hidden = false;
+    }
+    if (fallback) {
+      fallback.hidden = true;
+    }
+    if (resultsContainer) {
+      resultsContainer.innerHTML = '<div class="card"><p>No essays are indexed yet.</p></div>';
+    }
+    return;
+  }
 
   const run = () => {
     const matches = applyFilters({
