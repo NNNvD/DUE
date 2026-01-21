@@ -11,7 +11,7 @@ layout: base.njk
   {% set encodedShareSnippet = shareSnippet | urlencode %}
   {% set lengthRange %}
     {% if length.label == 'Tiny' %}
-      100–500 words
+      250–500 words
     {% elif length.label == 'Minute' %}
       500–1000 words
     {% elif length.label == 'Short' %}
@@ -30,7 +30,7 @@ layout: base.njk
         <div class="essay-badges">
         {% set timingLabel %}{% if initial_status == 'complete' %}Finished on time{% else %}Unfinished on time{% endif %}{% endset %}
         {% set timingClass %}{% if initial_status == 'complete' %}badge--tone-success{% else %}badge--tone-warn{% endif %}{% endset %}
-        <span class="badge badge--tone-info">Version {{ version }}</span>
+        <span class="badge badge--tone-info">Version {{ version | formatVersion(initial_status) }}</span>
         <span class="badge {{ timingClass }}">{{ timingLabel }}</span>
         {% if word_range %}
           <div class="length-chip" aria-label="Length: {{ word_range }} words">
@@ -69,7 +69,7 @@ layout: base.njk
         {% endif %}
       </div>
       <div class="meta">
-        {% if topic %}<span>Topic: {{ topic | shortWords(5) }}</span>{% endif %}
+        {% if topic %}<span>Topic: {{ topic }}</span>{% endif %}
         {% if display_keywords and display_keywords.length %}<span>Keywords: {{ display_keywords | join(", ") }}</span>{% endif %}
       </div>
     </div>
@@ -146,7 +146,7 @@ layout: base.njk
         {% set historyDate = snap.data.published_at or null %}
         <li>
           <div class="history-line">
-            <a class="history-version" href="{{ snap.url | url }}">v{{ snap.data.version }}</a>
+            <a class="history-version" href="{{ snap.url | url }}">v{{ snap.data.version | formatVersion(snap.data.initial_status) }}</a>
             {% if historyDate %}
               <span class="history-date">{{ historyDate | date("yyyy-LL-dd") }}</span>
             {% endif %}
