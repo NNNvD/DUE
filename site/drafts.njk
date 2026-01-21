@@ -28,7 +28,7 @@ description: "All essays in draft mode ordered by publish date."
               <h3 class="card-title {{ length.titleClass }}">{{ draft.data.title }}</h3>
             </div>
             <div class="meta meta--draft">
-              <span class="badge badge--tone-info">v{{ draft.data.version }}</span>
+              <span class="badge badge--tone-info">v{{ draft.data.version | formatVersion(draft.data.initial_status) }}</span>
               <span class="badge badge--tone-info">Proposed</span>
               {% if draft.data.deadline_at %}
                 <span
@@ -68,7 +68,7 @@ description: "All essays in draft mode ordered by publish date."
           {% if draft.data.topic %}
             <div>
               <dt>Topic</dt>
-              <dd>{{ draft.data.topic | shortWords(5) }}</dd>
+            <dd>{{ draft.data.topic }}</dd>
             </div>
           {% endif %}
         </dl>
