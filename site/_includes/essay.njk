@@ -87,9 +87,10 @@ layout: base.njk
         </div>
       </div>
     {% endif %}
-    {% if isPublishedEssay and site.giscus and site.giscus.repo %}
+    {% set giscusReady = site.giscus and site.giscus.repo and site.giscus.repoId and site.giscus.category and site.giscus.categoryId %}
+    {% if isPublishedEssay and giscusReady %}
       <div class="essay-header__row">
-        <a class="jump-to-comments" href="#comments">Jump to comments ↓</a>
+        <a class="jump-to-comments" href="#discussion">Jump to comments ↓</a>
       </div>
     {% endif %}
   </header>
