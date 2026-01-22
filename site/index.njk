@@ -17,10 +17,10 @@ description: "See what is shipping now, browse recent essays, and jump into the 
   <div class="hero__copy">
     <p class="eyebrow">Deadline for Unfinished Essays</p>
     <h2>Propose. Panic. Publish.</h2>
-    <p class="lede">DUE is a collaborative platform for short-form essays written under pressure. Writers propose a topic, choose a word range—Tiny (100–500 words), Minute (500–1000), or Short (1000–1500)—and have 30 days to deliver. When the deadline hits, the essay goes live, finished or not.</p>
+    <p class="lede">DUE is a collaborative platform for short-form essays written under pressure. Writers propose a topic, choose a word range—Tiny (250–500 words), Minute (500–1000), or Short (1000–1500)—and have 30 days to deliver. When the deadline hits, the essay goes live, finished or not.</p>
     <p class="muted">Purple squares mark Tiny essays, orange triangles Minute essays, and teal circles Short essays.</p>
     <div class="legend-badges">
-      <span class="legend-badge legend-badge--square magenta">Tiny · 100–500 words</span>
+      <span class="legend-badge legend-badge--square magenta">Tiny · 250–500 words</span>
       <span class="legend-badge legend-badge--triangle orange">Minute · 500–1000 words</span>
       <span class="legend-badge legend-badge--circle teal">Short · 1000–1500 words</span>
     </div>
@@ -114,7 +114,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
           {% set latestTimingLabel %}{% if latest.data.initial_status == 'complete' %}Finished on time{% else %}Unfinished on time{% endif %}{% endset %}
           {% set latestTimingClass %}{% if latest.data.initial_status == 'complete' %}badge--tone-success{% else %}badge--tone-warn{% endif %}{% endset %}
           <div class="meta">
-            <span class="badge badge--tone-info">v{{ latest.data.version }}</span>
+            <span class="badge badge--tone-info">v{{ latest.data.version | formatVersion(latest.data.initial_status) }}</span>
             <span class="badge {{ latestTimingClass }}">{{ latestTimingLabel }}</span>
             {% if latest.data.published_at %}<span>Published {{ latest.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
           </div>
