@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import * as bumpVersionAndCredit from "../bumpVersionAndCredit.js";
+import { createRequire } from "node:module";
 
-const exportsObject = bumpVersionAndCredit.default || bumpVersionAndCredit;
-const { bump, applyContribution } = exportsObject;
+const require = createRequire(import.meta.url);
+const { bump, applyContribution } = require("../bumpVersionAndCredit.js");
 
 describe("bump", () => {
   it("increments the minor version for minor contributions", () => {

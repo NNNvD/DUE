@@ -101,9 +101,8 @@ if (require.main === module) {
   process.exit(run());
 }
 
-module.exports = {
-  applyContribution,
-  parseEnv,
-  processFile,
-  run
-};
+exports.bump = bump;
+exports.applyContribution = applyContribution;
+exports.parseEnv = parseEnv;
+exports.processFile = processFile;
+exports.run = run;
