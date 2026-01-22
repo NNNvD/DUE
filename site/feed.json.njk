@@ -18,7 +18,7 @@ eleventyExcludeFromCollections: true
       {% set releaseNotes = post.data.release_notes or [] %}
       {% set releaseNote = releaseNotes | first or meta.extractDescription(post.data) %}
       {% set contentText = releaseNote or '' %}
-      {% set version = post.data.version or '0.0' %}
+      {% set version = post.data.version | formatVersion(post.data.initial_status) %}
       {% set canonicalUrl = (post.data.canonical or post.url | url) | absoluteUrl(site) %}
       {
         "id": {{ canonicalUrl | dump }},

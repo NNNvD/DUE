@@ -4,7 +4,7 @@ layout: base.njk
 <article class="card">
   <h1>{{ title }}</h1>
   <div class="meta">
-    <span class="badge">Snapshot v{{ version }}</span>
+    <span class="badge">Snapshot v{{ version | formatVersion(initial_status) }}</span>
     <span class="badge">{{ word_range }} words</span>
     {% if author %}<span>By <strong>@{{ author }}</strong></span>{% endif %}
     {% if coauthors and coauthors.length %}
