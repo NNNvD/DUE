@@ -10,7 +10,8 @@ initial_status: unfinished
 started_at: ''
 deadline_at: ''
 version: 0.1.0
-word_range: 500-1000
+word_range: 1-10
+word_count: 2
 release_notes: []
 ---
 Let's go!

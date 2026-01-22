@@ -28,7 +28,7 @@ eleventyExcludeFromCollections: true
     {% set canonicalUrl = (entry.data.canonical or entry.url | url) | absoluteUrl(site) %}
     {% set releaseNotes = entry.data.release_notes or [] %}
     {% set latestReleaseNote = releaseNotes | first or meta.extractDescription(entry.data) %}
-    {% set entryVersion = entry.data.version or '0.0' %}
+    {% set entryVersion = entry.data.version | formatVersion(entry.data.initial_status) %}
     <entry>
       <title>{{ entryTitle }}</title>
       <link href="{{ canonicalUrl }}" />

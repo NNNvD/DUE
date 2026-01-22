@@ -20,8 +20,8 @@
   <meta property="og:title" content="{{ metaTitle }}">
   <meta property="og:type" content="{{ ogType or 'website' }}">
   <meta property="og:site_name" content="{{ site.title }}">
-  <link rel="alternate" type="application/atom+xml" title="{{ site.title }} feed" href="{{ '/feeds/feed.xml' | url | absoluteUrl(site) }}">
-  <link rel="alternate" type="application/feed+json" title="{{ site.title }} feed (JSON)" href="{{ '/feeds/feed.json' | url | absoluteUrl(site) }}">
+  <link rel="alternate" type="application/rss+xml" title="{{ site.title }} feed" href="{{ '/feed.xml' | url | absoluteUrl(site) }}">
+  <link rel="alternate" type="application/feed+json" title="{{ site.title }} feed (JSON)" href="{{ '/feed.json' | url | absoluteUrl(site) }}">
   {% if socialImage %}
   <meta property="og:image" content="{{ socialImage }}">
   <meta name="twitter:card" content="summary_large_image">
@@ -66,7 +66,7 @@
       {% set stemParts = pathStem | split('/') %}
       {% set lastSegment = '' %}
       {% for part in stemParts %}
-        {% if part and part != 'index' %}
+        {% if part and part != 'index' and part != 'published' and part != 'drafts' %}
           {% set lastSegment = part %}
         {% endif %}
       {% endfor %}
@@ -79,11 +79,14 @@
             {% for part in stemParts %}
               {% if part and part != 'index' %}
                 {% set accumulated = accumulated + '/' + part %}
+                {% set isSkippable = part == 'published' or part == 'drafts' %}
                 {% set label = part | replace('-', ' ') | replace('_', ' ') | capitalize %}
-                {% if part != lastSegment %}
-                  <li><a href="{{ (accumulated + '/') | url }}">{{ label }}</a></li>
-                {% else %}
-                  <li aria-current="page">{{ label }}</li>
+                {% if not isSkippable %}
+                  {% if part != lastSegment %}
+                    <li><a href="{{ (accumulated + '/') | url }}">{{ label }}</a></li>
+                  {% else %}
+                    <li aria-current="page">{{ label }}</li>
+                  {% endif %}
                 {% endif %}
               {% endif %}
             {% endfor %}
@@ -94,9 +97,9 @@
     </main>
     <footer>
       Built with Eleventy · Content &copy; 2024–present Noah van Dongen & contributors. Subscribe via
-      <a href="{{ '/feeds/feed.xml' | url }}">Atom</a>
+      <a href="{{ '/feed.xml' | url }}">RSS</a>
       or
-      <a href="{{ '/feeds/feed.json' | url }}">JSON</a> feeds.
+      <a href="{{ '/feed.json' | url }}">JSON</a> feeds.
     </footer>
   </div>
   <script type="module" src="{{ "/assets/countdown.js" | url }}"></script>

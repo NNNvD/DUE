@@ -26,7 +26,7 @@ eleventyExcludeFromCollections: true
       {% set releaseNotes = post.data.release_notes or [] %}
       {% set releaseNote = releaseNotes | first or meta.extractDescription(post.data) %}
       {% set canonicalUrl = (post.data.canonical or post.url | url) | absoluteUrl(site) %}
-      {% set version = post.data.version or '0.0' %}
+      {% set version = post.data.version | formatVersion(post.data.initial_status) %}
       <item>
         <title>{{ postTitle }}</title>
         <link>{{ canonicalUrl }}</link>
