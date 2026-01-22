@@ -18,7 +18,7 @@ layout: base.njk
 <article class="card">
   <h1>Version history for “{{ essay.data.title }}”</h1>
   <div class="meta">
-    <span class="badge">Latest v{{ essay.data.version }}</span>
+    <span class="badge">Latest v{{ essay.data.version | formatVersion(essay.data.initial_status) }}</span>
     {% if essay.data.published_at %}
       <span>Published {{ essay.data.published_at | date("yyyy-LL-dd") }}</span>
     {% endif %}
@@ -42,7 +42,7 @@ layout: base.njk
         {% set historyDate = snap.data.published_at or null %}
         <li>
           <div class="history-line">
-            <a class="history-version" href="{{ snap.url | url }}">v{{ snap.data.version }}</a>
+            <a class="history-version" href="{{ snap.url | url }}">v{{ snap.data.version | formatVersion(snap.data.initial_status) }}</a>
             {% if historyDate %}
               <span class="history-date">{{ historyDate | date("yyyy-LL-dd") }}</span>
             {% endif %}
