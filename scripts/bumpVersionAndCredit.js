@@ -102,7 +102,6 @@ if (require.main === module) {
 }
 
 module.exports = {
-  bump,
   applyContribution,
   parseEnv,
   processFile,
