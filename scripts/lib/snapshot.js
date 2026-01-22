@@ -1,6 +1,7 @@
 const fs = require("fs-extra");
 const path = require("path");
 const matter = require("gray-matter");
+const { normalizeVersion } = require("./version");
 
 function slugOf(fp) {
   return path.basename(fp, path.extname(fp));
@@ -8,7 +9,7 @@ function slugOf(fp) {
 
 function writeSnapshot(fromFilePath, frontMatter, content) {
   const slug = slugOf(fromFilePath);
-  const version = String(frontMatter.version || "0.1");
+  const version = normalizeVersion(frontMatter.version, frontMatter.initial_status);
   const dir = path.join("site/essays/snapshots", slug);
   const dest = path.join(dir, `v${version}.md`);
 
@@ -25,4 +26,3 @@ function writeSnapshot(fromFilePath, frontMatter, content) {
 }
 
 module.exports = { writeSnapshot };
-

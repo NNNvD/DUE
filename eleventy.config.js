@@ -261,6 +261,24 @@ function filterEssayTemplates(collection = []) {
   });
 }
 
+function formatVersion(raw, initialStatus) {
+  const asString = raw === undefined || raw === null ? "" : String(raw);
+  const parts = asString
+    .split(".")
+    .map((part) => parseInt(part, 10))
+    .filter((part) => Number.isFinite(part));
+
+  if (!parts.length) {
+    return initialStatus === "complete" ? "1.0.0" : "0.1.0";
+  }
+
+  while (parts.length < 3) {
+    parts.push(0);
+  }
+
+  return parts.slice(0, 3).join(".");
+}
+
 function normalizeStatus(raw, fallback) {
   const normalized = typeof raw === "string" ? raw.toLowerCase() : "";
   if (fallback === "draft" && normalized === "published") {
@@ -360,12 +378,14 @@ function loadEssaysByStatus(status = "published") {
 
 module.exports = function(eleventyConfig) {
   const parseVersion = (value) => {
-    const parts = String(value || "0.0").split(".");
+    const parts = String(value || "0.0.0").split(".");
     const major = parseInt(parts[0], 10);
     const minor = parseInt(parts[1] || "0", 10);
+    const patch = parseInt(parts[2] || "0", 10);
     return {
       major: Number.isFinite(major) ? major : 0,
-      minor: Number.isFinite(minor) ? minor : 0
+      minor: Number.isFinite(minor) ? minor : 0,
+      patch: Number.isFinite(patch) ? patch : 0
     };
   };
 
@@ -469,6 +489,10 @@ module.exports = function(eleventyConfig) {
     return value.split(delimiter);
   });
 
+  eleventyConfig.addFilter("formatVersion", (value, initialStatus) => {
+    return formatVersion(value, initialStatus);
+  });
+
   eleventyConfig.addFilter("daysUntil", (value) => {
     if (!value) return null;
 
@@ -528,7 +552,11 @@ module.exports = function(eleventyConfig) {
           return bVersion.major - aVersion.major;
         }
 
-        return bVersion.minor - aVersion.minor;
+        if (bVersion.minor !== aVersion.minor) {
+          return bVersion.minor - aVersion.minor;
+        }
+
+        return bVersion.patch - aVersion.patch;
       });
   });
 
