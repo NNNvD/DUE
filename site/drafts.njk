@@ -23,6 +23,7 @@ description: "All essays in draft mode ordered by publish date."
               {% if draft.data.word_range %}
                 <div class="length-chip length-chip--icon-only" aria-label="Length indicator: {{ length.label }}">
                   <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
+                  <span class="length-chip__text">{{ length.label }}</span>
                 </div>
               {% endif %}
               <h3 class="card-title {{ length.titleClass }}">{{ draft.data.title }}</h3>

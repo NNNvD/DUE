@@ -88,7 +88,8 @@ function renderLengthIcon(entry) {
   const meta = entry.lengthMeta || {};
   if (!entry.word_range || !meta.icon || !meta.palette) return "";
   const iconClass = `length-icon length-icon--${meta.icon} length-icon--${meta.palette}`;
-  return `<span class="${iconClass}" aria-hidden="true"></span>`;
+  const label = meta.label || "Length";
+  return `<span class="${iconClass}" aria-hidden="true"></span><span class="length-icon__label">${label}</span>`;
 }
 
 function renderBadges(entry) {
