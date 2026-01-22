@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
-import bumpVersionAndCredit from "../bumpVersionAndCredit.js";
+import * as bumpVersionAndCredit from "../bumpVersionAndCredit.js";
 
-const { bump, applyContribution } = bumpVersionAndCredit;
+const exportsObject = bumpVersionAndCredit.default || bumpVersionAndCredit;
+const { bump, applyContribution } = exportsObject;
 
 describe("bump", () => {
   it("increments the minor version for minor contributions", () => {
