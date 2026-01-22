@@ -1,6 +1,7 @@
 const fs = require("fs");
 const matter = require("gray-matter");
 const { writeSnapshot } = require("./lib/snapshot");
+const { bumpVersion } = require("./lib/version");
 const { normalizeCoauthors, normalizeAcknowledgments } = require("./lib/creditUtils");
 
 function parseEnv(env = process.env) {
@@ -18,22 +19,13 @@ function parseEnv(env = process.env) {
   return { labels, user, intent, changed };
 }
 
-function bump(version, isMajor) {
-  const value = /^\d+\.\d+$/.test(String(version)) ? String(version) : "0.1";
-  const [maj, pat] = value.split(".").map(Number);
-  if (isMajor) {
-    return `${maj + 1}.0`;
-  }
-  return `${maj}.${(pat || 0) + 1}`;
-}
-
 function applyContribution(data = {}, { intent, user }) {
   if (!intent) {
     throw new Error("Intent is required to apply contribution");
   }
 
   const isMajor = intent === "major";
-  const version = bump(data.version, isMajor);
+  const version = bumpVersion(data.version, intent);
   const note = `Contribution by @${user} (${intent}).`;
   const baseReleaseNotes = Array.isArray(data.release_notes) ? data.release_notes : [];
 
@@ -71,6 +63,10 @@ function applyContribution(data = {}, { intent, user }) {
   return { data: updated, note, version };
 }
 
+function bump(version, isMajor) {
+  return bumpVersion(version, isMajor ? "major" : "minor");
+}
+
 function processFile(fp, intent, user, fsModule = fs) {
   const raw = fsModule.readFileSync(fp, "utf8");
   const doc = matter(raw);
@@ -105,10 +101,8 @@ if (require.main === module) {
   process.exit(run());
 }
 
-module.exports = {
-  bump,
-  applyContribution,
-  parseEnv,
-  processFile,
-  run
-};
+exports.bump = bump;
+exports.applyContribution = applyContribution;
+exports.parseEnv = parseEnv;
+exports.processFile = processFile;
+exports.run = run;

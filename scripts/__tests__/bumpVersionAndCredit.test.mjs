@@ -1,15 +1,16 @@
 import { describe, it, expect } from "vitest";
-import bumpVersionAndCredit from "../bumpVersionAndCredit.js";
+import { createRequire } from "node:module";
 
-const { bump, applyContribution } = bumpVersionAndCredit;
+const require = createRequire(import.meta.url);
+const { bump, applyContribution } = require("../bumpVersionAndCredit.js");
 
 describe("bump", () => {
   it("increments the minor version for minor contributions", () => {
-    expect(bump("1.2", false)).toBe("1.3");
+    expect(bump("1.2", false)).toBe("1.3.0");
   });
 
   it("resets invalid versions before bumping", () => {
-    expect(bump("not-a-version", true)).toBe("1.0");
+    expect(bump("not-a-version", true)).toBe("1.0.0");
   });
 });
 
@@ -23,7 +24,7 @@ describe("applyContribution", () => {
 
     const { data } = applyContribution(base, { intent: "major", user: "bob" });
 
-    expect(data.version).toBe("2.0");
+    expect(data.version).toBe("2.0.0");
     expect(data.release_notes[0]).toBe("Contribution by @bob (major).");
     expect(data.release_notes.slice(1)).toEqual(["Previous entry"]);
     expect(data.coauthors.sort()).toEqual(["alice", "bob"]);
@@ -38,13 +39,13 @@ describe("applyContribution", () => {
 
     const { data } = applyContribution(base, { intent: "minor", user: "carol" });
 
-    expect(data.version).toBe("0.4");
+    expect(data.version).toBe("0.4.0");
     expect(data.release_notes[0]).toBe("Contribution by @carol (minor).");
     expect(data.acknowledgments).toHaveLength(2);
     expect(data.acknowledgments[1]).toEqual({
       user: "carol",
       note: "Minor contribution",
-      since_version: "0.4"
+      since_version: "0.4.0"
     });
     expect(base.acknowledgments).toHaveLength(1);
   });
