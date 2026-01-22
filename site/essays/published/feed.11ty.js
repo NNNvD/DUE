@@ -1,4 +1,5 @@
 const { URL } = require("node:url");
+const { normalizeVersion } = require("../../../scripts/lib/version");
 
 function escapeXml(value) {
   if (value == null) return "";
@@ -35,7 +36,7 @@ function absoluteUrl(siteUrl, path) {
 function buildEntryXml(item, siteUrl) {
   const url = absoluteUrl(siteUrl, item.url || "");
   const baseId = url.replace(/\/?$/, "");
-  const version = item.data?.version ? String(item.data.version) : "1.0";
+  const version = normalizeVersion(item.data?.version, item.data?.initial_status);
   const entryId = `${baseId}#v${version.replace(/[^a-zA-Z0-9_.-]/g, "-")}`;
   const publishedAt = item.data?.published_at || item.data?.updated_at || item.data?.started_at || item.date;
   const isoDate = toIsoDate(publishedAt);

@@ -3,9 +3,12 @@ const path = require("path");
 const { registerErrorHandlers } = require("./lib/registerErrorHandlers");
 const loadEssayIndex = require("../site/_data/essayIndex");
 
-const root = path.join(__dirname, "..", "_site", "feeds");
-const xmlPath = path.join(root, "feed.xml");
-const jsonPath = path.join(root, "feed.json");
+const siteRoot = path.join(__dirname, "..", "_site");
+const feedsRoot = path.join(siteRoot, "feeds");
+const rssPath = path.join(siteRoot, "feed.xml");
+const jsonPath = path.join(siteRoot, "feed.json");
+const atomXmlPath = path.join(feedsRoot, "feed.xml");
+const atomJsonPath = path.join(feedsRoot, "feed.json");
 
 registerErrorHandlers("validateFeeds");
 
@@ -62,11 +65,11 @@ function isWellFormedXml(xml) {
   return stack.length === 0;
 }
 
-function validateXmlFeed(filePath) {
+function validateXmlFeed(filePath, rootTag, entryTag) {
   const xmlContent = fs.readFileSync(filePath, "utf8");
   assert(isWellFormedXml(xmlContent), "Feed XML is not well-formed.");
-  assert(/<feed[\s>]/.test(xmlContent), "Feed XML must include a <feed> root element.");
-  assert(/<entry[\s>]/.test(xmlContent), "Feed XML must contain at least one entry element.");
+  assert(new RegExp(`<${rootTag}[\\s>]`).test(xmlContent), `Feed XML must include a <${rootTag}> root element.`);
+  assert(new RegExp(`<${entryTag}[\\s>]`).test(xmlContent), `Feed XML must contain at least one ${entryTag} element.`);
 }
 
 function validateJsonFeed(filePath) {
@@ -100,9 +103,16 @@ function validateSourceMetadata() {
 }
 
 validateSourceMetadata();
-ensureFileExists(xmlPath);
+ensureFileExists(rssPath);
 ensureFileExists(jsonPath);
-validateXmlFeed(xmlPath);
+validateXmlFeed(rssPath, "rss", "item");
 validateJsonFeed(jsonPath);
+
+if (fs.existsSync(atomXmlPath)) {
+  validateXmlFeed(atomXmlPath, "feed", "entry");
+}
+if (fs.existsSync(atomJsonPath)) {
+  validateJsonFeed(atomJsonPath);
+}
 
 console.log("Feeds validated successfully.");
