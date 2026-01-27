@@ -108,7 +108,7 @@ async function main() {
     console.log(`Slug '${slug}' already exists. Using '${finalSlug}' instead.`);
   }
 
-  const normalizedStatus = "proposed";
+  const normalizedStatus = "draft";
   const version = "0.1.0";
   const wordRange = "500-1000";
   const frontMatter = {

@@ -40,9 +40,9 @@ function formatAuthorName(raw) {
 }
 
 function statusDisplay(entry) {
-  const isDraftLike = entry.status === "draft" || entry.status === "proposed";
+  const isDraftLike = entry.status === "draft" || entry.status === "proposed" || entry.time_status === "draft";
   if (isDraftLike) {
-    return { label: "Proposed", tone: "badge--tone-info" };
+    return { label: "Draft", tone: "badge--tone-muted" };
   }
 
   const finished = entry.time_status === "finished-on-time" || entry.initial_status === "complete";
@@ -95,9 +95,9 @@ function renderLengthIcon(entry) {
 function renderBadges(entry) {
   const badges = [];
   const status = statusDisplay(entry);
-  const isDraftLike = entry.status === "draft" || entry.status === "proposed";
+  const isDraftLike = entry.status === "draft" || entry.status === "proposed" || entry.time_status === "draft";
 
-  if (entry.version) {
+  if (!isDraftLike && entry.version) {
     badges.push(`<span class="badge badge--tone-info">v${formatVersion(entry.version)}</span>`);
   }
 
@@ -136,10 +136,13 @@ function renderMeta(entry) {
 
 function renderCard(entry, baseUrl) {
   const lengthClass = entry.lengthMeta?.titleClass || "";
-  const isDraftLike = entry.status === "draft" || entry.status === "proposed";
+  const isDraftLike = entry.status === "draft" || entry.status === "proposed" || entry.time_status === "draft";
   const badges = renderBadges(entry);
   const meta = renderMeta(entry);
-  const href = `${baseUrl.replace(/\/$/, "")}${entry.url}`;
+  const href = entry.url ? `${baseUrl.replace(/\/$/, "")}${entry.url}` : "";
+  const titleMarkup = isDraftLike || !href
+    ? `<span>${entry.title}</span>`
+    : `<a href="${href}">${entry.title}</a>`;
   const tracker = isDraftLike && entry.deadline_at
     ? `<p class="countdown" data-deadline="${entry.deadline_at}"><span data-countdown>Calculating days until publication…</span></p>`
     : "";
@@ -149,7 +152,7 @@ function renderCard(entry, baseUrl) {
       <header class="list-card__header">
         <div class="list-card__title-row">
           ${renderLengthIcon(entry)}
-          <h4 class="card-title ${lengthClass}"><a href="${href}">${entry.title}</a></h4>
+          <h4 class="card-title ${lengthClass}">${titleMarkup}</h4>
         </div>
       </header>
       <div class="meta">${badges}</div>

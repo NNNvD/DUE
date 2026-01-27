@@ -45,6 +45,23 @@ function getDeadlineDate(data) {
   return dayjs.utc(`${value}T${hhmm}${seconds}${zone}`);
 }
 
+function getStartDate(data) {
+  const value = data.started_at || data.proposed_at;
+  if (!value) return null;
+  const parsed = dayjs.utc(value);
+  return parsed.isValid() ? parsed : null;
+}
+
+function resolveDeadline(data) {
+  const explicitDeadline = getDeadlineDate(data);
+  if (explicitDeadline) return explicitDeadline;
+
+  const started = getStartDate(data);
+  if (!started) return null;
+
+  return started.add(30, "day");
+}
+
 function publishFile(fp, now, options = {}) {
   const { quiet = false } = options;
   const raw = fs.readFileSync(fp, "utf8");
@@ -53,11 +70,15 @@ function publishFile(fp, now, options = {}) {
   const slug = path.basename(fp, path.extname(fp));
 
   d.status = "published";
+  d.initial_status = "unfinished";
   d.version = d.initial_status === "complete" ? 1.0 : 0.1;
   d.published_at = now.format("YYYY-MM-DD");
   d.release_notes = Array.isArray(d.release_notes) ? d.release_notes : [];
   d.release_notes.unshift(`Auto-published at deadline (${now.toISOString()}).`);
   d.permalink = d.permalink || `/essays/published/${slug}/`;
+  if (!d.deadline_at && options.deadline) {
+    d.deadline_at = options.deadline.format("YYYY-MM-DD");
+  }
 
   const out = matter.stringify(doc.content, d);
   const dest = path.join(pubDir, path.basename(fp));
@@ -103,11 +124,11 @@ function runAutopublish(options = {}) {
     const raw = fs.readFileSync(fp, "utf8");
     const doc = matter(raw);
     const d = doc.data;
-    const deadline = getDeadlineDate(d);
+    const deadline = resolveDeadline(d);
     if (!deadline) return list;
 
     if (!now.isBefore(deadline)) {
-      const result = publishFile(fp, now, { quiet });
+      const result = publishFile(fp, now, { quiet, deadline });
       list.push(result);
     }
 

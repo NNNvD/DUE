@@ -8,10 +8,10 @@ eleventyExcludeFromCollections: true
 {% set siteUrl = '/' | url | absoluteUrl(site) %}
 {
   "version": "https://jsonfeed.org/version/1.1",
-  "title": {{ site.title | dump }},
-  "home_page_url": {{ siteUrl | dump }},
-  "feed_url": {{ feedUrl | dump }},
-  "description": {{ site.tagline | dump }},
+  "title": {{ site.title | dump | safe }},
+  "home_page_url": {{ siteUrl | dump | safe }},
+  "feed_url": {{ feedUrl | dump | safe }},
+  "description": {{ site.tagline | dump | safe }},
   "items": [
     {% for post in posts %}
       {% set title = post.data.title or (post.data.page and post.data.page.title) or post.fileSlug or 'Untitled essay' %}
@@ -21,12 +21,12 @@ eleventyExcludeFromCollections: true
       {% set version = post.data.version | formatVersion(post.data.initial_status) %}
       {% set canonicalUrl = (post.data.canonical or post.url | url) | absoluteUrl(site) %}
       {
-        "id": {{ canonicalUrl | dump }},
-        "url": {{ canonicalUrl | dump }},
-        "title": {{ title | dump }},
-        "date_published": {{ post.data.published_at | dump }},
-        "version": {{ version | dump }},
-        "content_text": {{ contentText | dump }}
+        "id": {{ canonicalUrl | dump | safe }},
+        "url": {{ canonicalUrl | dump | safe }},
+        "title": {{ title | dump | safe }},
+        "date_published": {{ post.data.published_at | dump | safe }},
+        "version": {{ version | dump | safe }},
+        "content_text": {{ contentText | dump | safe }}
       }{% if not loop.last %},{% endif %}
     {% endfor %}
   ]
