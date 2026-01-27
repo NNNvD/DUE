@@ -203,6 +203,8 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
             </div>
           </header>
           <div class="meta">
+            <span class="badge badge--tone-info">v{{ draft.data.version | formatVersion(draft.data.initial_status) }}</span>
+            <span class="badge badge--tone-info">Proposed</span>
             <span class="badge badge--tone-muted">Draft</span>
             {% if draft.data.deadline_at %}
               <span class="badge deadline-badge" data-deadline-badge="{{ draft.data.deadline_at }}" data-deadline-label="{{ draft.data.deadline_at | date('yyyy-LL-dd') }}" title="Publishes on {{ draft.data.deadline_at | date('yyyy-LL-dd') }}"></span>
