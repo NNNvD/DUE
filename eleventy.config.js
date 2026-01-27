@@ -290,6 +290,38 @@ function normalizeStatus(raw, fallback) {
   return fallback;
 }
 
+function parseDateValue(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+  return date;
+}
+
+function resolveDeadlineAt(deadlineAt, startedAt) {
+  const explicitDeadline = parseDateValue(deadlineAt);
+  if (explicitDeadline) return explicitDeadline;
+  const started = parseDateValue(startedAt);
+  if (!started) return null;
+  return new Date(started.getTime() + 30 * 24 * 60 * 60 * 1000);
+}
+
+function resolveTimeStatus({ status, initial_status, published_at, deadline_at, started_at }) {
+  if (status === "draft" || status === "proposed") return "draft";
+
+  const publishedDate = parseDateValue(published_at);
+  const deadlineDate = resolveDeadlineAt(deadline_at, started_at);
+  if (publishedDate && deadlineDate) {
+    return publishedDate <= deadlineDate ? "finished-on-time" : "unfinished-on-time";
+  }
+
+  if (initial_status === "complete") return "finished-on-time";
+  if (initial_status === "unfinished") return "unfinished-on-time";
+
+  return "unfinished-on-time";
+}
+
 function loadEssaysByStatus(status = "published") {
   const manifest = readAutopublishManifest();
   const autopublished = Array.isArray(manifest.published) ? manifest.published : [];
@@ -324,6 +356,13 @@ function loadEssaysByStatus(status = "published") {
       const title = data.title || (data.page && data.page.title) || fallbackTitle;
       const segment = normalizedStatus === "published" ? "published" : "drafts";
       const url = `/essays/${segment}/${slug}/`;
+      const time_status = resolveTimeStatus({
+        status: normalizedStatus,
+        initial_status: data.initial_status,
+        published_at: data.published_at,
+        deadline_at: data.deadline_at,
+        started_at: data.started_at,
+      });
 
       return {
         inputPath: file,
@@ -333,6 +372,7 @@ function loadEssaysByStatus(status = "published") {
           ...data,
           title,
           status: normalizedStatus,
+          time_status,
           page: {
             ...(data.page || {}),
             url,
