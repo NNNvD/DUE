@@ -154,8 +154,16 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
               <h4 class="card-title {{ length.titleClass }}"><a href="{{ post.url | url }}">{{ post.data.title }}</a></h4>
             </div>
           </header>
-          {% set timingLabel %}{% if post.data.initial_status == 'complete' %}Finished on time{% else %}Unfinished on time{% endif %}{% endset %}
-          {% set timingClass %}{% if post.data.initial_status == 'complete' %}badge--tone-success{% else %}badge--tone-warn{% endif %}{% endset %}
+          {% set timingStatus = post.data.time_status %}
+          {% if not timingStatus %}
+            {% if post.data.initial_status == 'complete' %}
+              {% set timingStatus = 'finished-on-time' %}
+            {% else %}
+              {% set timingStatus = 'unfinished-on-time' %}
+            {% endif %}
+          {% endif %}
+          {% set timingLabel %}{% if timingStatus == 'finished-on-time' %}Finished on time{% else %}Unfinished on time{% endif %}{% endset %}
+          {% set timingClass %}{% if timingStatus == 'finished-on-time' %}badge--tone-success{% else %}badge--tone-warn{% endif %}{% endset %}
           <div class="meta">
             <span class="badge badge--tone-info">v{{ post.data.version | formatVersion(post.data.initial_status) }}</span>
             <span class="badge {{ timingClass }}">{{ timingLabel }}</span>
@@ -195,8 +203,7 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
             </div>
           </header>
           <div class="meta">
-            <span class="badge badge--tone-info">v{{ draft.data.version | formatVersion(draft.data.initial_status) }}</span>
-            <span class="badge badge--tone-info">Proposed</span>
+            <span class="badge badge--tone-muted">Draft</span>
             {% if draft.data.deadline_at %}
               <span class="badge deadline-badge" data-deadline-badge="{{ draft.data.deadline_at }}" data-deadline-label="{{ draft.data.deadline_at | date('yyyy-LL-dd') }}" title="Publishes on {{ draft.data.deadline_at | date('yyyy-LL-dd') }}"></span>
             {% else %}

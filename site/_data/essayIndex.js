@@ -109,10 +109,34 @@ function normalizeStatus(raw, fallback) {
   return fallback;
 }
 
-function timeStatus(initialStatus, status) {
-  if (status === "proposed") return "proposed";
-  if (status === "draft") return "draft";
-  return initialStatus === "complete" ? "finished-on-time" : "unfinished-on-time";
+function parseDateValue(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date;
+}
+
+function resolveDeadlineAt(deadlineAt, startedAt) {
+  const explicitDeadline = parseDateValue(deadlineAt);
+  if (explicitDeadline) return explicitDeadline;
+  const started = parseDateValue(startedAt);
+  if (!started) return null;
+  return new Date(started.getTime() + 30 * 24 * 60 * 60 * 1000);
+}
+
+function timeStatus({ status, initialStatus, publishedAt, deadlineAt, startedAt }) {
+  if (status === "proposed" || status === "draft") return "draft";
+
+  const publishedDate = parseDateValue(publishedAt);
+  const deadlineDate = resolveDeadlineAt(deadlineAt, startedAt);
+  if (publishedDate && deadlineDate) {
+    return publishedDate <= deadlineDate ? "finished-on-time" : "unfinished-on-time";
+  }
+
+  if (initialStatus === "complete") return "finished-on-time";
+  if (initialStatus === "unfinished") return "unfinished-on-time";
+
+  return "unfinished-on-time";
 }
 
 function loadEssays(status = "published") {
@@ -143,8 +167,7 @@ function loadEssays(status = "published") {
       : normalizeStatus(data.status, status);
     const slug = (data.page && data.page.fileSlug) || data.slug || (file.split("/").pop() || "").replace(/\.md$/, "");
     const constrained = enforceTopicAndKeywords(data, { slug, inputPath: file });
-    const segment = normalizedStatus === "published" ? "published" : "drafts";
-    const url = `/essays/${segment}/${slug}/`;
+    const url = normalizedStatus === "published" ? `/essays/published/${slug}/` : null;
     const keywords = Array.isArray(constrained.keywords) ? constrained.keywords : [];
     const word_range = constrained.word_range || null;
     const lengthMeta = wordRangeMeta(word_range);
@@ -158,7 +181,13 @@ function loadEssays(status = "published") {
       : new Date(constrained.deadline_at || 0).getTime();
     const initialStatus = constrained.initial_status || null;
     const normalizedVersion = normalizeVersion(constrained.version, initialStatus);
-    const timelineStatus = timeStatus(initialStatus, normalizedStatus);
+    const timelineStatus = timeStatus({
+      status: normalizedStatus,
+      initialStatus,
+      publishedAt: constrained.published_at,
+      deadlineAt: constrained.deadline_at,
+      startedAt: constrained.started_at,
+    });
 
     return {
       id: `${normalizedStatus}-${slug}`,

@@ -30,6 +30,11 @@ function resolvePermalink(data = {}) {
   if (data.pagination) return data.permalink;
   if (data.permalink === false) return false;
 
+  const normalizedStatus = typeof data.status === "string" ? data.status.toLowerCase() : "";
+  if (inputPath.includes("/essays/drafts/") && ["draft", "proposed"].includes(normalizedStatus)) {
+    return false;
+  }
+
   if (typeof data.permalink === "string" && data.permalink.trim()) {
     return data.permalink;
   }
