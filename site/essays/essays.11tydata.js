@@ -6,6 +6,24 @@ const { wordCount } = require("../../scripts/checkWordRange");
 const { enforceTopicAndKeywords } = require("../../scripts/topicKeywordConstraints");
 
 const constraintCache = new Map();
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+function parseDateValue(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date;
+}
+
+function resolveDeadlineAt(data = {}) {
+  const explicit = parseDateValue(data.deadline_at) || parseDateValue(data.published_at);
+  if (explicit) return explicit;
+
+  const started = parseDateValue(data.started_at);
+  if (!started) return null;
+
+  return new Date(started.getTime() + 30 * MS_PER_DAY);
+}
 
 function applyTopicKeywordConstraints(data = {}) {
   const cacheKey = data?.page?.inputPath || data?.page?.fileSlug || data.slug || "unknown";
@@ -75,6 +93,11 @@ module.exports = {
       const constrained = applyTopicKeywordConstraints(data);
       if (!Array.isArray(constrained.keywords)) return [];
       return constrained.keywords.slice(0, 5);
+    },
+    deadline_at: (data) => {
+      if (data.deadline_at) return data.deadline_at;
+      const resolved = resolveDeadlineAt(data);
+      return resolved ? resolved.toISOString().slice(0, 10) : data.deadline_at;
     },
     socialImage: (data) => {
       if (!data.social_image) return null;

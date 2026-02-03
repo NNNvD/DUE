@@ -116,8 +116,8 @@ function parseDateValue(value) {
   return date;
 }
 
-function resolveDeadlineAt(deadlineAt, startedAt) {
-  const explicitDeadline = parseDateValue(deadlineAt);
+function resolveDeadlineAt(deadlineAt, startedAt, publishedAt) {
+  const explicitDeadline = parseDateValue(deadlineAt) || parseDateValue(publishedAt);
   if (explicitDeadline) return explicitDeadline;
   const started = parseDateValue(startedAt);
   if (!started) return null;
@@ -128,7 +128,7 @@ function timeStatus({ status, initialStatus, publishedAt, deadlineAt, startedAt 
   if (status === "proposed" || status === "draft") return "draft";
 
   const publishedDate = parseDateValue(publishedAt);
-  const deadlineDate = resolveDeadlineAt(deadlineAt, startedAt);
+  const deadlineDate = resolveDeadlineAt(deadlineAt, startedAt, publishedAt);
   if (publishedDate && deadlineDate) {
     return publishedDate <= deadlineDate ? "finished-on-time" : "unfinished-on-time";
   }
@@ -176,9 +176,15 @@ function loadEssays(status = "published") {
       page: { ...(data.page || {}), inputPath: file },
     });
     const word_count = typeof constrained.word_count === "number" ? constrained.word_count : wordCount(content || "");
+    const resolvedDeadline = resolveDeadlineAt(
+      constrained.deadline_at,
+      constrained.started_at,
+      normalizedStatus === "published" ? null : constrained.published_at
+    );
+    const resolvedDeadlineIso = resolvedDeadline ? resolvedDeadline.toISOString().slice(0, 10) : null;
     const dateValue = normalizedStatus === "published"
       ? new Date(constrained.published_at || 0).getTime()
-      : new Date(constrained.deadline_at || 0).getTime();
+      : new Date(resolvedDeadlineIso || 0).getTime();
     const initialStatus = constrained.initial_status || null;
     const normalizedVersion = normalizeVersion(constrained.version, initialStatus);
     const timelineStatus = timeStatus({
@@ -204,9 +210,10 @@ function loadEssays(status = "published") {
       release_notes: Array.isArray(constrained.release_notes) ? constrained.release_notes : [],
       version: normalizedVersion,
       published_at: constrained.published_at || null,
-      deadline_at: constrained.deadline_at || null,
+      deadline_at: resolvedDeadlineIso,
       initial_status: initialStatus,
       time_status: timelineStatus,
+      started_at: constrained.started_at || null,
       word_range,
       word_count,
       lengthMeta,

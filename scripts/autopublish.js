@@ -15,7 +15,7 @@ const pubDir = path.join(autopublishRoot, "published");
 const manifestPath = path.join(autopublishRoot, "manifest.json");
 
 function getDeadlineDate(data) {
-  const value = data.deadline_at;
+  const value = data.deadline_at || data.published_at;
   if (!value) return null;
 
   const isIsoWithTime = typeof value === "string" && value.includes("T");
