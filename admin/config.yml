@@ -60,11 +60,9 @@ collections:
         name: initial_status
         widget: hidden
         default: unfinished
-      - label: Started at
-        name: started_at
-        widget: hidden
-        default: "{{now}}"
-        required: true
+      - { label: Started at, name: started_at, widget: datetime, format: "YYYY-MM-DD", default: "{{now}}", required: true }
+      - { label: Publication date, name: published_at, widget: datetime, format: "YYYY-MM-DD", default: "{{now | add: 30, 'days'}}", required: true, hint: "Auto-set to 30 days after the start date." }
+      - { label: Days until publication, name: publication_countdown, widget: countdown, required: false }
       - label: Deadline at
         name: deadline_at
         widget: hidden

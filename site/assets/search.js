@@ -120,6 +120,7 @@ function renderBadges(entry) {
 
 function renderMeta(entry) {
   const parts = [];
+  const isDraftLike = entry.status === "draft" || entry.status === "proposed" || entry.time_status === "draft";
   if (entry.word_count) {
     parts.push(`<span>${entry.word_count} words</span>`);
   }
@@ -130,6 +131,12 @@ function renderMeta(entry) {
   if (entry.topic) {
     const topic = entry.topic.split(/\s+/).slice(0, 5).join(" ");
     parts.push(`<span>Topic: <strong>${topic}</strong></span>`);
+  }
+  if (isDraftLike && entry.started_at) {
+    parts.push(`<span>Started ${formatDate(entry.started_at)}</span>`);
+  }
+  if (isDraftLike && entry.deadline_at) {
+    parts.push(`<span>Publishes ${formatDate(entry.deadline_at)}</span>`);
   }
   return parts.join("");
 }

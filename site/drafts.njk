@@ -56,6 +56,18 @@ description: "All essays in draft mode ordered by publish date."
         </header>
 
         <dl class="draft-meta">
+          {% if draft.data.started_at %}
+            <div>
+              <dt>Started</dt>
+              <dd>{{ draft.data.started_at | date("yyyy-LL-dd") }}</dd>
+            </div>
+          {% endif %}
+          {% if draft.data.deadline_at %}
+            <div>
+              <dt>Publication date</dt>
+              <dd>{{ draft.data.deadline_at | date("yyyy-LL-dd") }}</dd>
+            </div>
+          {% endif %}
           {% if draft.data.word_count and draft.data.status != 'proposed' %}
             <div>
               <dt>Word count</dt>
