@@ -122,6 +122,7 @@ async function main() {
     started_at: startedAt,
     proposed_at: dayjs().format("YYYY-MM-DD"),
     deadline_at: deadlineAt,
+    published_at: deadlineAt,
     initial_status: initialStatus,
     version,
     word_range: wordRange,

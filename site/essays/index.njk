@@ -216,6 +216,8 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
             {% if draft.data.word_count %}<span>{{ draft.data.word_count }} words</span>{% endif %}
             {% if draft.data.author %}<span>By <strong>{{ draft.data.author | authorName }}</strong></span>{% endif %}
             {% if draft.data.topic %}<span>Topic: <strong>{{ draft.data.topic }}</strong></span>{% endif %}
+            {% if draft.data.started_at %}<span>Started {{ draft.data.started_at | date("yyyy-LL-dd") }}</span>{% endif %}
+            {% if draft.data.deadline_at %}<span>Publishes {{ draft.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
           </div>
           {% if draft.data.deadline_at %}
             <p class="countdown" data-deadline="{{ draft.data.deadline_at }}"><span data-countdown>Tracking publication date…</span></p>
