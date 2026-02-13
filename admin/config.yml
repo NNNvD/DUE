@@ -31,6 +31,13 @@ collections:
         allow_add: true
         max: 5
         required: false
+      - label: Themes
+        name: themes
+        widget: select
+        options: [deadlines, iteration, publishing, collaboration, quality, process, scope, authorship, feedback, revision]
+        multiple: true
+        required: false
+        hint: "Controlled discoverability vocabulary (up to 5)."
       - { label: Author, name: author, widget: string, required: true }
       - label: Coauthors
         name: coauthors
@@ -94,6 +101,12 @@ collections:
       - { label: Title, name: title, widget: string, required: true }
       - { label: Topic, name: topic, widget: string, required: true }
       - { label: Keywords, name: keywords, widget: list, field: { label: Keyword, name: item, widget: string }, allow_add: true, max: 5, required: false }
+      - label: Themes
+        name: themes
+        widget: select
+        options: [deadlines, iteration, publishing, collaboration, quality, process, scope, authorship, feedback, revision]
+        multiple: true
+        required: false
       - { label: Author, name: author, widget: string, required: true }
       - label: Coauthors
         name: coauthors

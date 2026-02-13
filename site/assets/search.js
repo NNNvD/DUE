@@ -62,7 +62,7 @@ function matchesQuery(entry, query) {
   const haystack = [
     entry.title,
     entry.topic,
-    (entry.keywords || []).join(" "),
+    (entry.themes || entry.keywords || []).join(" "),
     entry.author,
     (entry.coauthors || []).join(" "),
     entry.summary,
@@ -155,7 +155,7 @@ function renderCard(entry, baseUrl) {
     : "";
 
   return `
-    <article class="card list-card" data-essay-id="${entry.id}" data-status="${entry.status}" data-length-bin="${entry.lengthMeta?.bin || "unknown"}" data-time-status="${entry.time_status || (entry.initial_status === "complete" ? "finished-on-time" : "unfinished-on-time")}" data-author="${entry.author}" data-coauthors="${(entry.coauthors || []).join(",")}" data-keywords="${(entry.keywords || []).join(",")}" data-date="${entry.dateValue}" ${entry.deadline_at ? `data-deadline="${entry.deadline_at}"` : ""}>
+    <article class="card list-card" data-essay-id="${entry.id}" data-status="${entry.status}" data-phase="${entry.phase || "in-progress"}" data-length-bin="${entry.lengthMeta?.bin || "unknown"}" data-time-status="${entry.time_status || (entry.initial_status === "complete" ? "finished-on-time" : "unfinished-on-time")}" data-author="${entry.author}" data-coauthors="${(entry.coauthors || []).join(",")}" data-themes="${(entry.themes || entry.keywords || []).join(",")}" data-date="${entry.dateValue}" ${entry.deadline_at ? `data-deadline="${entry.deadline_at}"` : ""}>
       <header class="list-card__header">
         <div class="list-card__title-row">
           ${renderLengthIcon(entry)}
@@ -216,6 +216,7 @@ function applyFilters({
   timeStatuses,
   authors,
   keywords,
+  phases,
   sort,
 }) {
   const normalizedQuery = query.trim();
@@ -239,8 +240,15 @@ function applyFilters({
     }
 
     if (keywords.length) {
-      const entryKeywords = entry.keywords || [];
+      const entryKeywords = entry.themes || entry.keywords || [];
       if (!keywords.some((keyword) => entryKeywords.includes(keyword))) return false;
+    }
+
+    if (phases.length) {
+      const phase = entry.phase || ((entry.status === "proposed")
+        ? "proposal"
+        : (entry.status === "draft" ? "in-progress" : "initial-release"));
+      if (!phases.includes(phase)) return false;
     }
     return true;
   });
@@ -279,6 +287,7 @@ function ready() {
   const finishedGroup = document.querySelector("[data-filter-finished-group]");
   const authorGroup = document.querySelector("[data-filter-author-group]");
   const keywordGroup = document.querySelector("[data-filter-keyword-group]");
+  const phaseGroup = document.querySelector("[data-filter-phase-group]");
   const sortSelect = document.querySelector("[data-filter-sort]");
 
   const lengthCheckboxes = lengthGroup ? Array.from(lengthGroup.querySelectorAll("input[type='checkbox']")) : [];
@@ -291,10 +300,11 @@ function ready() {
   );
   const keywordCheckboxes = buildCheckboxList(
     keywordGroup,
-    data.flatMap((entry) => entry.keywords || []),
+    data.flatMap((entry) => entry.themes || entry.keywords || []),
     "keyword",
-    "No keywords available yet."
+    "No themes available yet."
   );
+  const phaseCheckboxes = phaseGroup ? Array.from(phaseGroup.querySelectorAll("input[type='checkbox']")) : [];
 
   if (!data.length) {
     if (interactive) {
@@ -317,6 +327,7 @@ function ready() {
       timeStatuses: getCheckedValues(finishedGroup),
       authors: getCheckedValues(authorGroup),
       keywords: getCheckedValues(keywordGroup),
+      phases: getCheckedValues(phaseGroup),
       sort: sortSelect?.value || "newest",
     });
     renderResults(matches, resultsContainer, baseUrl);
@@ -329,6 +340,7 @@ function ready() {
     ...finishedCheckboxes,
     ...Array.from(authorCheckboxes || []),
     ...Array.from(keywordCheckboxes || []),
+    ...phaseCheckboxes,
   ];
 
   for (const element of filterElements) {
