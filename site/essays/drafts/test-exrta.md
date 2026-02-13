@@ -13,7 +13,7 @@ deadline_at: ''
 version: 0.1.0
 word_range: 1-10
 release_notes: []
-word_count: 2
+word_count: 11
 ---
 
 Let's go! afasf aasda sfsafa asfafasf afasfa  asdasda asdafda adsad adasad
