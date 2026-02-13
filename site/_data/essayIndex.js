@@ -116,8 +116,8 @@ function parseDateValue(value) {
   return date;
 }
 
-function resolveDeadlineAt(deadlineAt, startedAt, publishedAt) {
-  const explicitDeadline = parseDateValue(deadlineAt) || parseDateValue(publishedAt);
+function resolveDeadlineAt(deadlineAt, startedAt) {
+  const explicitDeadline = parseDateValue(deadlineAt);
   if (explicitDeadline) return explicitDeadline;
   const started = parseDateValue(startedAt);
   if (!started) return null;
@@ -128,7 +128,7 @@ function timeStatus({ status, initialStatus, publishedAt, deadlineAt, startedAt 
   if (status === "proposed" || status === "draft") return "draft";
 
   const publishedDate = parseDateValue(publishedAt);
-  const deadlineDate = resolveDeadlineAt(deadlineAt, startedAt, publishedAt);
+  const deadlineDate = resolveDeadlineAt(deadlineAt, startedAt);
   if (publishedDate && deadlineDate) {
     return publishedDate <= deadlineDate ? "finished-on-time" : "unfinished-on-time";
   }
@@ -198,8 +198,7 @@ function loadEssays(status = "published") {
     const word_count = typeof constrained.word_count === "number" ? constrained.word_count : wordCount(content || "");
     const resolvedDeadline = resolveDeadlineAt(
       constrained.deadline_at,
-      constrained.started_at,
-      normalizedStatus === "published" ? null : constrained.published_at
+      constrained.started_at
     );
     const resolvedDeadlineIso = resolvedDeadline ? resolvedDeadline.toISOString().slice(0, 10) : null;
     const dateValue = normalizedStatus === "published"

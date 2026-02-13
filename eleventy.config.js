@@ -80,7 +80,7 @@ function computeEssayMeta(data = {}) {
     });
   }
 
-  if (data.published_at) {
+  if (data.published_at && data.status === "published") {
     const formatted = formatDateValue(data.published_at);
     meta.badges.push({
       key: "published",
