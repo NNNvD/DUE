@@ -1,12 +1,9 @@
 const fg = require("fast-glob");
 const matter = require("gray-matter");
 
-const fs = require("fs");
-const path = require("path");
 const meta = require("./meta");
 const { wordCount } = require("../../scripts/checkWordRange");
 const { enforceTopicAndKeywords } = require("../../scripts/topicKeywordConstraints");
-const { readAutopublishManifest } = require("../../scripts/autopublish");
 
 function normalizeWordRange(value) {
   if (!value) return null;
@@ -159,32 +156,15 @@ function resolvePhase({ status, startedAt, version }) {
 }
 
 function loadEssays(status = "published") {
-  const useAutopublishManifest = process.env.USE_AUTOPUBLISH_MANIFEST === "1";
-  const manifest = useAutopublishManifest ? readAutopublishManifest() : { published: [] };
-  const autopublished = Array.isArray(manifest.published) ? manifest.published : [];
-  const autopublishedSlugs = new Set(
-    autopublished
-      .map((entry) => entry && (entry.slug || path.basename(entry.source || "", path.extname(entry.source || ""))))
-      .filter(Boolean)
-  );
-  const autopublishedPaths = autopublished
-    .map((entry) => entry && entry.dest)
-    .filter((fp) => fp && fs.existsSync(fp));
-
   const basePattern = status === "draft"
     ? "site/essays/drafts/**/*.{md,njk}"
     : "site/essays/published/**/*.{md,njk}";
 
-  const baseFiles = fg.sync(basePattern, { dot: true });
-  const files = status === "published"
-    ? [...baseFiles, ...autopublishedPaths]
-    : baseFiles.filter((fp) => !autopublishedSlugs.has(path.basename(fp, path.extname(fp))));
+  const files = fg.sync(basePattern, { dot: true });
 
   return files.map((file) => {
     const { data, content } = matter.read(file);
-    const normalizedStatus = autopublishedPaths.includes(file)
-      ? "published"
-      : normalizeStatus(data.status, status);
+    const normalizedStatus = normalizeStatus(data.status, status);
     const slug = (data.page && data.page.fileSlug) || data.slug || (file.split("/").pop() || "").replace(/\.md$/, "");
     const constrained = enforceTopicAndKeywords(data, { slug, inputPath: file });
     const url = normalizedStatus === "published" ? `/essays/published/${slug}/` : null;

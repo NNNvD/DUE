@@ -3,7 +3,7 @@ const fg = require("fast-glob");
 const matter = require("gray-matter");
 const fs = require("fs");
 const path = require("path");
-const { runAutopublish, readAutopublishManifest } = require("./scripts/autopublish");
+const { runAutopublish } = require("./scripts/autopublish");
 
 function formatDateValue(value, format = "yyyy-LL-dd") {
   if (!value) return "";
@@ -323,32 +323,16 @@ function resolveTimeStatus({ status, initial_status, published_at, deadline_at, 
 }
 
 function loadEssaysByStatus(status = "published") {
-  const useAutopublishManifest = process.env.USE_AUTOPUBLISH_MANIFEST === "1";
-  const manifest = useAutopublishManifest ? readAutopublishManifest() : { published: [] };
-  const autopublished = Array.isArray(manifest.published) ? manifest.published : [];
-  const autopublishedSlugs = new Set(
-    autopublished
-      .map((entry) => entry && (entry.slug || path.basename(entry.source || "", path.extname(entry.source || ""))))
-      .filter(Boolean)
-  );
-
-  const autopublishedPaths = autopublished
-    .map((entry) => entry && entry.dest)
-    .filter((fp) => fp && fs.existsSync(fp));
-
   const pattern = status === "draft"
     ? "site/essays/drafts/**/*.{md,njk}"
     : "site/essays/published/**/*.{md,njk}";
 
   const files = fg.sync(pattern, { dot: true });
-  const resolved = status === "published" ? [...files, ...autopublishedPaths] : files;
 
-  const entries = resolved
+  return files
     .map((file) => {
       const { data, content } = matter.read(file);
-      const normalizedStatus = autopublishedPaths.includes(file)
-        ? "published"
-        : normalizeStatus(data.status, status);
+      const normalizedStatus = normalizeStatus(data.status, status);
       const slug =
         (data.page && data.page.fileSlug) ||
         data.slug ||
@@ -383,38 +367,7 @@ function loadEssaysByStatus(status = "published") {
         },
         templateContent: content,
       };
-    })
-    .filter((entry) => {
-      if (status === "draft" && autopublishedSlugs.has(entry.fileSlug)) {
-        return false;
-      }
-      return true;
     });
-
-  if (status !== "published") {
-    return entries;
-  }
-
-  const bySlug = new Map();
-
-  for (const entry of entries) {
-    const slug = entry.fileSlug || entry.data?.page?.fileSlug;
-    const key = slug || entry.inputPath;
-    const existing = bySlug.get(key);
-    if (!existing) {
-      bySlug.set(key, entry);
-      continue;
-    }
-
-    const existingCanonical = (existing.inputPath || "").includes("/essays/published/");
-    const currentCanonical = (entry.inputPath || "").includes("/essays/published/");
-
-    if (currentCanonical && !existingCanonical) {
-      bySlug.set(key, entry);
-    }
-  }
-
-  return Array.from(bySlug.values());
 }
 
 module.exports = function(eleventyConfig) {
@@ -487,8 +440,7 @@ module.exports = function(eleventyConfig) {
     const normalized = typeof status === "string" ? status.toLowerCase() : status;
     const inputPath = item.inputPath || "";
     const isCanonical = inputPath.includes("/essays/published/");
-    const isAutopublished = inputPath.includes("/autopublished/published/");
-    return normalized === "published" && (isCanonical || isAutopublished);
+    return normalized === "published" && isCanonical;
   };
 
   const isDraftEssay = (item = {}) => {
