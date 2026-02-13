@@ -13,7 +13,7 @@ version: 0.1.0
 word_range: 250-500
 word_count: 260
 release_notes:
-  - 'Auto-published at deadline (2026-02-13T14:04:10.566Z).'
+  - 'Auto-published at deadline (2026-02-13T13:43:26.794Z).'
 published_at: '2026-02-13'
 permalink: /essays/published/test-3/
 ---
