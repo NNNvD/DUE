@@ -159,7 +159,8 @@ function resolvePhase({ status, startedAt, version }) {
 }
 
 function loadEssays(status = "published") {
-  const manifest = readAutopublishManifest();
+  const useAutopublishManifest = process.env.USE_AUTOPUBLISH_MANIFEST === "1";
+  const manifest = useAutopublishManifest ? readAutopublishManifest() : { published: [] };
   const autopublished = Array.isArray(manifest.published) ? manifest.published : [];
   const autopublishedSlugs = new Set(
     autopublished
