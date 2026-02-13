@@ -1,6 +1,8 @@
-name: Auto publish overdue drafts (manual)
+name: Auto publish overdue drafts
 
 on:
+  schedule:
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 permissions:
@@ -22,20 +24,26 @@ jobs:
           cache: npm
 
       - name: Install deps
-        run: npm install --no-audit --no-fund
+        run: |
+          set -euxo pipefail
+          npm install --no-audit --no-fund
 
       - name: Run autopublish
-        run: node scripts/autopublish.js
+        run: |
+          set -euxo pipefail
+          node scripts/autopublish.js
+          npm run check:words
 
       - name: Commit and push changes
         run: |
+          set -euxo pipefail
           if [[ -n "$(git status --porcelain)" ]]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add -A
             git commit -m "chore: autopublish overdue drafts"
+            git pull --rebase --autostash
             git push
           else
             echo "No changes to commit."
           fi
-

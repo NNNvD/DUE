@@ -19,8 +19,8 @@ export function initializeCountdowns(root = document) {
     const now = new Date();
     const diff = deadline.getTime() - now.getTime();
     if (diff <= 0) {
-      badge.textContent = "Publishing now";
-      badge.setAttribute("aria-label", `Publishing now (deadline ${label})`);
+      badge.textContent = "Queued for publication";
+      badge.setAttribute("aria-label", `Past deadline; queued for publication (deadline ${label})`);
       continue;
     }
 
@@ -54,7 +54,7 @@ export function initializeCountdowns(root = document) {
       const diff = deadline.getTime() - now.getTime();
 
       if (diff <= 0) {
-        display.textContent = "Publishing now.";
+        display.textContent = "Past deadline — queued for publication.";
         return;
       }
 

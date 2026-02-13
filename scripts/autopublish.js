@@ -1,4 +1,3 @@
-
 const fs = require("fs-extra");
 const path = require("path");
 const matter = require("gray-matter");
@@ -10,12 +9,10 @@ const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
 const draftsDir = "site/essays/drafts";
-const autopublishRoot = "site/autopublished";
-const pubDir = path.join(autopublishRoot, "published");
-const manifestPath = path.join(autopublishRoot, "manifest.json");
+const pubDir = "site/essays/published";
 
 function getDeadlineDate(data) {
-  const value = data.deadline_at || data.published_at;
+  const value = data.deadline_at;
   if (!value) return null;
 
   const isIsoWithTime = typeof value === "string" && value.includes("T");
@@ -70,61 +67,39 @@ function publishFile(fp, now, options = {}) {
   const slug = path.basename(fp, path.extname(fp));
 
   d.status = "published";
-  d.initial_status = "unfinished";
-  d.version = d.initial_status === "complete" ? 1.0 : 0.1;
+  d.version = d.initial_status === "complete" ? "1.0.0" : "0.1.0";
   d.published_at = now.format("YYYY-MM-DD");
   d.release_notes = Array.isArray(d.release_notes) ? d.release_notes : [];
   d.release_notes.unshift(`Auto-published at deadline (${now.toISOString()}).`);
-  d.permalink = d.permalink || `/essays/published/${slug}/`;
-  if (!d.deadline_at && options.deadline) {
-    d.deadline_at = options.deadline.format("YYYY-MM-DD");
-  }
+  d.permalink = `/essays/published/${slug}/`;
 
   const out = matter.stringify(doc.content, d);
   const dest = path.join(pubDir, path.basename(fp));
   fs.ensureDirSync(pubDir);
   fs.writeFileSync(dest, out, "utf8");
+  fs.removeSync(fp);
+
   if (!quiet) {
-    console.log(`Prepared publication: ${slug} → v${d.version}`);
+    console.log(`Published overdue draft: ${slug}`);
   }
 
   return { slug, source: fp, dest };
 }
 
 function readAutopublishManifest() {
-  if (!fs.existsSync(manifestPath)) return { published: [], generated_at: null };
-  try {
-    return fs.readJsonSync(manifestPath);
-  } catch (err) {
-    console.warn("Unable to read autopublish manifest:", err.message);
-    return { published: [], generated_at: null };
-  }
-}
-
-function writeManifest(now, published) {
-  const manifest = {
-    generated_at: now.toISOString(),
-    published: published.map(({ slug, source, dest }) => ({ slug, source, dest })),
-  };
-
-  fs.ensureDirSync(autopublishRoot);
-  fs.writeJsonSync(manifestPath, manifest, { spaces: 2 });
-
-  return manifest;
+  return { published: [], generated_at: null };
 }
 
 function runAutopublish(options = {}) {
   const { quiet = false, referenceTime } = options;
   const now = referenceTime ? dayjs.utc(referenceTime) : dayjs.utc();
-  fs.removeSync(autopublishRoot);
 
   const draftFiles = fg.sync(`${draftsDir}/**/*.md`, { dot: false });
 
-  const published = draftFiles.reduce((list, fp) => {
+  return draftFiles.reduce((list, fp) => {
     const raw = fs.readFileSync(fp, "utf8");
     const doc = matter(raw);
-    const d = doc.data;
-    const deadline = resolveDeadline(d);
+    const deadline = resolveDeadline(doc.data);
     if (!deadline) return list;
 
     if (!now.isBefore(deadline)) {
@@ -134,8 +109,6 @@ function runAutopublish(options = {}) {
 
     return list;
   }, []);
-
-  return writeManifest(now, published);
 }
 
 if (require.main === module) {

@@ -73,7 +73,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
         </div>
         <h4 class="card-title">{{ active.data.title }}</h4>
         {% if active.data.topic %}<p class="muted"><strong>Topic:</strong> {{ active.data.topic }}</p>{% endif %}
-        <p class="countdown"><span data-countdown>{% if active.data.deadline_at %}Publishes on {{ active.data.deadline_at | date("yyyy-LL-dd") }}{% else %}Deadline not yet scheduled.{% endif %}</span></p>
+        <p class="countdown" {% if active.data.deadline_at %}data-deadline="{{ active.data.deadline_at }}"{% endif %}><span data-countdown>{% if active.data.deadline_at %}Tracking publication date…{% else %}Deadline not yet scheduled.{% endif %}</span></p>
       </div>
       {% if drafts.length > 1 %}
         <div class="divider"></div>

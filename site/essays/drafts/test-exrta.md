@@ -7,11 +7,12 @@ coauthors: []
 acknowledgments: []
 status: proposed
 initial_status: unfinished
-started_at: ''
-deadline_at: ''
+started_at: 2026-02-13
+deadline_at: 2026-03-15
 version: 0.1.0
-word_range: 1-10
-word_count: 2
+word_range: 250-500
+word_count: 260
 release_notes: []
 ---
-Let's go!
+
+draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft draft

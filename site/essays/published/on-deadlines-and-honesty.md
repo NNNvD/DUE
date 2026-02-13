@@ -4,15 +4,18 @@ topic: The role of time pressure in intellectual clarity
 author: noahvandongen
 coauthors: []
 acknowledgments: []
-status: proposed
-started_at: 2025-11-06T00:00:00Z
-deadline_at: 2025-12-06T00:00:00Z
-proposed_at: 2025-11-06T00:00:00Z
+status: published
+started_at: 2025-11-06T00:00:00.000Z
+deadline_at: 2025-12-06T00:00:00.000Z
+proposed_at: 2025-11-06T00:00:00.000Z
 initial_status: unfinished
 version: 0.1.0
 word_range: 250-500
-release_notes: []
+release_notes:
+  - 'Auto-published at deadline (2026-02-13T13:43:26.794Z).'
 word_count: 286
+published_at: '2026-02-13'
+permalink: /essays/published/on-deadlines-and-honesty/
 ---
 Deadlines have a way of stripping away our favorite illusions. Without the luxury of infinite revision, we learn what we really
 think.
