@@ -31,6 +31,13 @@ collections:
         allow_add: true
         max: 5
         required: false
+      - label: Themes
+        name: themes
+        widget: select
+        options: [deadlines, iteration, publishing, collaboration, quality, process, scope, authorship, feedback, revision]
+        multiple: true
+        required: false
+        hint: "Controlled discoverability vocabulary (up to 5)."
       - { label: Author, name: author, widget: string, required: true }
       - label: Coauthors
         name: coauthors
@@ -60,8 +67,11 @@ collections:
         name: initial_status
         widget: hidden
         default: unfinished
-      - { label: Started at, name: started_at, widget: datetime, format: "YYYY-MM-DD", default: "{{now}}", required: true }
-      - { label: Publication date, name: published_at, widget: datetime, format: "YYYY-MM-DD", default: "{{now | add: 30, 'days'}}", required: true, hint: "Auto-set to 30 days after the start date." }
+      - label: Started at
+        name: started_at
+        widget: hidden
+        default: "{{now}}"
+        required: true
       - { label: Days until publication, name: publication_countdown, widget: countdown, required: false }
       - label: Deadline at
         name: deadline_at
@@ -94,6 +104,12 @@ collections:
       - { label: Title, name: title, widget: string, required: true }
       - { label: Topic, name: topic, widget: string, required: true }
       - { label: Keywords, name: keywords, widget: list, field: { label: Keyword, name: item, widget: string }, allow_add: true, max: 5, required: false }
+      - label: Themes
+        name: themes
+        widget: select
+        options: [deadlines, iteration, publishing, collaboration, quality, process, scope, authorship, feedback, revision]
+        multiple: true
+        required: false
       - { label: Author, name: author, widget: string, required: true }
       - label: Coauthors
         name: coauthors
@@ -115,11 +131,11 @@ collections:
           - { label: Since version, name: since_version, widget: string, required: false }
       - { label: Status, name: status, widget: select, options: [proposed, draft, published], default: published }
       - { label: Initial status, name: initial_status, widget: select, options: [unfinished, complete], default: unfinished }
-      - { label: Started at, name: started_at, widget: datetime, format: "YYYY-MM-DD", required: true }
+      - { label: Started at, name: started_at, widget: hidden, required: true }
       - { label: Proposed at, name: proposed_at, widget: datetime, format: "YYYY-MM-DD", required: false }
       - { label: Deadline at, name: deadline_at, widget: datetime, format: "YYYY-MM-DD", required: true }
       - { label: Deadline time, name: deadline_at_time, widget: string, required: false }
-      - { label: Published at, name: published_at, widget: datetime, format: "YYYY-MM-DD", required: true }
+      - { label: Published at, name: published_at, widget: hidden, required: true }
       - label: Version
         name: version
         widget: string

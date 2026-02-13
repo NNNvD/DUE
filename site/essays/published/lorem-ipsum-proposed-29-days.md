@@ -4,15 +4,18 @@ topic: Planning a placeholder essay after nearly a month of consideration
 author: lorem-proposer
 coauthors: []
 acknowledgments: []
-status: proposed
-started_at: 2025-11-06
-deadline_at: 2025-12-06
-proposed_at: 2025-11-06
+status: published
+started_at: 2025-11-06T00:00:00.000Z
+deadline_at: 2025-12-06T00:00:00.000Z
+proposed_at: 2025-11-06T00:00:00.000Z
 initial_status: unfinished
 version: 0.1.0
 word_range: 250-500
-release_notes: []
+release_notes:
+  - 'Auto-published at deadline (2026-02-13T13:43:26.794Z).'
 word_count: 369
+published_at: '2026-02-13'
+permalink: /essays/published/lorem-ipsum-proposed-29-days/
 ---
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur auctor nisi sed arcu pulvinar, non placerat neque hendrerit. Maecenas in quam urna. Aliquam erat volutpat, vestibulum vitae sem nec, accumsan dictum justo. Aenean pharetra sem at eros dapibus, sed faucibus orci mattis. Pellentesque ut ipsum aliquet, euismod mi ac, tincidunt dolor. Fusce velit neque, pellentesque sit amet magna ut, posuere venenatis lorem. Vivamus rhoncus rhoncus felis, vitae ornare sem tincidunt sed.
 
