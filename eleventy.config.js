@@ -80,7 +80,7 @@ function computeEssayMeta(data = {}) {
     });
   }
 
-  if (data.published_at) {
+  if (data.published_at && data.status === "published") {
     const formatted = formatDateValue(data.published_at);
     meta.badges.push({
       key: "published",
@@ -323,7 +323,8 @@ function resolveTimeStatus({ status, initial_status, published_at, deadline_at, 
 }
 
 function loadEssaysByStatus(status = "published") {
-  const manifest = readAutopublishManifest();
+  const useAutopublishManifest = process.env.USE_AUTOPUBLISH_MANIFEST === "1";
+  const manifest = useAutopublishManifest ? readAutopublishManifest() : { published: [] };
   const autopublished = Array.isArray(manifest.published) ? manifest.published : [];
   const autopublishedSlugs = new Set(
     autopublished
@@ -451,8 +452,7 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.on("eleventy.before", () => {
-    if (process.env.SKIP_AUTOPUBLISH) {
-      console.log("Skipping autopublish because SKIP_AUTOPUBLISH is set.");
+    if (process.env.RUN_AUTOPUBLISH !== "1") {
       return;
     }
 
