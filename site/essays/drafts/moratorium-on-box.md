@@ -7,19 +7,20 @@ coauthors: []
 acknowledgments: []
 status: proposed
 initial_status: unfinished
-started_at: 2025-12-29
-proposed_at: 2025-12-29
+started_at: 2026-02-03
+published_at: 2026-03-05
 deadline_at: 2026-01-28
-deadline_at_time: ''
-published_at: ''
 version: 0.1.0
 word_range: 1000-1500
-word_count: 1229
 release_notes: []
+deadline_at_time: ''
+proposed_at: 2025-12-29
+word_count: 1229
 canonical_url: ''
 social_image: ''
 permalink: ''
 ---
+
 There is a quote that many scientists are familiar with, and it has been abused for decades. In his 1976 paper \*Science and Statistics\*, George Box, a British statistician, twice writes "all models are wrong". The full quote that everybody is familiar with is "all models are wrong, but some are useful." It first appeared in the proceedings of the \*Robustness in Statistics Conference\*, held in April 1978, in Box's (1979) paper \*[Robustness in the Strategy of Scientific Model Building](https://www.sciencedirect.com/science/article/abs/pii/B9780124381506500182).\* However, almost nobody knows about this paper. Often, people reference the paper by Box and Draper (1987), \*Empirical Model-Building and Response Surfaces\*, where, in the section "The Use of Approximating Functions," the authors use a polynomial function to approximate a true response function. They write, "The fact that the polynomial is an approximation does not necessarily detract from its usefulness because all models are approximations. Essentially, all models are wrong, but some are useful."
 
 It is this quote, "all models are wrong, but some are useful," that I see often in methodological papers or empirical papers that have a more theoretical streak of quantitative data analysis and/or formal modeling. It often appears at the end, when it is time to come clean on the faults and shortcomings of one's work, known as the "limitations section." To me, it always seems to be used as a cop out, an escape hatch for a manuscript that is speeding towards a cliff, or worse, another round of revisions.
