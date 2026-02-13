@@ -6,7 +6,7 @@ This is the minimal starter for **DUE — Deadline for Unfinished Essays**, desi
 ## What you get
 - Static site with **Eleventy (11ty)** rendering essays from Markdown.
 - Repo-native content under `site/essays/`.
-- **Auto-publish** overdue drafts (30‑day timer) via a **manual** workflow dispatch (enable a cron only if your backend needs the repo to keep publishing on a schedule).
+- **Auto-publish** overdue drafts (30‑day timer) on a scheduled GitHub Actions workflow.
 - **Word-range enforcement** on PRs (250–500, 500–1000, 1000–1500 with small grace).
 - **Published essay label guard** fails PRs that touch `site/essays/published/` without a `minor` or `major` label.
 - **Version bump + credits** on merged PRs using `minor` / `major` labels:
@@ -84,7 +84,7 @@ Markdown content here...
 
 ## Workflows
 - **Deploy Pages**: Builds on push to `main` and deploys to GitHub Pages.
-- **Auto-publish**: **Manual dispatch** workflow that moves overdue `site/essays/drafts/*.md` to `site/essays/published/` and sets version per `initial_status`. Enable the cron trigger only if this repo remains the publishing authority; otherwise leave it manual so the backend controls timing.
+- **Auto-publish**: Scheduled workflow that moves overdue `site/essays/drafts/*.md` to `site/essays/published/` and sets version per `initial_status`. You can still run it manually via workflow dispatch when needed.
 - **Word range + count check**: Runs on PRs; fails if essay content is out of bounds or `word_count` is missing/outdated. Use `npm run check:words -- --write` before opening a PR to sync counts.
 - **Accessibility report**: Ensures pages expose alt text, labels, landmarks, and WCAG-friendly palette contrast. Run `npm run build` then `npm run check:a11y` locally to reproduce CI results.
 - **Feed validation**: Confirms `/feeds/feed.xml` and `/feeds/feed.json` are present and well formed after a build.

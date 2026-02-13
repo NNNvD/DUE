@@ -36,12 +36,12 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
         <div>
           <p class="eyebrow">Search & filter</p>
           <h3 class="card-title">Find an essay by topic, author, or length</h3>
-          <p class="muted">Search titles, topics, keywords, authors, and coauthors. Then tick boxes like you're browsing a shop to refine by length, publication timing, authors, and keywords.</p>
+          <p class="muted">Search titles, topics, themes, authors, and coauthors. Then refine by lifecycle, outcome, length, people, and themes.</p>
         </div>
         <div class="filters__grid">
           <div class="filter-panel filter-panel--wide">
             <p class="filter-panel__label">Search</p>
-            <p class="muted">Scan titles, topics, keywords, authors, and coauthors.</p>
+            <p class="muted">Scan titles, topics, themes, authors, and coauthors.</p>
             <label class="filter">
               <span class="visually-hidden">Search essays</span>
               <input type="search" name="q" placeholder="Try 'deadlines' or 'publishing'" data-filter-search>
@@ -95,10 +95,35 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
           </div>
 
           <div class="filter-panel">
-            <p class="filter-panel__label">Keywords</p>
-            <p class="muted">Stack multiple keyword tags.</p>
+            <p class="filter-panel__label">Themes</p>
+            <p class="muted">Stack multiple controlled themes.</p>
             <div class="filter-options" data-filter-keyword-group>
-              <p class="muted">Loading keywords…</p>
+              <p class="muted">Loading themes…</p>
+            </div>
+          </div>
+
+
+
+          <div class="filter-panel">
+            <p class="filter-panel__label">Lifecycle phase</p>
+            <p class="muted">Browse by where each essay sits in the DUE process.</p>
+            <div class="filter-options" data-filter-phase-group>
+              <label class="filter-option">
+                <input type="checkbox" value="proposal">
+                <span>Proposal</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" value="in-progress">
+                <span>In progress</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" value="initial-release">
+                <span>Initial release</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" value="post-release-revision">
+                <span>Post-release revision</span>
+              </label>
             </div>
           </div>
 
