@@ -54,7 +54,8 @@ export function initializeCountdowns(root = document) {
       const diff = deadline.getTime() - now.getTime();
 
       if (diff <= 0) {
-        display.textContent = "Past deadline — queued for publication.";
+        const isHeroCounter = display.classList.contains("hero__stat-number");
+        display.textContent = isHeroCounter ? "0" : "Past deadline — queued for publication.";
         return;
       }
 

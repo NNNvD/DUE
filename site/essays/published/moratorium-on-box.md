@@ -10,15 +10,12 @@ initial_status: unfinished
 started_at: 2025-12-29T00:00:00.000Z
 proposed_at: 2025-12-29T00:00:00.000Z
 deadline_at: 2026-01-28T00:00:00.000Z
-deadline_at_time: ''
 published_at: '2026-02-13'
 version: 0.1.0
 word_range: 1000-1500
 word_count: 1229
 release_notes:
   - 'Auto-published at deadline (2026-02-13T13:43:26.794Z).'
-canonical_url: ''
-social_image: ''
 permalink: /essays/published/moratorium-on-box/
 ---
 There is a quote that many scientists are familiar with, and it has been abused for decades. In his 1976 paper \*Science and Statistics\*, George Box, a British statistician, twice writes "all models are wrong". The full quote that everybody is familiar with is "all models are wrong, but some are useful." It first appeared in the proceedings of the \*Robustness in Statistics Conference\*, held in April 1978, in Box's (1979) paper \*[Robustness in the Strategy of Scientific Model Building](https://www.sciencedirect.com/science/article/abs/pii/B9780124381506500182).\* However, almost nobody knows about this paper. Often, people reference the paper by Box and Draper (1987), \*Empirical Model-Building and Response Surfaces\*, where, in the section "The Use of Approximating Functions," the authors use a polynomial function to approximate a true response function. They write, "The fact that the polynomial is an approximation does not necessarily detract from its usefulness because all models are approximations. Essentially, all models are wrong, but some are useful."
