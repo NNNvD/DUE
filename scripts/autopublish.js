@@ -15,7 +15,16 @@ function getDeadlineDate(data) {
   const value = data.deadline_at;
   if (!value) return null;
 
-  const isIsoWithTime = typeof value === "string" && value.includes("T");
+  if (value instanceof Date) {
+    const parsed = dayjs.utc(value);
+    return parsed.isValid() ? parsed : null;
+  }
+
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const isIsoWithTime = value.includes("T");
   if (isIsoWithTime) {
     const parsed = dayjs.utc(value);
     return parsed.isValid() ? parsed : null;
@@ -24,7 +33,8 @@ function getDeadlineDate(data) {
   const rawTime = data.deadline_at_time;
   const defaultTime = "00:00:00";
   if (!rawTime) {
-    return dayjs.utc(`${value}T${defaultTime}Z`);
+    const parsed = dayjs.utc(`${value}T${defaultTime}Z`);
+    return parsed.isValid() ? parsed : null;
   }
 
   const time = String(rawTime).trim();
@@ -39,7 +49,8 @@ function getDeadlineDate(data) {
   const hhmm = timeMatch[1];
   const seconds = timeMatch[2] ? `:${timeMatch[2]}` : ":00";
   const zone = timeMatch[3] || "Z";
-  return dayjs.utc(`${value}T${hhmm}${seconds}${zone}`);
+  const parsed = dayjs.utc(`${value}T${hhmm}${seconds}${zone}`);
+  return parsed.isValid() ? parsed : null;
 }
 
 function getStartDate(data) {
@@ -115,4 +126,10 @@ if (require.main === module) {
   runAutopublish();
 }
 
-module.exports = { runAutopublish, readAutopublishManifest };
+module.exports = {
+  getDeadlineDate,
+  getStartDate,
+  resolveDeadline,
+  runAutopublish,
+  readAutopublishManifest
+};
