@@ -49,17 +49,23 @@ export function initializeCountdowns(root = document) {
       continue;
     }
 
+    const isHeroCounter = display.classList.contains("hero__stat-number");
+
     const update = () => {
       const now = new Date();
       const diff = deadline.getTime() - now.getTime();
 
       if (diff <= 0) {
-        const isHeroCounter = display.classList.contains("hero__stat-number");
         display.textContent = isHeroCounter ? "0" : "Past deadline — queued for publication.";
         return;
       }
 
       const days = Math.max(0, Math.ceil(diff / MS_PER_DAY));
+      if (isHeroCounter) {
+        display.textContent = `${days}`;
+        return;
+      }
+
       const suffix = days === 1 ? "day" : "days";
       display.textContent = `${days} ${suffix} until publication`;
     };
