@@ -61,7 +61,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
     <div class="section-heading">
       <p class="eyebrow">Now writing</p>
       <h3>In progress</h3>
-      <p>Deadlines arrive fast—here’s what is currently being drafted. Drafts are read-only until they publish.</p>
+      <p>These drafts are currently under development. Drafts cannot be read yet.</p>
     </div>
     {% if drafts.length %}
       {% set active = drafts[0] %}
@@ -100,7 +100,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
     <div class="section-heading">
       <p class="eyebrow">Latest release</p>
       <h3>Most recently published</h3>
-      <p>Catch the latest release before the next round of edits.</p>
+      <p>Read the latest release before the next round of edits.</p>
     </div>
     {% if latest %}
       {% set length = latest.data.word_range | wordRangeMeta %}
@@ -139,20 +139,20 @@ description: "See what is shipping now, browse recent essays, and jump into the 
   <div class="card-grid">
     <div class="card panel">
       <p class="eyebrow">Library</p>
-      <h4 class="card-title">Browse all essays</h4>
-      <p class="muted">See everything that has shipped and what is still cooking, all in one place.</p>
+      <h4 class="card-title">Browse essays</h4>
+      <p class="muted">See everything, published or unpublished on time, and drafts in one place.</p>
       <a class="inline-link" href="{{ '/essays/' | url }}">Open the library →</a>
     </div>
     <div class="card panel">
       <p class="eyebrow">Deadlines</p>
       <h4 class="card-title">Draft schedule</h4>
-      <p class="muted">View every draft ordered by publish date so you can plan your reading. Drafts are read-only.</p>
-      <a class="inline-link" href="{{ '/drafts/' | url }}">See the queue (read-only) →</a>
+      <p class="muted">View drafts ordered by set publication date to plan your reading. Drafts only show titles and topics.</p>
+      <a class="inline-link" href="{{ '/drafts/' | url }}">See the queue →</a>
     </div>
     <div class="card panel">
       <p class="eyebrow">Backstory</p>
       <h4 class="card-title">About DUE</h4>
-      <p class="muted">Learn how deadlines, credits, and feedback shape the project.</p>
+      <p class="muted">Learn how deadlines, credits, and feedback shape this platform.</p>
       <a class="inline-link" href="{{ '/about/' | url }}">Read the story →</a>
     </div>
   </div>
