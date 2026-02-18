@@ -34,7 +34,7 @@ function buildCountdownLabel(target) {
   if (!target) return "Publication date pending.";
   const now = new Date();
   const diff = target.getTime() - now.getTime();
-  if (diff <= 0) return "Publishing now.";
+  if (diff <= 0) return "0 days until publication";
   const days = Math.ceil(diff / MS_PER_DAY);
   const suffix = days === 1 ? "day" : "days";
   return `${days} ${suffix} until publication`;
