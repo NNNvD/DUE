@@ -8,11 +8,12 @@ coauthors: []
 acknowledgments: []
 status: proposed
 initial_status: unfinished
-started_at: ''
-publication_countdown: ''
-deadline_at: ''
+started_at: 2026-02-24
+proposed_at: 2026-02-24
+deadline_at: 2026-03-26
 version: 0.1.0
 word_range: 500-1000
+word_count: 35
 release_notes: []
 ---
 

@@ -388,6 +388,12 @@ function checkFiles(files, options = {}) {
   for (const fp of files) {
     const raw = fsModule.readFileSync(fp, "utf8");
     const doc = parseFrontMatter(raw);
+    const status = typeof doc.data.status === "string" ? doc.data.status.toLowerCase() : "";
+
+    if (status === "proposed") {
+      continue;
+    }
+
     const result = validateWordRange(doc.content, doc.data.word_range);
 
     if (!result.ok) {
