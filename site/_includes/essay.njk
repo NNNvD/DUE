@@ -175,8 +175,8 @@ layout: base.njk
   {% set essayComments = comments.byEssay[page.fileSlug] or [] %}
   <section class="card" id="comments">
     <div class="section-heading">
-      <h3>Published comments</h3>
-      <p class="muted">Notes that made it through moderation. Status chips indicate whether changes landed.</p>
+      <h3>Comments</h3>
+      <p class="muted">New comments are visible immediately. Status chips show moderation and implementation progress.</p>
     </div>
     {% if essayComments.length %}
       <ul class="comment-list" aria-live="polite">
@@ -191,9 +191,12 @@ layout: base.njk
           {% elif comment.status == 'rejected' %}
             {% set statusLabel = 'Rejected' %}
             {% set statusTone = 'badge--tone-critical' %}
-          {% else %}
+          {% elif comment.status == 'approved' %}
             {% set statusLabel = 'Not yet implemented' %}
             {% set statusTone = 'badge--tone-warn' %}
+          {% else %}
+            {% set statusLabel = 'Unmoderated' %}
+            {% set statusTone = 'badge--tone-info' %}
           {% endif %}
           <li class="comment">
             <div class="comment__header">
@@ -218,7 +221,7 @@ layout: base.njk
   <section class="card" id="feedback">
     <div class="comment-form__header">
       <h3>Share feedback</h3>
-      <p class="muted">Pick an intent and tell us what to improve. Comments are moderated before they appear.</p>
+      <p class="muted">Pick an intent and tell us what to improve. Your comment appears immediately and may be moderated afterward.</p>
     </div>
     <form class="comment-form" method="post" action="{{ site.comments.endpoint | default('') }}" data-comment-form data-comment-endpoint="{{ site.comments.endpoint | default('') }}">
       <input type="hidden" name="slug" value="{{ page.fileSlug }}">
