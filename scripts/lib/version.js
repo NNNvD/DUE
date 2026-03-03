@@ -23,18 +23,25 @@ function bumpVersion(version, intent) {
   const safeMinor = Number.isFinite(minor) ? minor : 0;
   const safePatch = Number.isFinite(patch) ? patch : 0;
 
-  if (intent === "major") {
+  if (intent === "new_version") {
     return `${safeMajor + 1}.0.0`;
   }
 
-  if (intent === "minor") {
+  if (intent === "major" || intent === "major_update") {
     return `${safeMajor}.${safeMinor + 1}.0`;
   }
 
   return `${safeMajor}.${safeMinor}.${safePatch + 1}`;
 }
 
+function normalizeUpdateIntent(rawIntent) {
+  if (rawIntent === "new_version") return "new_version";
+  if (rawIntent === "major_update" || rawIntent === "major") return "major_update";
+  return "minor_update";
+}
+
 module.exports = {
   normalizeVersion,
   bumpVersion,
+  normalizeUpdateIntent,
 };
