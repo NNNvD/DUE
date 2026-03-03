@@ -129,22 +129,25 @@ collections:
           - { label: User, name: user, widget: string, required: true, hint: "GitHub handle or name" }
           - { label: Note, name: note, widget: string, required: false }
           - { label: Since version, name: since_version, widget: string, required: false }
-      - { label: Status, name: status, widget: select, options: [proposed, draft, published], default: published }
-      - { label: Initial status, name: initial_status, widget: select, options: [unfinished, complete], default: unfinished }
+      - { label: Status, name: status, widget: hidden, default: published }
+      - { label: Initial status, name: initial_status, widget: hidden, default: unfinished }
       - { label: Started at, name: started_at, widget: hidden, required: true }
-      - { label: Proposed at, name: proposed_at, widget: datetime, format: "YYYY-MM-DD", required: false }
-      - { label: Deadline at, name: deadline_at, widget: datetime, format: "YYYY-MM-DD", required: true }
-      - { label: Deadline time, name: deadline_at_time, widget: string, required: false }
+      - { label: Proposed at, name: proposed_at, widget: hidden, required: false }
+      - { label: Deadline at, name: deadline_at, widget: hidden, required: true }
+      - { label: Deadline time, name: deadline_at_time, widget: hidden, required: false }
       - { label: Published at, name: published_at, widget: hidden, required: true }
-      - label: Version
-        name: version
-        widget: string
-        pattern:
-          - "^\\d+\\.\\d+(\\.\\d+)?$"
-          - "Use semantic versioning (e.g. 0.1.0 or 1.0.0)."
-        default: "1.0.0"
-      - { label: Word range, name: word_range, widget: select, options: ["250-500", "500-1000", "1000-1500"], default: "500-1000" }
-      - { label: Word count, name: word_count, widget: number, required: false }
+      - label: Update type
+        name: update_intent
+        widget: select
+        options:
+          - { label: Minor update (right digit +1), value: minor_update }
+          - { label: Major update (middle digit +1), value: major_update }
+          - { label: New version (left digit +1), value: new_version }
+        default: minor_update
+        hint: "Used by automation to bump vX.Y.Z after merge."
+      - { label: Version, name: version, widget: hidden, default: "1.0.0" }
+      - { label: Word range, name: word_range, widget: hidden, default: "500-1000" }
+      - { label: Word count, name: word_count, widget: hidden, required: false }
       - label: Release notes
         name: release_notes
         widget: list
@@ -153,5 +156,5 @@ collections:
         required: false
       - { label: Canonical URL, name: canonical_url, widget: string, required: false }
       - { label: Social image, name: social_image, widget: string, required: false }
-      - { label: Permalink override, name: permalink, widget: string, required: false }
+      - { label: Permalink override, name: permalink, widget: hidden, required: false }
       - { label: Body, name: body, widget: markdown }
