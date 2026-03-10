@@ -89,14 +89,19 @@ async function submit(form, endpoint) {
       body: JSON.stringify(payload),
     });
 
-    const data = await response.json().catch(() => ({}));
+    const contentType = response.headers.get('content-type') || '';
+    const data = contentType.includes('application/json')
+      ? await response.json().catch(() => ({}))
+      : {};
     const success = data && data.success;
 
     if (!response.ok || !success) {
       const message =
         (data && data.message) ||
         (data && data.errors && data.errors.join(' ')) ||
-        'Unable to send feedback right now. Please try again later.';
+        (response.status === 404
+          ? 'Comment endpoint is unavailable. Configure COMMENTS_ENDPOINT to a deployed serverless route.'
+          : 'Unable to send feedback right now. Please try again later.');
       throw new Error(message);
     }
 

@@ -111,7 +111,7 @@ Markdown content here...
 - Keep `giscus.mapping` as `pathname` so threads align with essay URLs. Once set, published essays will render the discussion widget along with a "Jump to comments" link.
 
 ### Configure post-moderated comment intake
-- The feedback form posts to `comments.endpoint` (default `/api/submit-comment`). Point this at the deployed serverless handler in `api/submit-comment.js`.
+- The feedback form posts to `comments.endpoint` (default empty). Point this at the deployed serverless handler in `api/submit-comment.js`.
 - Set `COMMENTS_REPO`/`COMMENTS_TOKEN` (or `GITHUB_REPOSITORY`/`GITHUB_TOKEN`) so the handler can commit comment YAML under `data/comments/<slug>/approved/` directly on the configured base branch so it is visible after deployment.
 - Optional: tune `COMMENTS_BASE_BRANCH`, `COMMENTS_DIR`, `COMMENTS_SITE_BASE`, and `COMMENTS_MAX_LENGTH` to fit your repo layout. See [`docs/comment-intake.md`](./docs/comment-intake.md) for setup and a sample `curl` request.
 
