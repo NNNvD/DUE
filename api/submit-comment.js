@@ -2,7 +2,6 @@ const crypto = require("node:crypto");
 const yaml = require("js-yaml");
 
 const COMMENT_DIR = process.env.COMMENTS_DIR || "data/comments";
-const COMMENT_BRANCH_PREFIX = process.env.COMMENTS_BRANCH_PREFIX || "comments/";
 const MAX_COMMENT_LENGTH = Number(process.env.COMMENTS_MAX_LENGTH || 4000);
 const SITE_BASE = process.env.COMMENTS_SITE_BASE || "";
 
@@ -61,7 +60,7 @@ function shortId() {
 
 function buildFilePath(slug, id) {
   const timestamp = new Date().toISOString().replace(/[:.]/gu, "-");
-  return `${COMMENT_DIR}/${slug}/pending/${timestamp}-${id}.yml`;
+  return `${COMMENT_DIR}/${slug}/approved/${timestamp}-${id}.yml`;
 }
 
 function ensureTrailingSlash(value) {
@@ -178,11 +177,6 @@ async function githubRequest(path, options = {}) {
   return data;
 }
 
-function buildBranchName(slug, id) {
-  const safePrefix = COMMENT_BRANCH_PREFIX.endsWith("/") ? COMMENT_BRANCH_PREFIX : `${COMMENT_BRANCH_PREFIX}/`;
-  return `${safePrefix}${slug}-${id}`;
-}
-
 function encodePath(path) {
   return path
     .split("/")
@@ -201,20 +195,10 @@ async function createCommentPullRequest(commentData, requestMeta = {}) {
   const baseBranch = process.env.COMMENTS_BASE_BRANCH;
   const submittedAt = new Date().toISOString();
   const id = shortId();
-  const branchName = buildBranchName(commentData.slug, id);
   const filePath = buildFilePath(commentData.slug, id);
 
   const { default_branch: defaultBranch } = await githubRequest(`/repos/${owner}/${repo}`);
   const branchBase = baseBranch || defaultBranch || "main";
-  const ref = await githubRequest(`/repos/${owner}/${repo}/git/ref/heads/${branchBase}`);
-
-  await githubRequest(`/repos/${owner}/${repo}/git/refs`, {
-    method: "POST",
-    body: JSON.stringify({
-      ref: `refs/heads/${branchName}`,
-      sha: ref.object.sha,
-    }),
-  });
 
   const content = yaml.dump(
     {
@@ -228,6 +212,7 @@ async function createCommentPullRequest(commentData, requestMeta = {}) {
       essay_url: resolveEssayUrl(commentData.essayUrl, commentData.essayPath),
       submitted_at: submittedAt,
       status: "pending",
+      moderated_at: null,
       user_agent: getHeader(requestMeta.headers, "user-agent") || null,
       referrer: getHeader(requestMeta.headers, "referer") || null,
     },
@@ -239,33 +224,11 @@ async function createCommentPullRequest(commentData, requestMeta = {}) {
     body: JSON.stringify({
       message: `Add ${commentData.intent} comment for ${commentData.slug}`,
       content: Buffer.from(content).toString("base64"),
-      branch: branchName,
+      branch: branchBase,
     }),
   });
 
-  const prBodyLines = [
-    `Automated comment submission for **${commentData.slug}**.`,
-    "",
-    `- Intent: ${commentData.intent}`,
-    `- From: ${commentData.name}${commentData.contact ? ` (${commentData.contact})` : ""}`,
-    `- Submitted: ${submittedAt}`,
-    commentData.essayTitle ? `- Essay: ${commentData.essayTitle}` : null,
-    commentData.essayUrl ? `- URL: ${commentData.essayUrl}` : null,
-    "",
-    "Review the YAML under pending/ and move to approved/ when ready.",
-  ].filter(Boolean);
-
-  const pr = await githubRequest(`/repos/${owner}/${repo}/pulls`, {
-    method: "POST",
-    body: JSON.stringify({
-      title: `Comment: ${commentData.slug} (${commentData.intent})`,
-      head: branchName,
-      base: branchBase,
-      body: prBodyLines.join("\n"),
-    }),
-  });
-
-  return { prUrl: pr.html_url, branchName, filePath };
+  return { prUrl: null, branchName: branchBase, filePath };
 }
 
 async function handleEvent(event) {
@@ -286,7 +249,7 @@ async function handleEvent(event) {
     const result = await createCommentPullRequest(validation.data, { headers });
     return jsonResponse(200, {
       success: true,
-      message: "Feedback received. A moderator will review it soon.",
+      message: "Feedback received and published. Moderators may update its status soon.",
       prUrl: result.prUrl,
       branch: result.branchName,
       filePath: result.filePath,

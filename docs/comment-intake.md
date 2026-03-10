@@ -1,6 +1,6 @@
 # Comment intake function
 
-Use `api/submit-comment.js` to pre-moderate feedback. The function accepts POSTed form data or JSON, writes a YAML file under `data/comments/<slug>/pending/`, and opens a PR against your main branch for review.
+Use `api/submit-comment.js` for post-moderated feedback. The function accepts POSTed form data or JSON, writes a YAML file under `data/comments/<slug>/approved/` on your base branch for moderation follow-up.
 
 ## Deploying
 - Deploy as a serverless handler (Netlify function, Vercel API route, or any Node server that supports `exports.handler`).
@@ -8,13 +8,12 @@ Use `api/submit-comment.js` to pre-moderate feedback. The function accepts POSTe
 - Ensure the runtime provides **Node 18+** so `fetch` and `crypto.randomUUID` are available.
 
 ### Required environment variables
-- `COMMENTS_REPO` (or `GITHUB_REPOSITORY`): `owner/repo` where comment PRs should open.
-- `COMMENTS_TOKEN` (or `GITHUB_TOKEN`): PAT with `repo` scope to create branches, files, and PRs.
+- `COMMENTS_REPO` (or `GITHUB_REPOSITORY`): `owner/repo` where comment files should be committed.
+- `COMMENTS_TOKEN` (or `GITHUB_TOKEN`): PAT with `repo` scope to create commits and files.
 
 ### Optional environment variables
-- `COMMENTS_BASE_BRANCH`: Base branch for PRs (defaults to the repo default branch).
-- `COMMENTS_DIR`: Root folder for pending comment YAML (default `data/comments`).
-- `COMMENTS_BRANCH_PREFIX`: Prefix for intake branches (default `comments/`).
+- `COMMENTS_BASE_BRANCH`: Base branch for comment commits (defaults to the repo default branch).
+- `COMMENTS_DIR`: Root folder for comment YAML (default `data/comments`).
 - `COMMENTS_SITE_BASE`: Absolute site origin used to build full essay URLs when only paths are provided.
 - `COMMENTS_MAX_LENGTH`: Override the max allowed comment length (default `4000`).
 
@@ -24,9 +23,8 @@ Use `api/submit-comment.js` to pre-moderate feedback. The function accepts POSTe
 - Submissions containing the honeypot field (`website`) are rejected.
 
 ## What it creates
-- A branch named `comments/<slug>-<id>` (prefix configurable).
-- A YAML file at `data/comments/<slug>/pending/<timestamp>-<id>.yml` with the submission, referrer, and user agent.
-- A PR pointing at the configured base branch with a short summary and file path for moderators.
+- A YAML file at `data/comments/<slug>/approved/<timestamp>-<id>.yml` with the submission, referrer, and user agent.
+- A direct commit on the configured base branch with the new comment file for moderators to update as needed.
 
 ## Local test (if your platform supports it)
 1. Run your platform’s dev server so the function responds at `http://localhost:<port>/api/submit-comment`.
@@ -46,13 +44,12 @@ curl -X POST \
   http://localhost:8888/api/submit-comment
 ```
 
-If configured correctly, the response returns `{ "success": true, "prUrl": "..." }` and the PR contains the pending YAML file.
+If configured correctly, the response returns `{ "success": true, "filePath": "..." }` and the comment YAML file is committed to the repository.
 
-## Publishing comments after moderation
-- When a PR merges, move files from `pending/` to `approved/` (or commit directly to `approved/`).
-- `npm run build` now runs `scripts/promoteComments.js`, which automatically promotes any `pending/*.yml` files to `approved/*.yml` and stamps `moderated_at` if missing. Set `COMMENTS_SKIP_PROMOTE=1` to opt out.
-- Update the YAML before/after promotion to reflect status:
-  - `implemented: true` (or `status: implemented`) → shows the **Implemented** chip.
-  - `status: rejected` + `moderation_note: ...` → shows the **Rejected** chip and the note.
-  - Omit both to keep the default **Not yet implemented** status.
-- Approved comments render under the essay in a "Published comments" section; the original discussion thread (giscus) remains below the form.
+## Moderating visible comments
+- New comments should use `status: pending` to render as **Unmoderated**.
+- After review, update the YAML status:
+  - `status: approved` → shows **Not yet implemented**.
+  - `implemented: true` (or `status: implemented`) → shows **Implemented**.
+  - `status: rejected` + `moderation_note: ...` → shows **Rejected** plus the note.
+- Comments render under the essay immediately; the giscus thread remains below the form.

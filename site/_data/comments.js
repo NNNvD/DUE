@@ -24,6 +24,9 @@ function resolveStatus(data = {}) {
   if (explicit === "implemented" || data.implemented === true) {
     return "implemented";
   }
+  if (explicit === "approved") {
+    return "approved";
+  }
   return "pending";
 }
 
@@ -50,7 +53,8 @@ function loadComments() {
     return { all: [], byEssay: {} };
   }
 
-  const files = fg.sync("**/approved/*.yml", { cwd: COMMENTS_ROOT, absolute: true, dot: false });
+  const files = fg.sync("**/*.{yml,yaml}", { cwd: COMMENTS_ROOT, absolute: true, dot: false })
+    .filter((filePath) => !filePath.includes(`${path.sep}pending${path.sep}`));
   const comments = files.map((file) => loadComment(file));
 
   comments.sort((a, b) => {
