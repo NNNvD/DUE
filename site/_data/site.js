@@ -133,7 +133,7 @@ function resolveGiscusConfig() {
 function resolveCommentConfig() {
   const defaults = baseConfig.comments || {};
   return {
-    endpoint: process.env.COMMENTS_ENDPOINT || defaults.endpoint || "",
+    endpoint: process.env.COMMENTS_ENDPOINT || defaults.endpoint || "/api/submit-comment",
   };
 }
 
