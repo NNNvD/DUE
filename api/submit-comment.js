@@ -11,8 +11,24 @@ function jsonResponse(statusCode, payload) {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Cache-Control": "no-store",
     },
     body: JSON.stringify(payload),
+  };
+}
+
+function emptyResponse(statusCode) {
+  return {
+    statusCode,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Cache-Control": "no-store",
+    },
+    body: "",
   };
 }
 
@@ -233,6 +249,10 @@ async function createCommentPullRequest(commentData, requestMeta = {}) {
 
 async function handleEvent(event) {
   const method = event.httpMethod || event.method || "GET";
+  if (method === "OPTIONS") {
+    return emptyResponse(204);
+  }
+
   if (method !== "POST") {
     return jsonResponse(405, { success: false, message: "Method not allowed" });
   }
@@ -261,9 +281,7 @@ async function handleEvent(event) {
   }
 }
 
-exports.handler = async (event) => handleEvent(event);
-
-module.exports = async (req, res) => {
+async function nodeHandler(req, res) {
   const headers = req.headers || {};
   const method = req.method || "GET";
   let rawBody = "";
@@ -290,4 +308,11 @@ module.exports = async (req, res) => {
     res.setHeader(key, value);
   });
   res.end(response.body);
-};
+}
+
+async function netlifyHandler(event) {
+  return handleEvent(event);
+}
+
+module.exports = nodeHandler;
+module.exports.handler = netlifyHandler;

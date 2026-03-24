@@ -223,7 +223,15 @@ layout: base.njk
       <h3>Share feedback</h3>
       <p class="muted">Pick an intent and tell us what to improve. Your comment appears immediately and may be moderated afterward.</p>
     </div>
-    <form class="comment-form" method="post" action="{{ site.comments.endpoint | default('') }}" data-comment-form data-comment-endpoint="{{ site.comments.endpoint | default('') }}">
+    <form
+      class="comment-form"
+      method="post"
+      action="{{ site.comments.endpoint | default('') }}"
+      data-comment-form
+      data-comment-endpoint="{{ site.comments.endpoint | default('') }}"
+      data-comment-endpoints="{{ site.comments.endpoints | join(',') }}"
+      data-comment-issue-fallback="{{ site.comments.issueFallback | default('') }}"
+    >
       <input type="hidden" name="slug" value="{{ page.fileSlug }}">
       <input type="hidden" name="essayTitle" value="{{ title }}">
       <input type="hidden" name="essayPath" value="{{ page.url | url }}">
