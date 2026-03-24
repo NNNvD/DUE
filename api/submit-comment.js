@@ -13,6 +13,7 @@ function jsonResponse(statusCode, payload) {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Cache-Control": "no-store",
     },
     body: JSON.stringify(payload),
   };
@@ -25,6 +26,7 @@ function emptyResponse(statusCode) {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Cache-Control": "no-store",
     },
     body: "",
   };
@@ -279,9 +281,7 @@ async function handleEvent(event) {
   }
 }
 
-exports.handler = async (event) => handleEvent(event);
-
-module.exports = async (req, res) => {
+async function nodeHandler(req, res) {
   const headers = req.headers || {};
   const method = req.method || "GET";
   let rawBody = "";
@@ -308,4 +308,11 @@ module.exports = async (req, res) => {
     res.setHeader(key, value);
   });
   res.end(response.body);
-};
+}
+
+async function netlifyHandler(event) {
+  return handleEvent(event);
+}
+
+module.exports = nodeHandler;
+module.exports.handler = netlifyHandler;

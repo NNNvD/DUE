@@ -6,6 +6,18 @@ function clearErrors(form) {
   form.querySelectorAll('.input-invalid').forEach((el) => el.classList.remove('input-invalid'));
 }
 
+function setStatus(form, message, asHtml = false) {
+  const status = form.querySelector('[data-comment-status]');
+  if (!status) return;
+
+  if (asHtml) {
+    status.innerHTML = message;
+    return;
+  }
+
+  status.textContent = message;
+}
+
 function showError(form, fieldName, message) {
   const error = form.querySelector(`[data-error-for="${fieldName}"]`);
   if (error) {
@@ -19,7 +31,6 @@ function showError(form, fieldName, message) {
 }
 
 function validate(form) {
-  const status = form.querySelector('[data-comment-status]');
   const honeypot = form.querySelector('[data-honeypot]');
   const intent = form.querySelector('input[name="intent"]:checked');
   const name = form.querySelector('input[name="name"]');
@@ -29,7 +40,7 @@ function validate(form) {
 
   if (honeypot && honeypot.value.trim().length) {
     showError(form, 'intent', 'Please try again.');
-    status.textContent = 'Submission blocked. If this is unexpected, refresh and try once more.';
+    setStatus(form, 'Submission blocked. If this is unexpected, refresh and try once more.');
     return false;
   }
 
@@ -54,11 +65,11 @@ function validate(form) {
   }
 
   if (!valid) {
-    status.textContent = 'Please fix the highlighted fields.';
+    setStatus(form, 'Please fix the highlighted fields.');
     return false;
   }
 
-  status.textContent = 'Sending feedback…';
+  setStatus(form, 'Sending feedback…');
   return true;
 }
 
@@ -70,45 +81,138 @@ function serializeForm(form) {
   return data;
 }
 
-async function submit(form, endpoint) {
-  const status = form.querySelector('[data-comment-status]');
-  const submitButton = form.querySelector('button[type="submit"]');
+function toAbsoluteEndpoint(endpoint) {
+  if (!endpoint) return '';
+  try {
+    return new URL(endpoint, window.location.origin).toString();
+  } catch (error) {
+    return endpoint;
+  }
+}
+
+function resolveEndpoints(form) {
+  const raw = form.dataset.commentEndpoints || form.dataset.commentEndpoint || '';
+  const parsed = raw
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .map((endpoint) => toAbsoluteEndpoint(endpoint));
+
+  return [...new Set(parsed)];
+}
+
+function buildIssueFallbackUrl(form) {
+  const base = form.dataset.commentIssueFallback || '';
+  if (!base) return '';
 
   const payload = serializeForm(form);
+  const title = `[Comment] ${payload.slug || 'essay'} · ${payload.intent || 'feedback'}`;
+  const body = [
+    `Essay slug: ${payload.slug || ''}`,
+    `Essay title: ${payload.essayTitle || ''}`,
+    `Essay URL: ${payload.essayUrl || ''}`,
+    `Intent: ${payload.intent || ''}`,
+    `Name: ${payload.name || ''}`,
+    `Contact: ${payload.contact || ''}`,
+    '',
+    'Comment:',
+    payload.comment || '',
+  ].join('\n');
+
+  try {
+    const fallback = new URL(base);
+    fallback.searchParams.set('title', title);
+    fallback.searchParams.set('body', body);
+    return fallback.toString();
+  } catch (error) {
+    return '';
+  }
+}
+
+function withTimeout(ms = 10000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), ms);
+  return { controller, clear: () => clearTimeout(timeout) };
+}
+
+async function submitToEndpoint(payload, endpoint) {
+  const { controller, clear } = withTimeout(12000);
+
+  try {
+    return await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+  } finally {
+    clear();
+  }
+}
+
+async function submit(form, endpoints) {
+  const submitButton = form.querySelector('button[type="submit"]');
+  const payload = serializeForm(form);
+  const issueFallbackUrl = buildIssueFallbackUrl(form);
 
   if (submitButton) {
     submitButton.disabled = true;
   }
 
   try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+    const attempts = [];
 
-    const contentType = response.headers.get('content-type') || '';
-    const data = contentType.includes('application/json')
-      ? await response.json().catch(() => ({}))
-      : {};
-    const success = data && data.success;
+    for (const endpoint of endpoints) {
+      try {
+        const response = await submitToEndpoint(payload, endpoint);
+        const contentType = response.headers.get('content-type') || '';
+        const data = contentType.includes('application/json')
+          ? await response.json().catch(() => ({}))
+          : {};
+        const success = data && data.success;
 
-    if (!response.ok || !success) {
-      const message =
-        (data && data.message) ||
-        (data && data.errors && data.errors.join(' ')) ||
-        (response.status === 404
-          ? 'Comment endpoint is unavailable. Configure COMMENTS_ENDPOINT to a deployed serverless route.'
-          : 'Unable to send feedback right now. Please try again later.');
-      throw new Error(message);
+        if (response.ok && success) {
+          setStatus(form, data.message || 'Thanks for sharing feedback. We will review it soon.');
+          form.reset();
+          return;
+        }
+
+        attempts.push({
+          endpoint,
+          status: response.status,
+          message:
+            (data && data.message) ||
+            (data && data.errors && data.errors.join(' ')) ||
+            `Request failed with status ${response.status}.`,
+        });
+      } catch (error) {
+        attempts.push({
+          endpoint,
+          status: 0,
+          message:
+            error.name === 'AbortError'
+              ? 'Request timed out.'
+              : (error && error.message) || 'Network error.',
+        });
+      }
     }
 
-    status.textContent = data.message || 'Thanks for sharing feedback. We will review it soon.';
-    form.reset();
-  } catch (error) {
-    status.textContent = error.message || 'Unable to send feedback right now. Please try again later.';
+    const unavailable = attempts.some((attempt) => attempt.status === 404);
+    const details = attempts.length
+      ? attempts.map((attempt) => `${attempt.endpoint} → ${attempt.message}`).join(' ')
+      : '';
+
+    const fallbackMessage = issueFallbackUrl
+      ? ` Couldn’t reach the submit service. <a href="${issueFallbackUrl}" target="_blank" rel="noopener noreferrer">Open a prefilled GitHub issue instead</a>.`
+      : '';
+
+    const helpMessage = unavailable
+      ? 'Comment endpoint is unavailable. Configure COMMENTS_ENDPOINT to a deployed serverless route.'
+      : 'Unable to send feedback right now. Please try again later.';
+
+    setStatus(form, `${helpMessage}${fallbackMessage}${details ? ` (${details})` : ''}`, Boolean(issueFallbackUrl));
   } finally {
     if (submitButton) {
       submitButton.disabled = false;
@@ -119,15 +223,14 @@ async function submit(form, endpoint) {
 export function initCommentForms(root = document) {
   const forms = root.querySelectorAll('[data-comment-form]');
   forms.forEach((form) => {
-    const status = form.querySelector('[data-comment-status]');
-    const endpoint = form.dataset.commentEndpoint || '';
+    const endpoints = resolveEndpoints(form);
 
     const intentInputs = form.querySelectorAll('input[name="intent"]');
     intentInputs.forEach((input) => {
       input.addEventListener('change', () => {
         const label = form.querySelector(`label[for="${input.id}"]`);
-        if (label && status) {
-          status.textContent = `${label.dataset.intentLabel} selected. Add your note below.`;
+        if (label) {
+          setStatus(form, `${label.dataset.intentLabel} selected. Add your note below.`);
         }
       });
     });
@@ -139,14 +242,24 @@ export function initCommentForms(root = document) {
         return;
       }
 
-      if (!endpoint) {
+      if (!endpoints.length) {
         event.preventDefault();
-        status.textContent = 'Submission endpoint is not configured yet. Use the discussion thread below to leave your note.';
+        const issueFallbackUrl = buildIssueFallbackUrl(form);
+        if (issueFallbackUrl) {
+          setStatus(
+            form,
+            `Submission endpoint is not configured yet. <a href="${issueFallbackUrl}" target="_blank" rel="noopener noreferrer">Open a prefilled GitHub issue instead</a>.`,
+            true
+          );
+          return;
+        }
+
+        setStatus(form, 'Submission endpoint is not configured yet. Use the discussion thread below to leave your note.');
         return;
       }
 
       event.preventDefault();
-      submit(form, endpoint);
+      submit(form, endpoints);
     });
   });
 }

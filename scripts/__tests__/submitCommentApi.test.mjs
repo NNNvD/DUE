@@ -5,6 +5,11 @@ const require = createRequire(import.meta.url);
 const submitCommentApi = require("../../api/submit-comment.js");
 
 describe("submit-comment API", () => {
+  it("exports both node and netlify handlers", () => {
+    expect(typeof submitCommentApi).toBe("function");
+    expect(typeof submitCommentApi.handler).toBe("function");
+  });
+
   it("returns CORS preflight response for OPTIONS", async () => {
     const headers = {};
     const res = {
@@ -34,5 +39,21 @@ describe("submit-comment API", () => {
     expect(headers["Access-Control-Allow-Origin"]).toBe("*");
     expect(headers["Access-Control-Allow-Methods"]).toContain("POST");
     expect(headers["Access-Control-Allow-Headers"]).toContain("Content-Type");
+  });
+
+  it("returns CORS preflight response for OPTIONS in netlify mode", async () => {
+    const response = await submitCommentApi.handler({
+      httpMethod: "OPTIONS",
+      headers: {
+        origin: "https://example.test",
+        "access-control-request-method": "POST",
+      },
+    });
+
+    expect(response.statusCode).toBe(204);
+    expect(response.body).toBe("");
+    expect(response.headers["Access-Control-Allow-Origin"]).toBe("*");
+    expect(response.headers["Access-Control-Allow-Methods"]).toContain("POST");
+    expect(response.headers["Access-Control-Allow-Headers"]).toContain("Content-Type");
   });
 });

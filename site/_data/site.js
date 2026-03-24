@@ -132,8 +132,24 @@ function resolveGiscusConfig() {
 
 function resolveCommentConfig() {
   const defaults = baseConfig.comments || {};
+  const endpointCandidates = [
+    process.env.COMMENTS_ENDPOINT,
+    defaults.endpoint,
+    "/api/submit-comment",
+  ]
+    .map((value) => (typeof value === "string" ? value.trim() : ""))
+    .filter(Boolean);
+
+  const endpoint = endpointCandidates[0] || "";
+  const issueFallback =
+    process.env.COMMENTS_ISSUE_FALLBACK ||
+    defaults.issueFallback ||
+    (computeRepoUrl() ? `${computeRepoUrl().replace(/\/+$/u, "")}/issues/new` : "");
+
   return {
-    endpoint: process.env.COMMENTS_ENDPOINT || defaults.endpoint || "/api/submit-comment",
+    endpoint,
+    endpoints: endpointCandidates,
+    issueFallback,
   };
 }
 
