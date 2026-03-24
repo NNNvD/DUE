@@ -11,8 +11,22 @@ function jsonResponse(statusCode, payload) {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
     },
     body: JSON.stringify(payload),
+  };
+}
+
+function emptyResponse(statusCode) {
+  return {
+    statusCode,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
+    body: "",
   };
 }
 
@@ -233,6 +247,10 @@ async function createCommentPullRequest(commentData, requestMeta = {}) {
 
 async function handleEvent(event) {
   const method = event.httpMethod || event.method || "GET";
+  if (method === "OPTIONS") {
+    return emptyResponse(204);
+  }
+
   if (method !== "POST") {
     return jsonResponse(405, { success: false, message: "Method not allowed" });
   }
