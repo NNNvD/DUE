@@ -11,8 +11,7 @@
     "started_at",
     "deadline_at",
     "initial_status",
-    "version",
-    "word_range"
+    "version"
   ],
   "properties": {
     "title": {

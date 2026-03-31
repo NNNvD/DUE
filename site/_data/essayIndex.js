@@ -2,7 +2,7 @@ const fg = require("fast-glob");
 const matter = require("gray-matter");
 
 const meta = require("./meta");
-const { wordCount } = require("../../scripts/checkWordRange");
+const { wordCount, wordRangeFromCount } = require("../../scripts/checkWordRange");
 const { enforceTopicAndKeywords } = require("../../scripts/topicKeywordConstraints");
 
 function normalizeWordRange(value) {
@@ -189,13 +189,15 @@ function loadEssays(status = "published") {
       const url = normalizedStatus === "published" ? `/essays/published/${slug}/` : null;
       const keywords = Array.isArray(constrained.keywords) ? constrained.keywords : [];
       const themes = Array.isArray(constrained.themes) ? constrained.themes : [];
-      const word_range = constrained.word_range || null;
-      const lengthMeta = wordRangeMeta(word_range);
       const description = meta.buildMetaDescription({
         ...constrained,
         page: { ...(data.page || {}), inputPath: file },
       });
       const word_count = typeof constrained.word_count === "number" ? constrained.word_count : wordCount(content || "");
+      const word_range = normalizedStatus === "published"
+        ? wordRangeFromCount(word_count)
+        : null;
+      const lengthMeta = wordRangeMeta(word_range);
       const resolvedDeadline = resolveDeadlineAt(
         constrained.deadline_at,
         constrained.started_at

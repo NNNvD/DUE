@@ -2,7 +2,7 @@ const fs = require("fs");
 const matter = require("gray-matter");
 
 const meta = require("../_data/meta");
-const { wordCount } = require("../../scripts/checkWordRange");
+const { wordCount, wordRangeFromCount } = require("../../scripts/checkWordRange");
 const { enforceTopicAndKeywords } = require("../../scripts/topicKeywordConstraints");
 
 const constraintCache = new Map();
@@ -88,6 +88,13 @@ module.exports = {
       } catch (error) {
         return null;
       }
+    },
+    word_range: (data) => {
+      const inputPath = data?.page?.inputPath || "";
+      const isPublishedEssay = inputPath.includes("/essays/published/");
+      if (!isPublishedEssay) return null;
+      const computedWordCount = typeof data.word_count === "number" ? data.word_count : null;
+      return wordRangeFromCount(computedWordCount);
     },
     display_keywords: (data) => {
       const constrained = applyTopicKeywordConstraints(data);

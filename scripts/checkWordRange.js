@@ -332,6 +332,14 @@ function wordCount(md) {
   return fallbackWordCount(md);
 }
 
+function wordRangeFromCount(count) {
+  if (!Number.isFinite(count)) return null;
+  if (count >= 250 && count <= 500) return "250-500";
+  if (count >= 501 && count <= 1000) return "500-1000";
+  if (count >= 1001 && count <= 1500) return "1000-1500";
+  return null;
+}
+
 function bounds(range) {
   const normalized = typeof range === "string" ? range : String(range || "250-500");
   const parts = normalized.split("-").filter(Boolean);
@@ -395,21 +403,39 @@ function checkFiles(files, options = {}) {
     }
 
     const result = validateWordRange(doc.content, doc.data.word_range);
+    const inferredRange = wordRangeFromCount(result.wordCount);
 
-    if (!result.ok) {
+    if (status !== "published" && !result.ok) {
       errors.push(formatError(fp, result));
     }
 
     const hasWordCount = typeof doc.data.word_count === "number";
     const wordCountMatches = hasWordCount && doc.data.word_count === result.wordCount;
+    const expectedPublishedRange = inferredRange || null;
+    const currentPublishedRange = doc.data.word_range || null;
+    const rangeMatches = status !== "published" || currentPublishedRange === expectedPublishedRange;
 
-    if (!wordCountMatches) {
+    if (!wordCountMatches || !rangeMatches) {
       if (write) {
-        const rewritten = stringifyFrontMatter(doc, result.wordCount);
+        const rewritten = stringifyFrontMatter({
+          ...doc,
+          data: {
+            ...doc.data,
+            ...(status === "published"
+              ? (inferredRange ? { word_range: inferredRange } : { word_range: undefined })
+              : {})
+          }
+        }, result.wordCount);
         fsModule.writeFileSync(fp, rewritten, "utf8");
         updates.push(fp);
       } else {
-        errors.push(`${fp}: missing or stale word_count (expected ${result.wordCount})`);
+        if (!wordCountMatches) {
+          errors.push(`${fp}: missing or stale word_count (expected ${result.wordCount})`);
+        }
+        if (!rangeMatches) {
+          const expected = inferredRange || "unset";
+          errors.push(`${fp}: stale word_range for published essay (expected ${expected})`);
+        }
       }
     }
   }
@@ -456,6 +482,7 @@ module.exports = {
   wordCount,
   bounds,
   validateWordRange,
+  wordRangeFromCount,
   formatError,
   scan,
   listMarkdownFiles,
