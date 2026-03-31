@@ -39,8 +39,10 @@ describe("resolveDeadline", () => {
 describe("runAutopublish", () => {
   it("publishes proposed drafts when deadline has passed", () => {
     const root = process.cwd();
+    const draftsDir = path.join(root, "site/essays/drafts");
     const draftPath = path.join(root, "site/essays/drafts/__autopublish-test-proposed__.md");
     const pubPath = path.join(root, "site/essays/published/__autopublish-test-proposed__.md");
+    const hadDraftsDir = fs.existsSync(draftsDir);
 
     const source = `---
 title: Test proposed draft
@@ -56,6 +58,7 @@ release_notes: []
 Test.
 `;
 
+    fs.mkdirSync(draftsDir, { recursive: true });
     fs.writeFileSync(draftPath, source, "utf8");
 
     try {
@@ -69,6 +72,9 @@ Test.
     } finally {
       if (fs.existsSync(draftPath)) fs.unlinkSync(draftPath);
       if (fs.existsSync(pubPath)) fs.unlinkSync(pubPath);
+      if (!hadDraftsDir && fs.existsSync(draftsDir)) {
+        fs.rmSync(draftsDir, { recursive: true, force: true });
+      }
     }
   });
 });
