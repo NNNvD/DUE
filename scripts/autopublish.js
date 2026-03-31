@@ -86,6 +86,9 @@ function publishFile(fp, now, options = {}) {
 
   const out = matter.stringify(doc.content, d);
   const dest = path.join(pubDir, path.basename(fp));
+  if (fs.existsSync(dest)) {
+    throw new Error(`Refusing to overwrite existing published essay: ${dest}`);
+  }
   fs.ensureDirSync(pubDir);
   fs.writeFileSync(dest, out, "utf8");
   fs.removeSync(fp);
@@ -110,6 +113,10 @@ function runAutopublish(options = {}) {
   return draftFiles.reduce((list, fp) => {
     const raw = fs.readFileSync(fp, "utf8");
     const doc = matter(raw);
+    const status = String(doc.data?.status || "draft").trim().toLowerCase();
+    if (!["proposed", "draft"].includes(status)) {
+      return list;
+    }
     const deadline = resolveDeadline(doc.data);
     if (!deadline) return list;
 
