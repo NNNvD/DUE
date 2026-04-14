@@ -19,7 +19,7 @@ eleventyExcludeFromCollections: true
       {% set releaseNote = releaseNotes | first or meta.extractDescription(post.data) %}
       {% set contentText = releaseNote or '' %}
       {% set version = post.data.version | formatVersion(post.data.initial_status) %}
-      {% set canonicalUrl = (post.data.canonical or post.url | url) | absoluteUrl(site) %}
+      {% set canonicalUrl = meta.buildCanonicalUrl({ canonical: post.data.canonical, canonical_url: post.data.canonical_url, page: { url: post.url }, site: site }) %}
       {
         "id": {{ canonicalUrl | dump | safe }},
         "url": {{ canonicalUrl | dump | safe }},

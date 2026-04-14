@@ -1,7 +1,12 @@
 ---
 title: Moratorium on Box
 topic: Reevaluating Box's famous quote
-keywords: []
+keywords:
+  - george box
+  - scientific modeling
+  - useful models
+  - limitations sections
+  - abstraction
 author: Noah van Dongen
 coauthors: []
 acknowledgments: []

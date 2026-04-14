@@ -21,6 +21,29 @@ function absoluteUrl(url, siteData = site) {
   }
 }
 
+function withBasePath(url, siteData = site) {
+  if (!url) {
+    return ensureTrailingSlash(siteData.baseUrl || "/");
+  }
+
+  if (/^[a-z][a-z\d+\-.]*:/iu.test(String(url))) {
+    return url;
+  }
+
+  const normalizedUrl = String(url).startsWith("/") ? String(url) : `/${url}`;
+  const basePath = ensureTrailingSlash(siteData.baseUrl || "/");
+
+  if (basePath === "/") {
+    return normalizedUrl;
+  }
+
+  if (normalizedUrl === basePath || normalizedUrl.startsWith(basePath)) {
+    return normalizedUrl;
+  }
+
+  return `${basePath.replace(/\/$/u, "")}${normalizedUrl}`;
+}
+
 function stripFrontMatter(content) {
   if (!content.startsWith("---")) {
     return content;
@@ -54,6 +77,24 @@ function truncate(text, length = 280) {
   return `${text.slice(0, length - 1).trim()}…`;
 }
 
+function normalizedKeywords(data = {}, limit) {
+  const source = Array.isArray(data.display_keywords) && data.display_keywords.length
+    ? data.display_keywords
+    : Array.isArray(data.keywords)
+      ? data.keywords
+      : [];
+
+  const keywords = source
+    .map((value) => (typeof value === "string" ? value.trim() : ""))
+    .filter(Boolean);
+
+  return typeof limit === "number" ? keywords.slice(0, limit) : keywords;
+}
+
+function keywordSummary(data = {}, limit = 3) {
+  return normalizedKeywords(data, limit).join(", ");
+}
+
 function extractDescription(data) {
   if (data && data.description) {
     return data.description;
@@ -61,7 +102,7 @@ function extractDescription(data) {
 
   const inputPath = data?.page?.inputPath;
   if (!inputPath) {
-    return data?.topic || data?.title || "";
+    return keywordSummary(data) || data?.topic || data?.title || "";
   }
 
   try {
@@ -76,10 +117,10 @@ function extractDescription(data) {
       return truncate(paragraphs[0]);
     }
   } catch (error) {
-    return data?.topic || data?.title || "";
+    return keywordSummary(data) || data?.topic || data?.title || "";
   }
 
-  return data?.topic || data?.title || "";
+  return keywordSummary(data) || data?.topic || data?.title || "";
 }
 
 function buildMetaDescription(data = {}) {
@@ -89,7 +130,7 @@ function buildMetaDescription(data = {}) {
 
   const raw = extractDescription(data);
   const summary = raw || "";
-  const title = data.title || data.topic || "";
+  const title = data.title || keywordSummary(data) || data.topic || "";
 
   if (title && summary && !summary.toLowerCase().startsWith(title.toLowerCase())) {
     return truncate(`${title}: ${summary}`, 160);
@@ -103,16 +144,22 @@ function buildMetaDescription(data = {}) {
 }
 
 function buildCanonicalUrl(data) {
+  const siteData = data?.site || site;
+
+  if (data?.canonical_url) {
+    return absoluteUrl(withBasePath(data.canonical_url, siteData), siteData);
+  }
+
   if (data?.canonical) {
-    return data.canonical;
+    return absoluteUrl(withBasePath(data.canonical, siteData), siteData);
   }
 
   const pageUrl = data?.page?.url;
   if (!pageUrl) {
-    return site.siteUrl;
+    return siteData.siteUrl;
   }
 
-  return absoluteUrl(pageUrl);
+  return absoluteUrl(withBasePath(pageUrl, siteData), siteData);
 }
 
 function normalizeAuthors(data = {}) {
@@ -151,14 +198,12 @@ function normalizeAuthors(data = {}) {
 }
 
 function buildArticleJsonLd(data = {}) {
-  const canonicalUrl = buildCanonicalUrl(data);
+  const siteData = data.site || site;
+  const canonicalUrl = buildCanonicalUrl({ ...data, site: siteData });
   const description = extractDescription(data);
   const authors = normalizeAuthors(data);
-  const keywords = Array.isArray(data.display_keywords)
-    ? data.display_keywords
-    : Array.isArray(data.keywords)
-      ? data.keywords.slice(0, 5)
-      : undefined;
+  const keywordList = normalizedKeywords(data);
+  const keywords = keywordList.length ? keywordList : undefined;
 
   const wordCount = typeof data.word_count === "number" ? data.word_count : undefined;
   const datePublished = data.published_at || data.started_at;
@@ -181,8 +226,8 @@ function buildArticleJsonLd(data = {}) {
     wordCount,
     publisher: {
       "@type": "Organization",
-      name: site.title,
-      url: site.siteUrl,
+      name: siteData.title || site.title,
+      url: absoluteUrl(withBasePath("/", siteData), siteData),
     },
   };
 
@@ -199,5 +244,6 @@ module.exports = {
   extractDescription,
   buildMetaDescription,
   ensureTrailingSlash,
+  withBasePath,
   buildArticleJsonLd,
 };

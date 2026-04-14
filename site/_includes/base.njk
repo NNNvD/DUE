@@ -4,9 +4,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  {% set metaTitle = ogTitle or title or site.title %}
-  {% set canonicalUrl = canonical or meta.buildCanonicalUrl({ page: page, site: site }) %}
-  <title>{{ metaTitle }}</title>
+  {% set pageTitle = title or ogTitle or site.title %}
+  {% set socialTitle = ogTitle or pageTitle %}
+  {% set canonicalUrl = canonical or canonical_url or meta.buildCanonicalUrl({ page: page, site: site, canonical: canonical, canonical_url: canonical_url }) %}
+  <title>{{ pageTitle }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   {% if canonicalUrl %}
@@ -17,7 +18,10 @@
   <meta name="description" content="{{ description }}">
   <meta property="og:description" content="{{ description }}">
   {% endif %}
-  <meta property="og:title" content="{{ metaTitle }}">
+  {% if excludeFromSitemap %}
+  <meta name="robots" content="noindex">
+  {% endif %}
+  <meta property="og:title" content="{{ socialTitle }}">
   <meta property="og:type" content="{{ ogType or 'website' }}">
   <meta property="og:site_name" content="{{ site.title }}">
   <link rel="alternate" type="application/rss+xml" title="{{ site.title }} feed" href="{{ '/feed.xml' | url | absoluteUrl(site) }}">
@@ -29,7 +33,7 @@
   {% else %}
   <meta name="twitter:card" content="summary">
   {% endif %}
-  <meta name="twitter:title" content="{{ metaTitle }}">
+  <meta name="twitter:title" content="{{ socialTitle }}">
   {% if description %}
   <meta name="twitter:description" content="{{ description }}">
   {% endif %}

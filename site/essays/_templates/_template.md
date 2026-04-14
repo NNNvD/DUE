@@ -1,6 +1,7 @@
 ---
 title: Your Essay Title
-topic: Your topic
+keywords:
+  - your keyword
 author: yourhandle
 eleventyExcludeFromCollections: true
 permalink: false

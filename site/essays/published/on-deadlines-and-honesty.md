@@ -1,6 +1,12 @@
 ---
 title: On Deadlines and Honesty
 topic: The role of time pressure in intellectual clarity
+keywords:
+  - deadlines
+  - honesty
+  - time pressure
+  - clarity
+  - perfectionism
 author: noahvandongen
 coauthors: []
 acknowledgments: []

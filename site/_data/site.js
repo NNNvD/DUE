@@ -132,10 +132,13 @@ function resolveGiscusConfig() {
 
 function resolveCommentConfig() {
   const defaults = baseConfig.comments || {};
+  const defaultEndpoint = process.env.GITHUB_ACTIONS === "true"
+    ? ""
+    : "/api/submit-comment";
   const endpointCandidates = [
     process.env.COMMENTS_ENDPOINT,
     defaults.endpoint,
-    "/api/submit-comment",
+    defaultEndpoint,
   ]
     .map((value) => (typeof value === "string" ? value.trim() : ""))
     .filter(Boolean);

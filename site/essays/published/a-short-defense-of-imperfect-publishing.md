@@ -1,6 +1,12 @@
 ---
 title: A Short Defense of Imperfect Publishing
 topic: Why the first version is for readers, not for pride
+keywords:
+  - imperfect publishing
+  - reader feedback
+  - iteration
+  - deadlines
+  - public drafts
 author: noahvandongen
 coauthors: []
 acknowledgments: []

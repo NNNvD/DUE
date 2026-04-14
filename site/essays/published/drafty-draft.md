@@ -1,7 +1,11 @@
 ---
 title: Drafty draft
 topic: Just another test
-keywords: []
+keywords:
+  - test content
+  - placeholder draft
+  - repeated filler
+  - word-count fixture
 themes: []
 author: Noah van Dongen
 coauthors: []
@@ -10,6 +14,7 @@ acknowledgments:
     note: Minor contribution
     since_version: 0.1.1
 status: published
+visibility: hidden
 initial_status: unfinished
 started_at: 2026-02-24T00:00:00.000Z
 deadline_at: 2026-03-26T00:00:00.000Z

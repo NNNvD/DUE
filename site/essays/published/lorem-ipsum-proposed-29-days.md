@@ -1,10 +1,17 @@
 ---
 title: Lorem Ipsum Proposal at Day Twenty-Nine
 topic: Planning a placeholder essay after nearly a month of consideration
+keywords:
+  - lorem ipsum
+  - proposal placeholder
+  - deadline planning
+  - day twenty-nine
+  - test essay
 author: lorem-proposer
 coauthors: []
 acknowledgments: []
 status: published
+visibility: hidden
 started_at: 2025-11-06T00:00:00.000Z
 deadline_at: 2025-12-06T00:00:00.000Z
 proposed_at: 2025-11-06T00:00:00.000Z

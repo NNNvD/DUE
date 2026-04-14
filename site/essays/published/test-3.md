@@ -1,11 +1,16 @@
 ---
 title: test 3
 topic: test again
-keywords: []
+keywords:
+  - test content
+  - word-count fixture
+  - sequential tokens
+  - placeholder essay
 author: Noah van Dongen
 coauthors: []
 acknowledgments: []
 status: published
+visibility: hidden
 initial_status: unfinished
 started_at: 2026-01-01T00:00:00.000Z
 deadline_at: 2026-01-31T00:00:00.000Z

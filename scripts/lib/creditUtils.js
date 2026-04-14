@@ -17,9 +17,13 @@ function normalizeCoauthors(list) {
 
 function parseVersion(version) {
   if (typeof version !== "string") return null;
-  const match = version.trim().match(/^(\d+)\.(\d+)$/);
+  const match = version.trim().match(/^(\d+)\.(\d+)(?:\.(\d+))?$/);
   if (!match) return null;
-  return { major: Number(match[1]), minor: Number(match[2]) };
+  return {
+    major: Number(match[1]),
+    minor: Number(match[2]),
+    patch: Number(match[3] || 0),
+  };
 }
 
 function selectEarliestVersion(a, b) {
@@ -38,6 +42,9 @@ function selectEarliestVersion(a, b) {
   }
   if (pa.minor !== pb.minor) {
     return pa.minor < pb.minor ? a : b;
+  }
+  if (pa.patch !== pb.patch) {
+    return pa.patch < pb.patch ? a : b;
   }
   return a;
 }

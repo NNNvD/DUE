@@ -7,6 +7,31 @@ Use `api/submit-comment.js` for post-moderated feedback. The function accepts PO
 - Point `site/_data/site.json` → `comments.endpoint` (or set `COMMENTS_ENDPOINT`) at the deployed route (defaults to `/api/submit-comment`).
 - Ensure the runtime provides **Node 18+** so `fetch` and `crypto.randomUUID` are available.
 
+### Recommended for GitHub Pages: Cloudflare Worker
+This repo now includes a Worker scaffold at `workers/comment-intake/` so the comment API can live off-Pages while the site itself stays on GitHub Pages.
+
+Typical setup:
+1. Copy `workers/comment-intake/.dev.vars.example` to `workers/comment-intake/.dev.vars` and fill in:
+   - `COMMENTS_REPO`
+   - `COMMENTS_SITE_BASE`
+   - `COMMENTS_TOKEN`
+   - optional `COMMENTS_BASE_BRANCH`
+2. Deploy with Wrangler:
+
+```bash
+npx wrangler deploy --config workers/comment-intake/wrangler.toml
+```
+
+3. In GitHub, set the Pages build variable or secret `COMMENTS_ENDPOINT` to your deployed Worker URL plus `/api/submit-comment`, for example:
+
+```text
+https://due-comment-intake.<your-subdomain>.workers.dev/api/submit-comment
+```
+
+4. Optionally set `COMMENTS_ISSUE_FALLBACK` if you want a custom manual fallback instead of the default repository issue form.
+
+If `COMMENTS_ENDPOINT` is missing during the Pages build, the deployed site now disables live submission and falls back to the issue path instead of shipping a broken `/api/submit-comment` form action.
+
 ### Required environment variables
 - `COMMENTS_REPO` (or `GITHUB_REPOSITORY`): `owner/repo` where comment files should be committed.
 - `COMMENTS_TOKEN` (or `GITHUB_TOKEN`): PAT with `repo` scope to create commits and files.
@@ -45,6 +70,27 @@ curl -X POST \
 ```
 
 If configured correctly, the response returns `{ "success": true, "filePath": "..." }` and the comment YAML file is committed to the repository.
+
+## One-command live verification
+Use the repo helper when you want a real production-path check instead of a mocked local test:
+
+```bash
+COMMENTS_VERIFY_ENDPOINT="https://due-comment-intake.<your-subdomain>.workers.dev/api/submit-comment" \
+COMMENTS_VERIFY_SITE_URL="https://nnnvd.github.io/DUE/" \
+npm run verify:comments-live
+```
+
+What this does:
+- submits a real verification comment against the configured endpoint;
+- expects a successful API response with a committed `filePath`;
+- tries to fetch the committed YAML back from GitHub and verify its core fields;
+- prints the follow-up manual checks for comment visibility and moderation.
+
+Defaults and safety notes:
+- The helper targets `drafty-draft` by default so the live check lands on a clearly non-production essay slug unless you override `--slug`.
+- Override the payload with `--slug`, `--essay-title`, `--comment`, or the matching `COMMENTS_VERIFY_*` env vars.
+- Add `--skip-github-check` if the repo is private and you do not want the helper to fetch the file back for verification.
+- Reject or delete the verification comment after the pipeline has been confirmed.
 
 ## Moderating visible comments
 - New comments should use `status: pending` to render as **Unmoderated**.

@@ -3,7 +3,9 @@ const matter = require("gray-matter");
 
 const meta = require("./meta");
 const { wordCount, wordRangeFromCount } = require("../../scripts/checkWordRange");
-const { enforceTopicAndKeywords } = require("../../scripts/topicKeywordConstraints");
+const { resolveDeadlineAt, resolveTimeStatus } = require("../../scripts/lib/essayLifecycle");
+const { enforceTopicAndKeywords, keywordPreview } = require("../../scripts/topicKeywordConstraints");
+const { isEssayHidden } = require("../../scripts/lib/essayVisibility");
 
 function normalizeWordRange(value) {
   if (!value) return null;
@@ -106,36 +108,6 @@ function normalizeStatus(raw, fallback) {
   return fallback;
 }
 
-function parseDateValue(value) {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  return date;
-}
-
-function resolveDeadlineAt(deadlineAt, startedAt) {
-  const explicitDeadline = parseDateValue(deadlineAt);
-  if (explicitDeadline) return explicitDeadline;
-  const started = parseDateValue(startedAt);
-  if (!started) return null;
-  return new Date(started.getTime() + 30 * 24 * 60 * 60 * 1000);
-}
-
-function timeStatus({ status, initialStatus, publishedAt, deadlineAt, startedAt }) {
-  if (status === "proposed" || status === "draft") return "draft";
-
-  const publishedDate = parseDateValue(publishedAt);
-  const deadlineDate = resolveDeadlineAt(deadlineAt, startedAt);
-  if (publishedDate && deadlineDate) {
-    return publishedDate <= deadlineDate ? "finished-on-time" : "unfinished-on-time";
-  }
-
-  if (initialStatus === "complete") return "finished-on-time";
-  if (initialStatus === "unfinished") return "unfinished-on-time";
-
-  return "unfinished-on-time";
-}
-
 function normalizeContributors(contributors = []) {
   if (!Array.isArray(contributors)) return [];
   return contributors
@@ -180,6 +152,7 @@ function loadEssays(status = "published") {
     .map((file) => {
       const { data, content } = matter.read(file);
       if (!isEssayEntry(file, data)) return null;
+      if (isEssayHidden(data)) return null;
       const normalizedStatus = normalizeStatus(data.status, status);
       const slug =
         (data.page && data.page.fileSlug) ||
@@ -208,7 +181,7 @@ function loadEssays(status = "published") {
         : new Date(resolvedDeadlineIso || 0).getTime();
       const initialStatus = constrained.initial_status || null;
       const normalizedVersion = normalizeVersion(constrained.version, initialStatus);
-      const timelineStatus = timeStatus({
+      const timelineStatus = resolveTimeStatus({
         status: normalizedStatus,
         initialStatus,
         publishedAt: constrained.published_at,
@@ -232,7 +205,8 @@ function loadEssays(status = "published") {
         coauthors: contributors,
         keywords,
         themes,
-        display_keywords: keywords.slice(0, 5),
+        display_keywords: keywords,
+        browser_keywords: keywordPreview(keywords, 3),
         description,
         url,
         release_notes: Array.isArray(constrained.release_notes) ? constrained.release_notes : [],
@@ -263,6 +237,7 @@ function loadEssays(status = "published") {
         },
         taxonomy: {
           topic: constrained.topic || "",
+          keywords,
           themes,
           length_bucket: lengthMeta.bin,
         },

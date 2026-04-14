@@ -1,6 +1,8 @@
 {
   "title": "DUE — Deadline for Unfinished Essays",
   "tagline": "Propose. Panic. Publish.",
+  "baseUrl": "/DUE/",
+  "repoUrl": "https://github.com/NNNvD/DUE",
   "giscus": {
     "repo": "",
     "repoId": "",

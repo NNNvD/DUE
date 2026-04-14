@@ -8,7 +8,7 @@ Use this checklist before releasing the "v1 — Comments-only public site" miles
 
 ## Manual end-to-end checks
 - **Public surface**: verify no "start an essay" / "suggest change" CTAs remain. Drafts render read-only with countdowns and no interaction paths.
-- **Comments intake**: on a published essay, submit both minor and major intents against the configured endpoint. Confirm the serverless handler commits an approved-directory comment YAML to the base branch with expected metadata (slug, path, intent, contact details, moderation note placeholder).
+- **Comments intake**: run `npm run verify:comments-live` against the deployed endpoint, then open the targeted essay URL directly and submit at least one manual browser comment. Confirm the serverless handler commits an approved-directory comment YAML to the base branch with expected metadata (slug, path, intent, contact details, moderation note placeholder).
 - **Moderation + publication**: submit a comment and confirm it renders immediately as **Unmoderated**; then update moderation status data in the committed YAML and rebuild to verify status-chip transitions and moderation notes.
 - **Search + filters**: load the essay browser, run a keyword search, toggle length/author/completeness filters, and confirm the countdown timers refresh on dynamically rendered draft cards.
 - **Accessibility behaviors**: keyboard the nav, skip link, and controls (comment form, filters, share buttons). Spot-check headings, form labels, focus states, and color contrast for issues not caught by the automated audit.

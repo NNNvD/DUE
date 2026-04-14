@@ -2,7 +2,9 @@ name: Auto publish overdue drafts
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    # Run throughout the day so deadline_at_time values do not wait until the
+    # next UTC midnight to publish.
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 concurrency:

@@ -9,7 +9,7 @@ function parseEnv(env = process.env) {
   const user = env.PR_USER || "contributor";
   const labelIntent = labels.includes("major")
     ? "new_version"
-    : (labels.includes("minor") ? "major_update" : null);
+    : (labels.includes("minor") ? "minor_update" : null);
   const changed = (env.CHANGED_FILES || "")
     .split(/\r?\n/)
     .map(s => s.trim())
@@ -74,7 +74,7 @@ function applyContribution(data = {}, { intent, user }) {
 }
 
 function bump(version, isMajor) {
-  return bumpVersion(version, isMajor ? "new_version" : "major_update");
+  return bumpVersion(version, isMajor ? "new_version" : "minor_update");
 }
 
 function processFile(fp, labelIntent, user, fsModule = fs) {

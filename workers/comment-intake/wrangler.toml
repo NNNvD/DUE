@@ -1,0 +1,8 @@
+name = "due-comment-intake"
+main = "src/index.mjs"
+compatibility_date = "2026-04-12"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[vars]
+COMMENTS_DIR = "data/comments"

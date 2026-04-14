@@ -21,7 +21,7 @@ title: "Comment on DUE"
       The form lets you pick minor or major intent before you type. This helps route and credit your comment correctly.
     </li>
     <li><strong>How specific to be</strong><br>Point to particular sentences or sections when possible. If you propose cuts or additions, state them plainly. You do not have to solve everything; it is enough to identify what feels off.</li>
-    <li><strong>Scope of topics and keywords</strong><br>Keep topics and keywords tight (≤ 5 each) so discussions stay searchable and on-topic.</li>
+    <li><strong>Keyword suggestions</strong><br>If an essay is hard to discover, suggest better keywords alongside your textual feedback. Keywords now do the main browsing work in the library.</li>
     <li><strong>Tone and evidence</strong><br>Stay close to the existing tone of the essay. When challenging a claim, say what you would change <strong>and why</strong>, and cite sources where that matters.</li>
   </ul>
 </section>
@@ -55,7 +55,16 @@ title: "Comment on DUE"
     <li><strong>Stay on topic</strong><br>Keep the comment tied to the specific essay—Tiny, Minute, or Short. If you have a broader idea for a new essay, mention it briefly rather than derailing the thread.</li>
     <li><strong>One account per person</strong><br>Do not create multiple identities to influence discussion or moderation.</li>
   </ul>
-  <p>If you encounter behaviour that violates these rules, you can flag it in your comment or contact the maintainers via the About page.</p>
+  <p>
+    If you encounter behaviour that violates these rules, you can flag it in your comment or,
+    {% if site.comments and site.comments.issueFallback %}
+      if needed, <a href="{{ site.comments.issueFallback }}">open an issue for the maintainers</a>.
+    {% elif site.repoUrl %}
+      if needed, use the <a href="{{ site.repoUrl }}">project repository</a>.
+    {% else %}
+      contact the maintainers through the repository.
+    {% endif %}
+  </p>
 </section>
 
 <section class="card">
@@ -70,7 +79,7 @@ title: "Comment on DUE"
   <ul>
     <li><strong>Data use</strong><br>Your comment and chosen display name are visible under the relevant essay right away. Optional contact information is used only for clarifications and is not shared publicly.</li>
     <li><strong>Retention</strong><br>Comments and their moderation history remain on record so that release notes and version histories can be audited later.</li>
-    <li><strong>Removal and corrections</strong><br>You can request updates or deletion of your comments by contacting the maintainers through the route indicated on the About page. Technical and legal limits may apply, but requests will be taken seriously.</li>
+    <li><strong>Removal and corrections</strong><br>You can request updates or deletion of your comments through the repository contact route linked on this page. Technical and legal limits may apply, but requests will be taken seriously.</li>
     <li><strong>Cookies and analytics</strong><br>No advertising trackers are used. Only essential site cookies are required for basic functionality and aggregate analytics.</li>
   </ul>
 </section>
@@ -133,5 +142,14 @@ title: "Comment on DUE"
     <li>browse the <strong>published essays</strong> to see how versioning and credits look in practice;</li>
     <li>follow the <strong>Draft schedule</strong> to know when new Tiny, Minute, and Short essays will open for comments.</li>
   </ul>
-  <p>For questions that do not fit into a comment, use the contact information listed on the About page or in the repository.</p>
+  <p>
+    For questions that do not fit into a comment,
+    {% if site.comments and site.comments.issueFallback %}
+      <a href="{{ site.comments.issueFallback }}">open an issue in the repository</a>.
+    {% elif site.repoUrl %}
+      use the <a href="{{ site.repoUrl }}">project repository</a>.
+    {% else %}
+      use the repository contact route.
+    {% endif %}
+  </p>
 </section>

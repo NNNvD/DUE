@@ -4,6 +4,8 @@ const matter = require("gray-matter");
 const fs = require("fs");
 const path = require("path");
 const { runAutopublish } = require("./scripts/autopublish");
+const { resolveTimeStatus } = require("./scripts/lib/essayLifecycle");
+const { isEssayHidden } = require("./scripts/lib/essayVisibility");
 
 function formatDateValue(value, format = "yyyy-LL-dd") {
   if (!value) return "";
@@ -257,6 +259,10 @@ function filterEssayTemplates(collection = []) {
       return false;
     }
 
+    if (isEssayHidden(data)) {
+      return false;
+    }
+
     return true;
   });
 }
@@ -290,38 +296,6 @@ function normalizeStatus(raw, fallback) {
   return fallback;
 }
 
-function parseDateValue(value) {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-  return date;
-}
-
-function resolveDeadlineAt(deadlineAt, startedAt) {
-  const explicitDeadline = parseDateValue(deadlineAt);
-  if (explicitDeadline) return explicitDeadline;
-  const started = parseDateValue(startedAt);
-  if (!started) return null;
-  return new Date(started.getTime() + 30 * 24 * 60 * 60 * 1000);
-}
-
-function resolveTimeStatus({ status, initial_status, published_at, deadline_at, started_at }) {
-  if (status === "draft" || status === "proposed") return "draft";
-
-  const publishedDate = parseDateValue(published_at);
-  const deadlineDate = resolveDeadlineAt(deadline_at, started_at);
-  if (publishedDate && deadlineDate) {
-    return publishedDate <= deadlineDate ? "finished-on-time" : "unfinished-on-time";
-  }
-
-  if (initial_status === "complete") return "finished-on-time";
-  if (initial_status === "unfinished") return "unfinished-on-time";
-
-  return "unfinished-on-time";
-}
-
 function loadEssaysByStatus(status = "published") {
   const pattern = status === "draft"
     ? "site/essays/drafts/**/*.{md,njk}"
@@ -343,10 +317,10 @@ function loadEssaysByStatus(status = "published") {
       const url = `/essays/${segment}/${slug}/`;
       const time_status = resolveTimeStatus({
         status: normalizedStatus,
-        initial_status: data.initial_status,
-        published_at: data.published_at,
-        deadline_at: data.deadline_at,
-        started_at: data.started_at,
+        initialStatus: data.initial_status,
+        publishedAt: data.published_at,
+        deadlineAt: data.deadline_at,
+        startedAt: data.started_at,
       });
 
       return {

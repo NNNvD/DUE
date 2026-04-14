@@ -14,7 +14,7 @@ description: "What Deadline for Unfinished Essays is, how the publishing cadence
   <h3>Cadence · 30 days to publish</h3>
   <p>Each essay starts with three choices:</p>
   <ul>
-    <li>a topic;</li>
+    <li>a keyword set;</li>
     <li>a target length band: Tiny, Minute, or Short;</li>
     <li>a fixed publication date, 30 days away.</li>
   </ul>
@@ -91,15 +91,22 @@ description: "What Deadline for Unfinished Essays is, how the publishing cadence
   <p>If you would like to become an essayist:</p>
   <ol>
     <li><strong>Read a few essays</strong> to get a sense of scope, tone, and length—Tiny, Minute, and Short.</li>
-    <li><strong>Sketch 1–3 possible topics</strong> you might want to write about, each with a tentative length band (Tiny, Minute, or Short).</li>
-    <li><strong>Send a short note</strong> via the contact route listed here or in the repository, including:
+    <li><strong>Sketch 1–3 possible essays</strong> you might want to write, each with a tentative length band (Tiny, Minute, or Short) and a few starter keywords.</li>
+    <li><strong>Send a short note</strong> through the repository contact route, including:
       <ul>
         <li>your name and affiliation (if relevant);</li>
-        <li>your proposed topics and length bands;</li>
+        <li>your proposed essays, keywords, and length bands;</li>
         <li>links to any existing writing you feel is representative.</li>
       </ul>
     </li>
   </ol>
+  <p>
+    {% if site.comments and site.comments.issueFallback %}
+      The simplest way to reach the maintainers is to <a href="{{ site.comments.issueFallback }}">open an issue in the repository</a>.
+    {% elif site.repoUrl %}
+      The simplest way to reach the maintainers is through the <a href="{{ site.repoUrl }}">project repository</a>.
+    {% endif %}
+  </p>
   <p>Current maintainers review these requests irregularly. When a new essayist is added, they receive access to the backend workflow (Git-based editing, versioning, and release notes) and are expected to:</p>
   <ul>
     <li>respect deadlines once a Tiny, Minute, or Short essay is started;</li>
@@ -114,7 +121,7 @@ description: "What Deadline for Unfinished Essays is, how the publishing cadence
   <p>Navigation stays simple:</p>
   <ul>
     <li><strong>Home →</strong> shows the latest publication and any current draft.</li>
-    <li><strong>Essay library →</strong> lists all published essays and drafts, with filters for topic and length (Tiny, Minute, Short).</li>
+    <li><strong>Essay library →</strong> lists all published essays and drafts, with filters for keywords and length (Tiny, Minute, Short).</li>
     <li><strong>Draft schedule →</strong> orders in-progress essays by their publish date.</li>
     <li><strong>Contribute →</strong> explains how comments work and how they are handled.</li>
     <li><strong>Style guide →</strong> documents the visual system and content patterns for people working on the site.</li>
