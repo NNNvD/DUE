@@ -1,10 +1,17 @@
 ---
 title: Lorem Ipsum Boundary Test
 topic: Automated lorem ipsum content for word range validation
+keywords:
+  - lorem ipsum
+  - boundary validation
+  - placeholder content
+  - word-count threshold
+  - test essay
 author: lorem-boundary-tester
 coauthors: []
 acknowledgments: []
 status: published
+visibility: hidden
 started_at: 2025-11-07T00:00:00.000Z
 deadline_at: 2025-12-07T00:00:00.000Z
 proposed_at: 2025-11-07T00:00:00.000Z

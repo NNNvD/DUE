@@ -3,7 +3,7 @@ layout: base.njk
 ---
 <article class="card">
   {% set length = word_range | wordRangeMeta %}
-  {% set shareUrl = canonical or meta.buildCanonicalUrl({ page: page, site: site }) %}
+  {% set shareUrl = canonical or canonical_url or meta.buildCanonicalUrl({ page: page, site: site, canonical: canonical, canonical_url: canonical_url }) %}
   {% set shareLabel = (title or site.title) ~ ' — ' ~ site.title %}
   {% set shareSnippet = shareLabel ~ ' ' ~ shareUrl %}
   {% set encodedShareUrl = shareUrl | urlencode %}
@@ -73,7 +73,6 @@ layout: base.njk
         {% endif %}
       </div>
       <div class="meta">
-        {% if topic %}<span>Topic: {{ topic }}</span>{% endif %}
         {% if display_keywords and display_keywords.length %}<span>Keywords: {{ display_keywords | join(", ") }}</span>{% endif %}
       </div>
     </div>
@@ -113,7 +112,11 @@ layout: base.njk
     </ul>
   {% else %}
     <ul>
-      <li>Initial publication as complete (v1.0.0).</li>
+      {% if initial_status == 'complete' %}
+        <li>Initial publication as complete (v1.0.0).</li>
+      {% else %}
+        <li>Initial publication as unfinished on time (v0.1.0).</li>
+      {% endif %}
     </ul>
   {% endif %}
 </section>
@@ -124,7 +127,7 @@ layout: base.njk
     <ul>
       {% for ack in meta.acknowledgments %}
         <li>
-          @{{ ack.handle }}
+          @{{ ack.handle or ack.user or ack.name }}
           {% if ack.note %}— {{ ack.note }}{% endif %}
           {% if ack.since_version %}<span class="ack-since">(since v{{ ack.since_version }})</span>{% endif %}
         </li>
@@ -227,6 +230,7 @@ layout: base.njk
       class="comment-form"
       method="post"
       action="{{ site.comments.endpoint | default('') }}"
+      novalidate
       data-comment-form
       data-comment-endpoint="{{ site.comments.endpoint | default('') }}"
       data-comment-endpoints="{{ site.comments.endpoints | join(',') }}"
@@ -235,7 +239,7 @@ layout: base.njk
       <input type="hidden" name="slug" value="{{ page.fileSlug }}">
       <input type="hidden" name="essayTitle" value="{{ title }}">
       <input type="hidden" name="essayPath" value="{{ page.url | url }}">
-      <input type="hidden" name="essayUrl" value="{{ site.siteUrl }}{{ page.url | url }}">
+      <input type="hidden" name="essayUrl" value="{{ (page.url | url) | absoluteUrl(site) }}">
       <fieldset class="intent-buttons" aria-label="Feedback intent">
         <legend class="visually-hidden">Choose feedback intent</legend>
         <div class="intent-buttons__controls">

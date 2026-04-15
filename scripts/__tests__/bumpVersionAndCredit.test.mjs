@@ -2,11 +2,11 @@ import { describe, it, expect } from "vitest";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const { bump, applyContribution, resolveIntent } = require("../bumpVersionAndCredit.js");
+const { bump, applyContribution, parseEnv, resolveIntent } = require("../bumpVersionAndCredit.js");
 
 describe("bump", () => {
-  it("increments the middle version for default update path", () => {
-    expect(bump("1.2", false)).toBe("1.3.0");
+  it("increments the patch version for the default update path", () => {
+    expect(bump("1.2", false)).toBe("1.2.1");
   });
 
   it("resets invalid versions before bumping", () => {
@@ -15,12 +15,21 @@ describe("bump", () => {
 });
 
 describe("resolveIntent", () => {
+  it("maps the minor PR label to a patch update", () => {
+    const parsed = parseEnv({
+      PR_LABELS: JSON.stringify([{ name: "minor" }]),
+      CHANGED_FILES: "",
+    });
+
+    expect(parsed.labelIntent).toBe("minor_update");
+  });
+
   it("prefers front matter update_intent", () => {
     expect(resolveIntent({ update_intent: "new_version" }, "major_update")).toBe("new_version");
   });
 
   it("falls back to label intent", () => {
-    expect(resolveIntent({}, "major_update")).toBe("major_update");
+    expect(resolveIntent({}, "minor_update")).toBe("minor_update");
   });
 
   it("defaults to minor update", () => {
@@ -45,21 +54,21 @@ describe("applyContribution", () => {
     expect(base.coauthors).toEqual(["alice"]);
   });
 
-  it("queues acknowledgments for major update contributions", () => {
+  it("queues acknowledgments for patch contributions from the minor label path", () => {
     const base = {
       version: "0.3",
       acknowledgments: [{ user: "alice", note: "Thanks", since_version: "0.2" }]
     };
 
-    const { data } = applyContribution(base, { intent: "major_update", user: "carol" });
+    const { data } = applyContribution(base, { intent: "minor_update", user: "carol" });
 
-    expect(data.version).toBe("0.4.0");
-    expect(data.release_notes[0]).toBe("Contribution by @carol (major_update).");
+    expect(data.version).toBe("0.3.1");
+    expect(data.release_notes[0]).toBe("Contribution by @carol (minor_update).");
     expect(data.acknowledgments).toHaveLength(2);
     expect(data.acknowledgments[1]).toEqual({
       user: "carol",
-      note: "Major contribution",
-      since_version: "0.4.0"
+      note: "Minor contribution",
+      since_version: "0.3.1"
     });
     expect(base.acknowledgments).toHaveLength(1);
   });

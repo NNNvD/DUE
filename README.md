@@ -6,7 +6,7 @@ This is the minimal starter for **DUE — Deadline for Unfinished Essays**, desi
 ## What you get
 - Static site with **Eleventy (11ty)** rendering essays from Markdown.
 - Repo-native content under `site/essays/`.
-- **Auto-publish** overdue drafts (30‑day timer) on a scheduled GitHub Actions workflow (daily at 00:00 UTC).
+- **Auto-publish** overdue drafts (30‑day timer) on a scheduled GitHub Actions workflow (every 15 minutes).
 - **Word-range enforcement** on PRs (250–500, 500–1000, 1000–1500 with small grace).
 - **Published essay label guard** fails PRs that touch `site/essays/published/` without a `minor` or `major` label.
 - **Version bump + credits** on merged PRs using `minor` / `major` labels:
@@ -32,7 +32,7 @@ Drafting and edits happen in the backend. Maintainers can scaffold a draft local
 npm run new
 ```
 
-The script prompts for title, topic, author, key dates, word range, and slug, then writes a new Markdown file to `site/essays/drafts/`.
+The script prompts for title, keywords, author, key dates, word range, and slug, then writes a new Markdown file to `site/essays/drafts/`.
 
 ## CMS (/admin)
 - The `/admin` route now loads **Sveltia CMS** for GitHub Pages. Content stays under `site/essays/drafts/` and `site/essays/published/`. The Eleventy build passthroughs `/admin` so the CMS is available at `https://your-username.github.io/DUE/admin/` after a deploy.
@@ -52,7 +52,7 @@ The script prompts for title, topic, author, key dates, word range, and slug, th
 ### Start a new essay from the frontend
 1. Visit `/admin/` on the deployed site and sign in with your GitHub account through the configured OAuth backend (only repo collaborators are allowed).
 2. In the **Draft essays** collection, click **New Draft essay**.
-3. Fill in the required fields to match the front matter schema (title, topic, author, status, dates, word range, etc.).
+3. Fill in the required fields to match the front matter schema (title, keywords, author, status, dates, word range, etc.).
 4. Save the entry; Sveltia commits the new Markdown file to `site/essays/drafts/` using the slug you choose.
 5. Run `npm run check:words -- --write` locally (or in CI) to populate `word_count` before publishing.
 
@@ -60,11 +60,10 @@ The script prompts for title, topic, author, key dates, word range, and slug, th
 ```yaml
 ---
 title: "Title here"
-topic: "Proposed topic"
 author: yourhandle
 coauthors: []             # GitHub handles or { user, since_version }
 acknowledgments: []       # list of { user, note, since_version }
-keywords: []              # up to 5 keywords
+keywords: []              # any number of searchable keywords
 status: draft             # proposed|draft|published
 started_at: YYYY-MM-DD
 deadline_at: YYYY-MM-DD
@@ -82,9 +81,12 @@ release_notes:
 Markdown content here...
 ```
 
+`topic` remains supported as an optional legacy fallback while older essays are backfilled with keywords.
+The essay browser previews the first three keywords on each card while keeping the full keyword list on the essay itself.
+
 ## Workflows
-- **Deploy Pages**: Builds on push to `main` and deploys to GitHub Pages.
-- **Auto-publish**: Scheduled workflow (00:00 UTC daily) that moves overdue `site/essays/drafts/*.md` to `site/essays/published/` and sets version per `initial_status`. You can still run it manually via workflow dispatch when needed.
+- **Deploy Pages**: Builds on push to `main`, and also after the autopublish workflow completes, then deploys to GitHub Pages.
+- **Auto-publish**: Scheduled workflow (every 15 minutes) that moves overdue `site/essays/drafts/*.md` to `site/essays/published/` and sets version per `initial_status`. You can still run it manually via workflow dispatch when needed.
 - **Word range + count check**: Runs on PRs; fails if essay content is out of bounds or `word_count` is missing/outdated. Use `npm run check:words -- --write` before opening a PR to sync counts.
 - **Accessibility report**: Ensures pages expose alt text, labels, landmarks, and WCAG-friendly palette contrast. Run `npm run build` then `npm run check:a11y` locally to reproduce CI results.
 - **Feed validation**: Confirms `/feeds/feed.xml` and `/feeds/feed.json` are present and well formed after a build.
@@ -114,6 +116,8 @@ Markdown content here...
 - The feedback form posts to `comments.endpoint` (default empty). Point this at the deployed serverless handler in `api/submit-comment.js`.
 - Set `COMMENTS_REPO`/`COMMENTS_TOKEN` (or `GITHUB_REPOSITORY`/`GITHUB_TOKEN`) so the handler can commit comment YAML under `data/comments/<slug>/approved/` directly on the configured base branch so it is visible after deployment.
 - Optional: tune `COMMENTS_BASE_BRANCH`, `COMMENTS_DIR`, `COMMENTS_SITE_BASE`, and `COMMENTS_MAX_LENGTH` to fit your repo layout. See [`docs/comment-intake.md`](./docs/comment-intake.md) for setup and a sample `curl` request.
+- For GitHub Pages, the recommended production path is the included Cloudflare Worker scaffold under `workers/comment-intake/`. After deploying it, set the Pages build variable or secret `COMMENTS_ENDPOINT` to the Worker URL plus `/api/submit-comment`.
+- For a real deployment check, run `npm run verify:comments-live` with `COMMENTS_VERIFY_ENDPOINT` and `COMMENTS_VERIFY_SITE_URL` set. The helper posts a test comment, validates the response, and tries to fetch the committed YAML back from GitHub.
 
 ## Notes
 - This starter stores history in front‑matter `release_notes`. For full version snapshots, keep tagged versions or store copies.

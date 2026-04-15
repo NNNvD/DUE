@@ -11,11 +11,74 @@ dayjs.extend(utc);
 const draftsDir = "site/essays/drafts";
 const pubDir = "site/essays/published";
 
+function formatUtcDate(date) {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function normalizeDeadlineTime(rawTime) {
+  if (typeof rawTime === "number" && Number.isFinite(rawTime) && rawTime >= 0) {
+    if (!Number.isInteger(rawTime)) {
+      return String(rawTime);
+    }
+
+    if (rawTime < 24 * 60) {
+      const hours = Math.floor(rawTime / 60);
+      const minutes = rawTime % 60;
+      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    }
+
+    if (rawTime < 24 * 60 * 60) {
+      const hours = Math.floor(rawTime / 3600);
+      const minutes = Math.floor((rawTime % 3600) / 60);
+      const seconds = rawTime % 60;
+      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+  }
+
+  return String(rawTime).trim();
+}
+
+function parseDeadlineWithOptionalTime(dateValue, data) {
+  const rawTime = data.deadline_at_time;
+  const defaultTime = "00:00:00";
+
+  if (!rawTime) {
+    const parsed = dayjs.utc(`${dateValue}T${defaultTime}Z`);
+    return parsed.isValid() ? parsed : null;
+  }
+
+  const time = normalizeDeadlineTime(rawTime);
+  const timeMatch = time.match(/^(\d{2}:\d{2})(?::(\d{2}))?(Z|[+-]\d{2}:?\d{2})?$/);
+  if (!timeMatch) {
+    console.warn(
+      `Invalid deadline_at_time "${time}" for ${data.title || "untitled draft"}; falling back to midnight UTC.`
+    );
+    return dayjs.utc(`${dateValue}T${defaultTime}Z`);
+  }
+
+  const hhmm = timeMatch[1];
+  const seconds = timeMatch[2] ? `:${timeMatch[2]}` : ":00";
+  const zone = timeMatch[3] || "Z";
+  const parsed = dayjs.utc(`${dateValue}T${hhmm}${seconds}${zone}`);
+  return parsed.isValid() ? parsed : null;
+}
+
 function getDeadlineDate(data) {
   const value = data.deadline_at;
   if (!value) return null;
 
   if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) {
+      return null;
+    }
+
+    if (data.deadline_at_time) {
+      return parseDeadlineWithOptionalTime(formatUtcDate(value), data);
+    }
+
     const parsed = dayjs.utc(value);
     return parsed.isValid() ? parsed : null;
   }
@@ -29,28 +92,7 @@ function getDeadlineDate(data) {
     const parsed = dayjs.utc(value);
     return parsed.isValid() ? parsed : null;
   }
-
-  const rawTime = data.deadline_at_time;
-  const defaultTime = "00:00:00";
-  if (!rawTime) {
-    const parsed = dayjs.utc(`${value}T${defaultTime}Z`);
-    return parsed.isValid() ? parsed : null;
-  }
-
-  const time = String(rawTime).trim();
-  const timeMatch = time.match(/^(\d{2}:\d{2})(?::(\d{2}))?(Z|[+-]\d{2}:?\d{2})?$/);
-  if (!timeMatch) {
-    console.warn(
-      `Invalid deadline_at_time "${time}" for ${data.title || "untitled draft"}; falling back to midnight UTC.`
-    );
-    return dayjs.utc(`${value}T${defaultTime}Z`);
-  }
-
-  const hhmm = timeMatch[1];
-  const seconds = timeMatch[2] ? `:${timeMatch[2]}` : ":00";
-  const zone = timeMatch[3] || "Z";
-  const parsed = dayjs.utc(`${value}T${hhmm}${seconds}${zone}`);
-  return parsed.isValid() ? parsed : null;
+  return parseDeadlineWithOptionalTime(value, data);
 }
 
 function getStartDate(data) {

@@ -3,7 +3,8 @@ const matter = require("gray-matter");
 
 const meta = require("../_data/meta");
 const { wordCount, wordRangeFromCount } = require("../../scripts/checkWordRange");
-const { enforceTopicAndKeywords } = require("../../scripts/topicKeywordConstraints");
+const { enforceTopicAndKeywords, keywordPreview } = require("../../scripts/topicKeywordConstraints");
+const { isEssayHidden } = require("../../scripts/lib/essayVisibility");
 
 const constraintCache = new Map();
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -68,11 +69,16 @@ module.exports = {
     permalink: (data) => resolvePermalink(data),
     topic: (data) => applyTopicKeywordConstraints(data).topic,
     keywords: (data) => applyTopicKeywordConstraints(data).keywords,
-    canonical: (data) => meta.buildCanonicalUrl(data),
+    canonical: (data) => meta.buildCanonicalUrl({
+      ...data,
+      canonical: data.canonical,
+      canonical_url: data.canonical_url,
+      site: data.site,
+    }),
     description: (data) => meta.buildMetaDescription(applyTopicKeywordConstraints(data)),
     ogTitle: (data) => {
       const constrained = applyTopicKeywordConstraints(data);
-      return constrained.title || constrained.topic || constrained.site?.title;
+      return data.title || data.page?.title || constrained.title || constrained.topic || constrained.site?.title;
     },
     ogType: () => "article",
     word_count: (data) => {
@@ -99,28 +105,53 @@ module.exports = {
     display_keywords: (data) => {
       const constrained = applyTopicKeywordConstraints(data);
       if (!Array.isArray(constrained.keywords)) return [];
-      return constrained.keywords.slice(0, 5);
+      return constrained.keywords;
+    },
+    browser_keywords: (data) => {
+      const constrained = applyTopicKeywordConstraints(data);
+      if (!Array.isArray(constrained.keywords)) return [];
+      return keywordPreview(constrained.keywords, 3);
     },
     deadline_at: (data) => {
       if (data.deadline_at) return data.deadline_at;
       const resolved = resolveDeadlineAt(data);
       return resolved ? resolved.toISOString().slice(0, 10) : data.deadline_at;
     },
+    excludeFromSitemap: (data) => isEssayHidden(data),
     socialImage: (data) => {
       if (!data.social_image) return null;
       return meta.absoluteUrl(data.social_image, data.site);
     },
     jsonLd: (data) => {
       const isPublishedEssay = data?.page?.inputPath?.includes("/essays/published/");
-      if (!isPublishedEssay) return null;
+      if (!isPublishedEssay || isEssayHidden(data)) return null;
 
       const constrained = applyTopicKeywordConstraints(data);
+      const resolvedTitle = data.title || data.page?.title || constrained.title || constrained.topic;
+      const resolvedDescription = data.description || meta.buildMetaDescription({
+        ...constrained,
+        title: resolvedTitle,
+        page: data.page,
+      });
+
       return meta.buildArticleJsonLd({
         ...constrained,
-        description: meta.buildMetaDescription(constrained),
-        socialImage: constrained.socialImage,
+        title: resolvedTitle,
+        description: resolvedDescription,
+        author: data.author || constrained.author,
+        coauthors: data.coauthors || constrained.coauthors,
+        version: data.version || constrained.version,
+        word_count: typeof data.word_count === "number" ? data.word_count : constrained.word_count,
+        published_at: data.published_at || constrained.published_at,
+        started_at: data.started_at || constrained.started_at,
+        last_modified_at: data.last_modified_at || constrained.last_modified_at,
+        page: data.page,
+        site: data.site,
+        canonical: data.canonical,
+        canonical_url: data.canonical_url,
+        socialImage: data.socialImage || constrained.socialImage,
         display_keywords: Array.isArray(constrained.keywords)
-          ? constrained.keywords.slice(0, 5)
+          ? constrained.keywords
           : constrained.display_keywords,
       });
     },

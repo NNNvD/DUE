@@ -15,6 +15,13 @@ description: "All essays in draft mode ordered by publish date."
   <div class="card-list">
     {% for draft in drafts %}
       {% set length = draft.data.word_range | wordRangeMeta %}
+      {% if draft.data.status == 'proposed' %}
+        {% set workflowLabel = 'Proposed' %}
+        {% set workflowTone = 'badge--tone-info' %}
+      {% else %}
+        {% set workflowLabel = 'In progress' %}
+        {% set workflowTone = 'badge--tone-muted' %}
+      {% endif %}
       <article class="card draft-card" data-deadline="{{ draft.data.deadline_at }}">
         <header class="list-card__header">
           <div>
@@ -30,7 +37,7 @@ description: "All essays in draft mode ordered by publish date."
             </div>
             <div class="meta meta--draft">
               <span class="badge badge--tone-info">v{{ draft.data.version | formatVersion(draft.data.initial_status) }}</span>
-              <span class="badge badge--tone-info">Proposed</span>
+              <span class="badge {{ workflowTone }}">{{ workflowLabel }}</span>
               {% if draft.data.deadline_at %}
                 <span
                   class="badge deadline-badge"
@@ -78,10 +85,10 @@ description: "All essays in draft mode ordered by publish date."
             <dt>Author</dt>
             <dd>{{ draft.data.author | authorName }}</dd>
           </div>
-          {% if draft.data.topic %}
+          {% if draft.data.browser_keywords and draft.data.browser_keywords.length %}
             <div>
-              <dt>Topic</dt>
-            <dd>{{ draft.data.topic }}</dd>
+              <dt>Keywords</dt>
+              <dd>{{ draft.data.browser_keywords | join(", ") }}</dd>
             </div>
           {% endif %}
         </dl>

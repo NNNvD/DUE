@@ -47,5 +47,6 @@ describe("_internal.selectEarliestVersion", () => {
   it("prefers the lower semantic version", () => {
     expect(selectEarliestVersion("1.2", "1.3")).toBe("1.2");
     expect(selectEarliestVersion("2.0", "1.5")).toBe("1.5");
+    expect(selectEarliestVersion("1.2.1", "1.2.3")).toBe("1.2.1");
   });
 });

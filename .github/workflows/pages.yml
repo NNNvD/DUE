@@ -3,6 +3,10 @@ name: Deploy Pages
 on:
   push:
     branches: [ "main" ]
+  workflow_run:
+    workflows: [ "Auto publish overdue drafts" ]
+    types: [ completed ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -16,13 +20,18 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     env:
       # Prefer the secret; fall back to a repository variable if the secret is not set.
       DECAP_OAUTH_BASE: ${{ secrets.DECAP_OAUTH_BASE || vars.DECAP_OAUTH_BASE }}
+      COMMENTS_ENDPOINT: ${{ secrets.COMMENTS_ENDPOINT || vars.COMMENTS_ENDPOINT }}
+      COMMENTS_ISSUE_FALLBACK: ${{ secrets.COMMENTS_ISSUE_FALLBACK || vars.COMMENTS_ISSUE_FALLBACK }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
 
       - name: Note Decap OAuth base
         run: |
@@ -31,6 +40,16 @@ jobs:
             echo "::warning::DECAP_OAUTH_BASE is not set. Decap login will show a missing OAuth host until you configure it." >&2
           else
             echo "Using DECAP_OAUTH_BASE=${DECAP_OAUTH_BASE}"
+          fi
+
+      - name: Note comment endpoint
+        run: |
+          echo "COMMENTS_ENDPOINT=${COMMENTS_ENDPOINT:-}" >> "$GITHUB_ENV"
+          echo "COMMENTS_ISSUE_FALLBACK=${COMMENTS_ISSUE_FALLBACK:-}" >> "$GITHUB_ENV"
+          if [ -z "${COMMENTS_ENDPOINT:-}" ]; then
+            echo "::warning::COMMENTS_ENDPOINT is not set. The deployed site will fall back to the GitHub issue path instead of live comment submission." >&2
+          else
+            echo "Using COMMENTS_ENDPOINT=${COMMENTS_ENDPOINT}"
           fi
 
       - name: Setup Node
@@ -47,6 +66,8 @@ jobs:
           # Forward to Eleventy and the Decap data helper in case the job env is not inherited automatically.
           DECAP_OAUTH_BASE: ${{ env.DECAP_OAUTH_BASE }}
           GITHUB_PAGES_DECAP_OAUTH_BASE: ${{ env.DECAP_OAUTH_BASE }}
+          COMMENTS_ENDPOINT: ${{ env.COMMENTS_ENDPOINT }}
+          COMMENTS_ISSUE_FALLBACK: ${{ env.COMMENTS_ISSUE_FALLBACK }}
         run: npm run build
 
       - name: Upload artifact

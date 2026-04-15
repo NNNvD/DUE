@@ -18,7 +18,7 @@
 - JS: Prefer 2‑space indentation; keep functions small and pure in `scripts/`.
 - Templates: Nunjucks (`.njk`) in `site/_includes/`; keep presentation logic in templates, data/filters in config.
 - Slugs: Lower‑kebab‑case filenames for essays (e.g., `on-deadlines-and-honesty.md`).
-- Front matter: Use the provided keys (`title, topic, author, status, started_at, deadline_at, initial_status, version, published_at, word_range, release_notes`).
+- Front matter: Use the provided keys (`title, keywords, author, status, started_at, deadline_at, initial_status, version, published_at, word_range, release_notes`). `topic` is still accepted as a legacy fallback for older essays.
 
 ## Testing Guidelines
 - No unit test framework is configured. Use:

@@ -1,10 +1,17 @@
 ---
 title: Lorem Ipsum on Sustained Revision
 topic: Extending placeholder narratives through iterative passes
+keywords:
+  - lorem ipsum
+  - sustained revision
+  - iterative drafting
+  - placeholder narrative
+  - test essay
 author: lorem-storyteller
 coauthors: []
 acknowledgments: []
 status: published
+visibility: hidden
 started_at: 2024-06-10
 deadline_at: 2024-07-10
 initial_status: complete

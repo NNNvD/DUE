@@ -1,11 +1,16 @@
 ---
 title: TEST EXRTA
 topic: testy test
-keywords: []
+keywords:
+  - test content
+  - repeated draft text
+  - word-count fixture
+  - placeholder essay
 author: Noah van Dongen
 coauthors: []
 acknowledgments: []
 status: published
+visibility: hidden
 initial_status: unfinished
 started_at: 2026-02-13T00:00:00.000Z
 deadline_at: 2026-03-15T00:00:00.000Z

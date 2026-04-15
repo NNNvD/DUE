@@ -5,3 +5,7 @@ site/autopublished/
 .DS_Store
 site/.DS_Store
 site/essays/.DS_Store
+playwright-report/
+test-results/
+workers/comment-intake/.dev.vars
+.codex/

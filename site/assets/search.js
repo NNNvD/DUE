@@ -1,4 +1,10 @@
 import { initializeCountdowns } from "./countdown.js";
+import {
+  authorIdentity,
+  collectUniqueAuthorIdentities,
+  entryTaxonomyTerms,
+  formatAuthorName,
+} from "./search-utils.mjs";
 
 function parseData() {
   const dataNode = document.querySelector("[data-essay-search]");
@@ -22,21 +28,10 @@ function formatVersion(raw) {
   return parts.slice(0, 3).join(".");
 }
 
-const AUTHOR_ALIASES = {
-  noahvandongen: "Noah van Dongen",
-};
-
-function formatAuthorName(raw) {
-  if (!raw) return "";
-  const normalized = String(raw).replace(/^@/, "");
-  if (AUTHOR_ALIASES[normalized]) return AUTHOR_ALIASES[normalized];
-
-  const parts = normalized
-    .split(/[-_]/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1));
-
-  return parts.length ? parts.join(" ") : normalized;
+function entryAuthorIdentities(entry) {
+  return [entry.author, ...(entry.coauthors || [])]
+    .map((value) => authorIdentity(value))
+    .filter(Boolean);
 }
 
 function statusDisplay(entry) {
@@ -62,9 +57,8 @@ function matchesQuery(entry, query) {
   const haystack = [
     entry.title,
     entry.topic,
-    (entry.themes || entry.keywords || []).join(" "),
-    entry.author,
-    (entry.coauthors || []).join(" "),
+    entryTaxonomyTerms(entry).join(" "),
+    ...entryAuthorIdentities(entry).flatMap(({ label, raw }) => [label, raw]),
     entry.summary,
   ]
     .filter(Boolean)
@@ -121,6 +115,10 @@ function renderBadges(entry) {
 function renderMeta(entry) {
   const parts = [];
   const isDraftLike = entry.status === "draft" || entry.status === "proposed" || entry.time_status === "draft";
+  const previewKeywords = Array.isArray(entry.browser_keywords) && entry.browser_keywords.length
+    ? entry.browser_keywords
+    : entryTaxonomyTerms(entry).slice(0, 3);
+
   if (entry.word_count) {
     parts.push(`<span>${entry.word_count} words</span>`);
   }
@@ -128,9 +126,8 @@ function renderMeta(entry) {
   if (authorName) {
     parts.push(`<span>By <strong>${authorName}</strong></span>`);
   }
-  if (entry.topic) {
-    const topic = entry.topic.split(/\s+/).slice(0, 5).join(" ");
-    parts.push(`<span>Topic: <strong>${topic}</strong></span>`);
+  if (previewKeywords.length) {
+    parts.push(`<span>Keywords: <strong>${previewKeywords.join(", ")}</strong></span>`);
   }
   if (isDraftLike && entry.started_at) {
     parts.push(`<span>Started ${formatDate(entry.started_at)}</span>`);
@@ -155,7 +152,7 @@ function renderCard(entry, baseUrl) {
     : "";
 
   return `
-    <article class="card list-card" data-essay-id="${entry.id}" data-status="${entry.status}" data-phase="${entry.phase || "in-progress"}" data-length-bin="${entry.lengthMeta?.bin || "unknown"}" data-time-status="${entry.time_status || (entry.initial_status === "complete" ? "finished-on-time" : "unfinished-on-time")}" data-author="${entry.author}" data-coauthors="${(entry.coauthors || []).join(",")}" data-themes="${(entry.themes || entry.keywords || []).join(",")}" data-date="${entry.dateValue}" ${entry.deadline_at ? `data-deadline="${entry.deadline_at}"` : ""}>
+    <article class="card list-card" data-essay-id="${entry.id}" data-status="${entry.status}" data-phase="${entry.phase || "in-progress"}" data-length-bin="${entry.lengthMeta?.bin || "unknown"}" data-time-status="${entry.time_status || (entry.initial_status === "complete" ? "finished-on-time" : "unfinished-on-time")}" data-author="${entry.author}" data-coauthors="${(entry.coauthors || []).join(",")}" data-keywords="${entryTaxonomyTerms(entry).join(",")}" data-date="${entry.dateValue}" ${entry.deadline_at ? `data-deadline="${entry.deadline_at}"` : ""}>
       <header class="list-card__header">
         <div class="list-card__title-row">
           ${renderLengthIcon(entry)}
@@ -202,6 +199,39 @@ function buildCheckboxList(container, values, labelPrefix, emptyText) {
   return container.querySelectorAll("input[type='checkbox']");
 }
 
+function buildAuthorCheckboxList(container, values, labelPrefix, emptyText) {
+  if (!container) return [];
+
+  const identities = collectUniqueAuthorIdentities(values);
+  container.innerHTML = "";
+
+  if (!identities.length) {
+    container.innerHTML = `<p class="muted">${emptyText}</p>`;
+    return [];
+  }
+
+  for (const identity of identities) {
+    const id = `${labelPrefix}-${identity.key}`;
+    const label = document.createElement("label");
+    label.className = "filter-option";
+    label.setAttribute("for", id);
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = identity.key;
+    input.id = id;
+
+    const text = document.createElement("span");
+    text.textContent = identity.label;
+
+    label.appendChild(input);
+    label.appendChild(text);
+    container.appendChild(label);
+  }
+
+  return container.querySelectorAll("input[type='checkbox']");
+}
+
 function getCheckedValues(container) {
   if (!container) return [];
   return Array.from(container.querySelectorAll("input[type='checkbox']"))
@@ -235,12 +265,12 @@ function applyFilters({
     }
 
     if (authors.length) {
-      const allAuthors = [entry.author, ...(entry.coauthors || [])].filter(Boolean);
+      const allAuthors = entryAuthorIdentities(entry).map(({ key }) => key);
       if (!allAuthors.some((person) => authors.includes(person))) return false;
     }
 
     if (keywords.length) {
-      const entryKeywords = entry.themes || entry.keywords || [];
+      const entryKeywords = entryTaxonomyTerms(entry);
       if (!keywords.some((keyword) => entryKeywords.includes(keyword))) return false;
     }
 
@@ -292,7 +322,7 @@ function ready() {
 
   const lengthCheckboxes = lengthGroup ? Array.from(lengthGroup.querySelectorAll("input[type='checkbox']")) : [];
   const finishedCheckboxes = finishedGroup ? Array.from(finishedGroup.querySelectorAll("input[type='checkbox']")) : [];
-  const authorCheckboxes = buildCheckboxList(
+  const authorCheckboxes = buildAuthorCheckboxList(
     authorGroup,
     data.flatMap((entry) => [entry.author, ...(entry.coauthors || [])]),
     "author",
@@ -300,9 +330,9 @@ function ready() {
   );
   const keywordCheckboxes = buildCheckboxList(
     keywordGroup,
-    data.flatMap((entry) => entry.themes || entry.keywords || []),
+    data.flatMap((entry) => entryTaxonomyTerms(entry)),
     "keyword",
-    "No themes available yet."
+    "No keywords available yet."
   );
   const phaseCheckboxes = phaseGroup ? Array.from(phaseGroup.querySelectorAll("input[type='checkbox']")) : [];
 

@@ -22,22 +22,21 @@ collections:
       preview: false
     fields:
       - { label: Title, name: title, widget: string, required: true }
-      - { label: Topic, name: topic, widget: string, required: true, hint: "Keep the topic to ~5 words." }
       - label: Keywords
         name: keywords
         widget: list
         summary: "Keyword: {{fields.item}}"
-        field: { label: Keyword, name: item, widget: string, hint: "Up to 5 keywords", pattern: ["^.{0,100}$", "Keyword must be under 100 characters"] }
+        field: { label: Keyword, name: item, widget: string, hint: "Add any number of searchable keywords.", pattern: ["^.{0,100}$", "Keyword must be under 100 characters"] }
         allow_add: true
-        max: 5
         required: false
+      - { label: Legacy topic, name: topic, widget: string, required: false, hint: "Optional fallback for older essays. Prefer keywords." }
       - label: Themes
         name: themes
         widget: select
         options: [deadlines, iteration, publishing, collaboration, quality, process, scope, authorship, feedback, revision]
         multiple: true
         required: false
-        hint: "Controlled discoverability vocabulary (up to 5)."
+        hint: "Optional controlled vocabulary for broader discovery."
       - { label: Author, name: author, widget: string, required: true }
       - label: Coauthors
         name: coauthors
@@ -102,14 +101,15 @@ collections:
       preview: false
     fields:
       - { label: Title, name: title, widget: string, required: true }
-      - { label: Topic, name: topic, widget: string, required: true }
-      - { label: Keywords, name: keywords, widget: list, field: { label: Keyword, name: item, widget: string }, allow_add: true, max: 5, required: false }
+      - { label: Keywords, name: keywords, widget: list, field: { label: Keyword, name: item, widget: string, hint: "Add any number of searchable keywords." }, allow_add: true, required: false }
+      - { label: Legacy topic, name: topic, widget: string, required: false, hint: "Optional fallback for older essays. Prefer keywords." }
       - label: Themes
         name: themes
         widget: select
         options: [deadlines, iteration, publishing, collaboration, quality, process, scope, authorship, feedback, revision]
         multiple: true
         required: false
+        hint: "Optional controlled vocabulary for broader discovery."
       - { label: Author, name: author, widget: string, required: true }
       - label: Coauthors
         name: coauthors

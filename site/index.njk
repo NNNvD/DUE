@@ -17,7 +17,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
   <div class="hero__copy">
     <p class="eyebrow">Deadline for Unfinished Essays</p>
     <h2>Propose. Panic. Publish.</h2>
-    <p class="lede">DUE is a collaborative platform for short-form essays written under pressure. Writers propose a topic, choose a word range—Tiny (250–500 words), Minute (500–1000), or Short (1000–1500)—and have 30 days to deliver. When the deadline hits, the essay goes live, finished or not.</p>
+    <p class="lede">DUE is a collaborative platform for short-form essays written under pressure. Writers choose a keyword set, pick a word range—Tiny (250–500 words), Minute (500–1000), or Short (1000–1500)—and have 30 days to deliver. When the deadline hits, the essay goes live, finished or not.</p>
     <p class="muted">Purple squares mark Tiny essays, orange triangles Minute essays, and teal circles Short essays.</p>
     <div class="legend-badges">
       <span class="legend-badge legend-badge--square magenta">Tiny · 250–500 words</span>
@@ -61,7 +61,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
     <div class="section-heading">
       <p class="eyebrow">Now writing</p>
       <h3>In progress</h3>
-      <p>These drafts are currently under development. Drafts only show titles and topics. They can be read and commented on after publication.</p>
+      <p>These drafts are currently under development. Drafts only show titles and keywords. They can be read and commented on after publication.</p>
     </div>
     {% if drafts.length %}
       {% set active = drafts[0] %}
@@ -72,7 +72,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
           {% if active.data.deadline_at %}<span>Publishes on {{ active.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
         </div>
         <h4 class="card-title">{{ active.data.title }}</h4>
-        {% if active.data.topic %}<p class="muted"><strong>Topic:</strong> {{ active.data.topic }}</p>{% endif %}
+        {% if active.data.browser_keywords and active.data.browser_keywords.length %}<p class="muted"><strong>Keywords:</strong> {{ active.data.browser_keywords | join(", ") }}</p>{% endif %}
         <p class="countdown" {% if active.data.deadline_at %}data-deadline="{{ active.data.deadline_at }}"{% endif %}><span data-countdown>{% if active.data.deadline_at %}Tracking publication date…{% else %}Deadline not yet scheduled.{% endif %}</span></p>
       </div>
       {% if drafts.length > 1 %}
@@ -122,7 +122,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
         <div class="meta">
           {% if latest.data.word_count %}<span>{{ latest.data.word_count }} words</span>{% endif %}
           {% if latest.data.author %}<span>By <strong>{{ latest.data.author | authorName }}</strong></span>{% endif %}
-          {% if latest.data.topic %}<span>Topic: {{ latest.data.topic | shortWords(5) }}</span>{% endif %}
+          {% if latest.data.browser_keywords and latest.data.browser_keywords.length %}<span>Keywords: {{ latest.data.browser_keywords | join(", ") }}</span>{% endif %}
         </div>
       </div>
     {% else %}
@@ -146,7 +146,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
     <div class="card panel">
       <p class="eyebrow">Deadlines</p>
       <h4 class="card-title">Draft schedule</h4>
-      <p class="muted">View drafts ordered by set publication date to plan your reading. Drafts only show titles and topics.</p>
+      <p class="muted">View drafts ordered by set publication date to plan your reading. Drafts only show titles and keywords.</p>
       <a class="inline-link" href="{{ '/drafts/' | url }}">See the queue →</a>
     </div>
     <div class="card panel">

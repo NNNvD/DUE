@@ -1,10 +1,17 @@
 ---
 title: Lorem Ipsum on Focused Drafting
 topic: Using placeholder prose to shape arguments
+keywords:
+  - lorem ipsum
+  - focused drafting
+  - placeholder prose
+  - iteration
+  - argument shaping
 author: lorem-essayist
 coauthors: []
 acknowledgments: []
 status: published
+visibility: hidden
 started_at: 2024-07-05
 deadline_at: 2024-07-20
 initial_status: unfinished

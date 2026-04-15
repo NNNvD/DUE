@@ -68,19 +68,9 @@ async function main() {
   console.log("\nCreate a new draft\n===================\n");
 
   const title = await ask("Title", { required: true });
-  const topic = await ask("Topic", { required: true });
-
-  const keywordsRaw = await ask("Keywords (comma-separated, up to 5)", {
-    required: false,
-    validate: value => {
-      if (!value) return true;
-      const entries = value.split(",").map(item => item.trim()).filter(Boolean);
-      if (entries.length > 5) return "Please provide 5 or fewer keywords.";
-      return true;
-    },
-  });
+  const keywordsRaw = await ask("Keywords (comma-separated)", { required: false });
   const keywords = keywordsRaw
-    ? keywordsRaw.split(",").map(entry => entry.trim()).filter(Boolean).slice(0, 5)
+    ? keywordsRaw.split(",").map(entry => entry.trim()).filter(Boolean)
     : [];
 
   const defaultAuthor = process.env.GIT_AUTHOR_NAME || process.env.USER || "";
@@ -113,7 +103,6 @@ async function main() {
   const wordRange = "500-1000";
   const frontMatter = {
     title,
-    topic,
     keywords,
     author,
     coauthors: [],

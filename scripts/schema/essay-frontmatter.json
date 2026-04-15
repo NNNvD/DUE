@@ -5,7 +5,6 @@
   "additionalProperties": true,
   "required": [
     "title",
-    "topic",
     "author",
     "status",
     "started_at",
@@ -33,7 +32,6 @@
         "minLength": 1,
         "maxLength": 100
       },
-      "maxItems": 5,
       "default": []
     },
     "coauthors": {
