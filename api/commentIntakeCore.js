@@ -97,6 +97,7 @@ function validatePayload(payload = {}, options = {}) {
   const maxCommentLength = Number(options.maxCommentLength || DEFAULT_MAX_COMMENT_LENGTH);
   const intent = (payload.intent || "").toString().toLowerCase();
   const name = (payload.name || "").toString().trim();
+  const commenterId = (payload.commenter_id || payload.commenterId || payload.user || "").toString().trim();
   const contact = (payload.contact || "").toString().trim();
   const comment = (payload.comment || "").toString().trim();
   const slug = sanitizeSlug(payload.slug || payload.essay || payload.essay_slug || "");
@@ -145,6 +146,7 @@ function validatePayload(payload = {}, options = {}) {
       slug,
       intent,
       name,
+      commenter_id: commenterId || null,
       contact: contact || null,
       comment,
       essayTitle: essayTitle || null,
@@ -222,6 +224,7 @@ async function createCommentCommit(commentData, requestMeta = {}, runtime = {}) 
       essay: commentData.slug,
       intent: commentData.intent,
       name: commentData.name,
+      commenter_id: commentData.commenter_id,
       contact: commentData.contact,
       comment: commentData.comment,
       essay_title: commentData.essayTitle,

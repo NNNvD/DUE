@@ -44,7 +44,7 @@ If `COMMENTS_ENDPOINT` is missing during the Pages build, the deployed site now 
 
 ## Payload
 - Required: `slug`, `intent` (`minor`|`major`), `name`, `comment` (≥10 chars).
-- Optional: `contact`, `essayTitle`, `essayPath`, `essayUrl`, `website` (honeypot), plus any form fields included in the essay template.
+- Optional: `commenter_id`, `contact`, `essayTitle`, `essayPath`, `essayUrl`, `website` (honeypot), plus any form fields included in the essay template.
 - Submissions containing the honeypot field (`website`) are rejected.
 
 ## What it creates

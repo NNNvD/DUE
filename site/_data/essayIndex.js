@@ -115,18 +115,6 @@ function normalizeContributors(contributors = []) {
     .filter(Boolean);
 }
 
-function resolvePhase({ status, startedAt, version }) {
-  if (status === "proposed") return "proposal";
-  if (status === "draft") return startedAt ? "in-progress" : "proposal";
-
-  const normalizedVersion = String(version || "");
-  if (/^(0\.1|1\.0)(\.0)?$/.test(normalizedVersion)) {
-    return "initial-release";
-  }
-
-  return "post-release-revision";
-}
-
 function isEssayEntry(file, data = {}) {
   const slug = (data.page && data.page.fileSlug) || data.slug || "";
   const fileName = (file.split("/").pop() || "").replace(/\.(md|njk)$/i, "");
@@ -189,11 +177,6 @@ function loadEssays(status = "published") {
         startedAt: constrained.started_at,
       });
       const contributors = normalizeContributors(constrained.coauthors);
-      const phase = constrained.phase || resolvePhase({
-        status: normalizedStatus,
-        startedAt: constrained.started_at,
-        version: normalizedVersion,
-      });
 
       return {
         id: `${normalizedStatus}-${slug}`,
@@ -215,7 +198,6 @@ function loadEssays(status = "published") {
         deadline_at: resolvedDeadlineIso,
         initial_status: initialStatus,
         time_status: timelineStatus,
-        phase,
         started_at: constrained.started_at || null,
         word_range,
         word_count,
@@ -229,7 +211,6 @@ function loadEssays(status = "published") {
         lifecycle: {
           workflow_state: normalizedStatus,
           outcome_state: timelineStatus,
-          phase,
           started_at: constrained.started_at || null,
           deadline_at: resolvedDeadlineIso,
           published_at: constrained.published_at || null,

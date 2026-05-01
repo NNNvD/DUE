@@ -984,6 +984,22 @@ footer {
   margin-top: var(--space-2xs);
 }
 
+.filter-options__toggle {
+  align-self: flex-start;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 800;
+  padding: var(--space-2xs) 0;
+  cursor: pointer;
+}
+
+.filter-options__toggle:hover,
+.filter-options__toggle:focus-visible {
+  text-decoration: underline;
+}
+
 .filter-option {
   display: flex;
   align-items: center;

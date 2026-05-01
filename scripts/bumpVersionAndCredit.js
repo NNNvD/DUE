@@ -73,6 +73,55 @@ function applyContribution(data = {}, { intent, user }) {
   return { data: updated, note, version };
 }
 
+function normalizeCreditUser(value) {
+  return String(value || "")
+    .trim()
+    .replace(/^@/u, "")
+    .replace(/[^a-z0-9_-]+/giu, "-")
+    .replace(/-{2,}/gu, "-")
+    .replace(/^-+|-+$/gu, "");
+}
+
+function resolveCommenterId(comment = {}) {
+  const candidates = [
+    comment.commenter_id,
+    comment.commenterId,
+    comment.user,
+    comment.github,
+    comment.handle,
+    comment.contact,
+    comment.name,
+  ];
+
+  for (const candidate of candidates) {
+    const normalized = normalizeCreditUser(candidate);
+    if (normalized) return normalized;
+  }
+
+  return "commenter";
+}
+
+function resolveIntentFromComment(comment = {}) {
+  const intent = String(comment.intent || "").toLowerCase();
+  return intent === "major" ? "new_version" : "minor_update";
+}
+
+function commentIsImplemented(comment = {}) {
+  const status = String(comment.status || "").toLowerCase();
+  return comment.implemented === true || status === "implemented" || status === "accepted";
+}
+
+function applyCommentContribution(data = {}, comment = {}) {
+  if (!commentIsImplemented(comment)) {
+    throw new Error("Comment must be implemented before applying essay credit");
+  }
+
+  return applyContribution(data, {
+    intent: resolveIntentFromComment(comment),
+    user: resolveCommenterId(comment),
+  });
+}
+
 function bump(version, isMajor) {
   return bumpVersion(version, isMajor ? "new_version" : "minor_update");
 }
@@ -92,6 +141,25 @@ function processFile(fp, labelIntent, user, fsModule = fs) {
   } catch (error) {
     console.warn("Snapshot failed:", error.message);
   }
+}
+
+function processFileWithComment(fp, comment, fsModule = fs, options = {}) {
+  const raw = fsModule.readFileSync(fp, "utf8");
+  const doc = matter(raw);
+  const { data: updated } = applyCommentContribution(doc.data, comment);
+  const out = matter.stringify(doc.content, updated);
+  fsModule.writeFileSync(fp, out, "utf8");
+
+  if (options.writeSnapshot !== false) {
+    try {
+      const snap = writeSnapshot(fp, updated, doc.content);
+      console.log(`Snapshot written: ${snap}`);
+    } catch (error) {
+      console.warn("Snapshot failed:", error.message);
+    }
+  }
+
+  return updated;
 }
 
 function run(env = process.env, fsModule = fs) {
@@ -114,7 +182,12 @@ if (require.main === module) {
 
 exports.bump = bump;
 exports.applyContribution = applyContribution;
+exports.applyCommentContribution = applyCommentContribution;
+exports.commentIsImplemented = commentIsImplemented;
 exports.parseEnv = parseEnv;
+exports.resolveCommenterId = resolveCommenterId;
+exports.resolveIntentFromComment = resolveIntentFromComment;
 exports.resolveIntent = resolveIntent;
 exports.processFile = processFile;
+exports.processFileWithComment = processFileWithComment;
 exports.run = run;
