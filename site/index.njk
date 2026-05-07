@@ -34,7 +34,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
       </div>
       <div class="hero__stat">
         <span class="hero__stat-number">{{ ideasCount }}</span>
-        <span class="hero__stat-label">Ideas proposed</span>
+        <span class="hero__stat-label">Drafts scheduled</span>
       </div>
       <div class="hero__stat" {% if nextDeadline %}data-deadline="{{ nextDeadline }}"{% endif %}>
         <span class="hero__stat-number" data-countdown>
@@ -59,8 +59,8 @@ description: "See what is shipping now, browse recent essays, and jump into the 
 <section class="grid grid-two">
   <article class="card in-progress">
     <div class="section-heading">
-      <p class="eyebrow">Now writing</p>
-      <h3>In progress</h3>
+      <p class="eyebrow">Now drafting</p>
+      <h3>Draft</h3>
       <p>These drafts are currently under development. Drafts only show titles and keywords. They can be read and commented on after publication.</p>
     </div>
     {% if drafts.length %}
@@ -92,7 +92,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
         </div>
       {% endif %}
     {% else %}
-      <p>No drafts in progress. Check back soon for the next deadline.</p>
+      <p>No drafts scheduled. Check back soon for the next deadline.</p>
     {% endif %}
   </article>
 

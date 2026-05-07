@@ -15,13 +15,8 @@ description: "All essays in draft mode ordered by publish date."
   <div class="card-list">
     {% for draft in drafts %}
       {% set length = draft.data.word_range | wordRangeMeta %}
-      {% if draft.data.status == 'proposed' %}
-        {% set workflowLabel = 'Proposed' %}
-        {% set workflowTone = 'badge--tone-info' %}
-      {% else %}
-        {% set workflowLabel = 'In progress' %}
-        {% set workflowTone = 'badge--tone-muted' %}
-      {% endif %}
+      {% set workflowLabel = 'Draft' %}
+      {% set workflowTone = 'badge--tone-muted' %}
       <article class="card draft-card" data-deadline="{{ draft.data.deadline_at }}">
         <header class="list-card__header">
           <div>
@@ -97,6 +92,6 @@ description: "All essays in draft mode ordered by publish date."
   </div>
 {% else %}
   <div class="card">
-    <p>No drafts in progress. Check back soon for the next round.</p>
+    <p>No drafts scheduled. Check back soon for the next round.</p>
   </div>
 {% endif %}

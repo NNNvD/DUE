@@ -152,7 +152,7 @@ function renderCard(entry, baseUrl) {
     : "";
 
   return `
-    <article class="card list-card" data-essay-id="${entry.id}" data-status="${entry.status}" data-phase="${entry.phase || "in-progress"}" data-length-bin="${entry.lengthMeta?.bin || "unknown"}" data-time-status="${entry.time_status || (entry.initial_status === "complete" ? "finished-on-time" : "unfinished-on-time")}" data-author="${entry.author}" data-coauthors="${(entry.coauthors || []).join(",")}" data-keywords="${entryTaxonomyTerms(entry).join(",")}" data-date="${entry.dateValue}" ${entry.deadline_at ? `data-deadline="${entry.deadline_at}"` : ""}>
+    <article class="card list-card" data-essay-id="${entry.id}" data-status="${entry.status}" data-length-bin="${entry.lengthMeta?.bin || "unknown"}" data-time-status="${entry.time_status || (entry.initial_status === "complete" ? "finished-on-time" : "unfinished-on-time")}" data-author="${entry.author}" data-coauthors="${(entry.coauthors || []).join(",")}" data-keywords="${entryTaxonomyTerms(entry).join(",")}" data-date="${entry.dateValue}" ${entry.deadline_at ? `data-deadline="${entry.deadline_at}"` : ""}>
       <header class="list-card__header">
         <div class="list-card__title-row">
           ${renderLengthIcon(entry)}
@@ -196,6 +196,7 @@ function buildCheckboxList(container, values, labelPrefix, emptyText) {
     container.appendChild(label);
   }
 
+  collapseLongFilterOptions(container);
   return container.querySelectorAll("input[type='checkbox']");
 }
 
@@ -229,7 +230,40 @@ function buildAuthorCheckboxList(container, values, labelPrefix, emptyText) {
     container.appendChild(label);
   }
 
+  collapseLongFilterOptions(container);
   return container.querySelectorAll("input[type='checkbox']");
+}
+
+function collapseLongFilterOptions(container, visibleCount = 5) {
+  if (!container) return;
+
+  const options = Array.from(container.querySelectorAll(".filter-option"));
+  if (options.length <= visibleCount) return;
+
+  const hiddenCount = options.length - visibleCount;
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "filter-options__toggle";
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.textContent = `Show ${hiddenCount} more`;
+
+  const setExpanded = (expanded) => {
+    options.forEach((option, index) => {
+      const input = option.querySelector("input[type='checkbox']");
+      if (index >= visibleCount) {
+        option.hidden = !expanded && !input?.checked;
+      }
+    });
+    toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+    toggle.textContent = expanded ? "Show fewer" : `Show ${hiddenCount} more`;
+  };
+
+  toggle.addEventListener("click", () => {
+    setExpanded(toggle.getAttribute("aria-expanded") !== "true");
+  });
+
+  container.appendChild(toggle);
+  setExpanded(false);
 }
 
 function getCheckedValues(container) {
@@ -246,7 +280,6 @@ function applyFilters({
   timeStatuses,
   authors,
   keywords,
-  phases,
   sort,
 }) {
   const normalizedQuery = query.trim();
@@ -272,13 +305,6 @@ function applyFilters({
     if (keywords.length) {
       const entryKeywords = entryTaxonomyTerms(entry);
       if (!keywords.some((keyword) => entryKeywords.includes(keyword))) return false;
-    }
-
-    if (phases.length) {
-      const phase = entry.phase || ((entry.status === "proposed")
-        ? "proposal"
-        : (entry.status === "draft" ? "in-progress" : "initial-release"));
-      if (!phases.includes(phase)) return false;
     }
     return true;
   });
@@ -317,7 +343,6 @@ function ready() {
   const finishedGroup = document.querySelector("[data-filter-finished-group]");
   const authorGroup = document.querySelector("[data-filter-author-group]");
   const keywordGroup = document.querySelector("[data-filter-keyword-group]");
-  const phaseGroup = document.querySelector("[data-filter-phase-group]");
   const sortSelect = document.querySelector("[data-filter-sort]");
 
   const lengthCheckboxes = lengthGroup ? Array.from(lengthGroup.querySelectorAll("input[type='checkbox']")) : [];
@@ -334,7 +359,6 @@ function ready() {
     "keyword",
     "No keywords available yet."
   );
-  const phaseCheckboxes = phaseGroup ? Array.from(phaseGroup.querySelectorAll("input[type='checkbox']")) : [];
 
   if (!data.length) {
     if (interactive) {
@@ -357,7 +381,6 @@ function ready() {
       timeStatuses: getCheckedValues(finishedGroup),
       authors: getCheckedValues(authorGroup),
       keywords: getCheckedValues(keywordGroup),
-      phases: getCheckedValues(phaseGroup),
       sort: sortSelect?.value || "newest",
     });
     renderResults(matches, resultsContainer, baseUrl);
@@ -370,7 +393,6 @@ function ready() {
     ...finishedCheckboxes,
     ...Array.from(authorCheckboxes || []),
     ...Array.from(keywordCheckboxes || []),
-    ...phaseCheckboxes,
   ];
 
   for (const element of filterElements) {

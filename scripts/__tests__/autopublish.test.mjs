@@ -2,9 +2,11 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { createRequire } from "node:module";
 import fs from "node:fs";
 import path from "node:path";
+import matter from "gray-matter";
 
 const require = createRequire(import.meta.url);
 const { getDeadlineDate, resolveDeadline, runAutopublish } = require("../autopublish.js");
+const { createDraft } = require("../newDraft.js");
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -85,6 +87,73 @@ describe("resolveDeadline", () => {
 });
 
 describe("runAutopublish", () => {
+  it("runs the new-essay lifecycle from 30-day countdown start to autopublication", () => {
+    const root = process.cwd();
+    const draftsDir = path.join(root, "site/essays/drafts");
+    const hadDraftsDir = fs.existsSync(draftsDir);
+    const slug = `new-essay-lifecycle-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const draftPath = path.join(root, `site/essays/drafts/${slug}.md`);
+    const pubPath = path.join(root, `site/essays/published/${slug}.md`);
+
+    try {
+      const draft = createDraft({
+        title: "New Essay Lifecycle",
+        keywords: ["countdown", "publication"],
+        author: "Test",
+        slug,
+        now: "2026-04-01T09:30:00.000Z",
+      });
+
+      expect(draft.filePath).toBe(draftPath);
+      expect(fs.existsSync(draftPath)).toBe(true);
+
+      const draftDoc = matter.read(draftPath);
+      expect(draftDoc.data).toMatchObject({
+        title: "New Essay Lifecycle",
+        author: "Test",
+        status: "proposed",
+        started_at: "2026-04-01",
+        proposed_at: "2026-04-01",
+        deadline_at: "2026-05-01",
+        initial_status: "unfinished",
+        version: "0.1.0",
+      });
+
+      expect(resolveDeadline(draftDoc.data)?.toISOString()).toBe("2026-05-01T00:00:00.000Z");
+
+      const beforeDeadline = runAutopublish({
+        quiet: true,
+        referenceTime: "2026-04-30T23:59:59.000Z",
+      });
+      expect(beforeDeadline.some(entry => entry.slug === slug)).toBe(false);
+      expect(fs.existsSync(draftPath)).toBe(true);
+      expect(fs.existsSync(pubPath)).toBe(false);
+
+      const atDeadline = runAutopublish({
+        quiet: true,
+        referenceTime: "2026-05-01T00:00:00.000Z",
+      });
+      expect(atDeadline.some(entry => entry.slug === slug)).toBe(true);
+      expect(fs.existsSync(draftPath)).toBe(false);
+      expect(fs.existsSync(pubPath)).toBe(true);
+
+      const publishedDoc = matter.read(pubPath);
+      expect(publishedDoc.data).toMatchObject({
+        status: "published",
+        published_at: "2026-05-01",
+        permalink: `/essays/published/${slug}/`,
+        version: "0.1.0",
+      });
+      expect(String(publishedDoc.data.release_notes[0])).toContain("Auto-published at deadline");
+    } finally {
+      if (fs.existsSync(draftPath)) fs.unlinkSync(draftPath);
+      if (fs.existsSync(pubPath)) fs.unlinkSync(pubPath);
+      if (!hadDraftsDir && fs.existsSync(draftsDir)) {
+        fs.rmSync(draftsDir, { recursive: true, force: true });
+      }
+    }
+  });
+
   it("publishes proposed drafts when deadline has passed", () => {
     const root = process.cwd();
     const draftsDir = path.join(root, "site/essays/drafts");

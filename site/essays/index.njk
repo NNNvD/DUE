@@ -36,7 +36,7 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
         <div>
           <p class="eyebrow">Search & filter</p>
           <h3 class="card-title">Find an essay by keyword, author, or length</h3>
-          <p class="muted">Search titles, keywords, authors, and coauthors. Then refine by lifecycle, outcome, length, people, and keywords.</p>
+          <p class="muted">Search titles, keywords, authors, and coauthors. Then refine by status, length, people, and keywords.</p>
         </div>
         <div class="filters__grid">
           <div class="filter-panel filter-panel--wide">
@@ -68,9 +68,13 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
           </div>
 
           <div class="filter-panel">
-            <p class="filter-panel__label">Publication timing</p>
-            <p class="muted">Choose when essays were published.</p>
+            <p class="filter-panel__label">Status</p>
+            <p class="muted">Use the three DUE states.</p>
             <div class="filter-options" data-filter-finished-group>
+              <label class="filter-option">
+                <input type="checkbox" value="draft">
+                <span>Draft</span>
+              </label>
               <label class="filter-option">
                 <input type="checkbox" value="finished-on-time">
                 <span>Finished on time</span>
@@ -78,10 +82,6 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
               <label class="filter-option">
                 <input type="checkbox" value="unfinished-on-time">
                 <span>Unfinished on time</span>
-              </label>
-              <label class="filter-option">
-                <input type="checkbox" value="draft">
-                <span>Drafts</span>
               </label>
             </div>
           </div>
@@ -99,31 +99,6 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
             <p class="muted">Mix and match the tags attached to each essay.</p>
             <div class="filter-options" data-filter-keyword-group>
               <p class="muted">Loading keywords…</p>
-            </div>
-          </div>
-
-
-
-          <div class="filter-panel">
-            <p class="filter-panel__label">Lifecycle phase</p>
-            <p class="muted">Browse by where each essay sits in the DUE process.</p>
-            <div class="filter-options" data-filter-phase-group>
-              <label class="filter-option">
-                <input type="checkbox" value="proposal">
-                <span>Proposal</span>
-              </label>
-              <label class="filter-option">
-                <input type="checkbox" value="in-progress">
-                <span>In progress</span>
-              </label>
-              <label class="filter-option">
-                <input type="checkbox" value="initial-release">
-                <span>Initial release</span>
-              </label>
-              <label class="filter-option">
-                <input type="checkbox" value="post-release-revision">
-                <span>Post-release revision</span>
-              </label>
             </div>
           </div>
 

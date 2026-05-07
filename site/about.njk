@@ -1,13 +1,13 @@
 ---
 layout: base.njk
 title: "About DUE"
-description: "What Deadline for Unfinished Essays is, how the publishing cadence works, and where to get involved."
+description: "What Deadline for Unfinished Essays is and how the publishing cadence works."
 ---
 <section class="page-header card">
   <p class="eyebrow">About</p>
   <h2>Deadline for Unfinished Essays</h2>
-  <p class="lede">DUE is a writing experiment built around a simple rule: every essay ships within 30 days—finished or not. Drafts are not private diaries; they are public commitments with a clock. Once the deadline expires, the essay goes live and can then evolve through future versions.</p>
-  <p>For readers, DUE is a place for short, focused essays with a transparent history. For contributors, it is a way to get ideas out of notebooks and into the world.</p>
+  <p class="lede">DUE is a writing experiment built around a simple rule: every essay ships within 30 days, finished or not. Drafts are public commitments with a clock. Once the deadline expires, the essay goes live and can evolve through later versions.</p>
+  <p>For readers, DUE is a place for short, focused essays with visible deadlines, publication status, and version history.</p>
 </section>
 
 <section class="card">
@@ -18,113 +18,38 @@ description: "What Deadline for Unfinished Essays is, how the publishing cadence
     <li>a target length band: Tiny, Minute, or Short;</li>
     <li>a fixed publication date, 30 days away.</li>
   </ul>
-  <p>Once an essay begins, the deadline does not move. On that date it is published in whatever state it has reached: unfinished but on time, or finished and on time. After publication, the essay can be revised in later versions, but the original deadline is preserved as part of the record.</p>
-  <p>Drafting and edits happen in the backend so the schedule stays predictable. Public participation starts once an essay is published.</p>
+  <p>Before publication, every essay is a <strong>Draft</strong>. When the deadline arrives, an unfinished draft is published as <strong>Unfinished on time</strong>. If the author finishes and publishes before the deadline, it is labeled <strong>Finished on time</strong>.</p>
+  <p>After publication, an essay may be revised, but the original deadline and publication outcome remain part of the record.</p>
 </section>
 
 <section class="card">
   <h3>Length · Tiny, Minute, Short</h3>
   <p>Length is part of the constraint. Every essay commits to one of three bands:</p>
   <ul>
-    <li><strong>Tiny</strong><br><strong>250–500 words</strong> · purple <strong>square</strong><br>Short notes, sharp arguments, or single ideas.</li>
-    <li><strong>Minute</strong><br><strong>500–1000 words</strong> · orange <strong>triangle</strong><br>Room for a few steps in the argument, plus one or two examples.</li>
-    <li><strong>Short</strong><br><strong>1000–1500 words</strong> · teal <strong>circle</strong><br>Short-essay territory, enough space for a structured case.</li>
+    <li><strong>Tiny</strong><br><strong>250-500 words</strong> · purple <strong>square</strong><br>Short notes, sharp arguments, or single ideas.</li>
+    <li><strong>Minute</strong><br><strong>500-1000 words</strong> · orange <strong>triangle</strong><br>Room for a few steps in the argument, plus one or two examples.</li>
+    <li><strong>Short</strong><br><strong>1000-1500 words</strong> · teal <strong>circle</strong><br>Short-essay territory, enough space for a structured case.</li>
   </ul>
-  <p>The icons use outlines rather than filled shapes so the colors stay visible without overwhelming the text. Each essay also shows its exact word count next to the Tiny/Minute/Short badge.</p>
+  <p>Each essay also shows its exact word count next to the Tiny, Minute, or Short badge.</p>
 </section>
 
 <section class="card">
-  <h3>Credit & versioning</h3>
-  <p>DUE treats essays as evolving objects, not frozen pieces.</p>
-  <p>Minor contributions—grammar, phrasing, small clarifications, examples, references—are credited in the acknowledgments once merged. Major contributions that change structure, arguments, or conclusions can lead to shared authorship. These are negotiated at the time of revision.</p>
-  <p>Each essay has a three-part version number, for example <code>version 1.2.6</code>:</p>
+  <h3>Versions</h3>
+  <p>DUE treats essays as evolving objects, not frozen pieces. Version history and release notes document what changed after publication.</p>
+  <p>The first public version follows the publication outcome:</p>
   <ul>
-    <li><strong>Right number</strong><br>Very small fixes such as typos or adding a single reference.</li>
-    <li><strong>Middle number</strong><br>Substantive local edits, such as adding or removing several sentences or a paragraph.</li>
-    <li><strong>Left number</strong><br>Completion and meaning:
-      <ul>
-        <li><code>0</code> for essays that were published as <em>Unfinished on time</em>;</li>
-        <li><code>1</code> for essays that reached their first finished version;</li>
-        <li><code>2</code> or higher when the core message or conclusion changes.</li>
-      </ul>
-    </li>
+    <li><strong>Unfinished on time</strong> essays start at <code>0.1.0</code>.</li>
+    <li><strong>Finished on time</strong> essays start at <code>1.0.0</code>.</li>
   </ul>
-  <p>Starting points follow the deadline logic:</p>
-  <ul>
-    <li>Essays published before they are finished start at <code>version 0.1.0</code> and are labeled <em>Unfinished on time</em>.</li>
-    <li>Essays published when or after they are finished start at <code>version 1.0.0</code> and are labeled <em>Finished on time</em>.</li>
-  </ul>
-  <p>Release notes and version history document what changed and why.</p>
-</section>
-
-<section class="card">
-  <h3>Comments & feedback</h3>
-  <p>Public participation happens through comments on <strong>published</strong> essays.</p>
-  <ul>
-    <li>Comments are <strong>post-moderated</strong>. New comments are visible right away and initially marked <strong>Unmoderated</strong>.</li>
-    <li>Accepted comments may be shown under the essay with a status such as:
-      <ul>
-        <li><strong>Not yet implemented</strong> — considered but not (yet) in the text;</li>
-        <li><strong>Implemented</strong> — already incorporated in a specific version;</li>
-        <li><strong>Rejected (with reason)</strong> — not adopted, with a short explanation.</li>
-      </ul>
-    </li>
-  </ul>
-  <p>Minor feedback that leads to a change is acknowledged in the essay credits. Major feedback that materially shifts an essay is reflected in the release notes and version number, and may lead to coauthorship.</p>
-  <p>The <strong>Contribute</strong> page contains the full comment policy, privacy notes, and terms of use.</p>
-</section>
-
-<section class="card">
-  <h3>Roles · reader, commenter, essayist</h3>
-  <p>There are three main roles on DUE:</p>
-  <ul>
-    <li><strong>Readers</strong> explore essays, follow version histories, and see which drafts are scheduled next.</li>
-    <li><strong>Commenters</strong> respond to published essays, suggest changes, and help refine arguments. Anyone can comment, subject to moderation.</li>
-    <li><strong>Essayists (members)</strong> propose essays, commit to deadlines, and maintain pieces over time.</li>
-  </ul>
-  <p>Only essayists can start or edit essays in the backend. This keeps responsibility for Tiny, Minute, and Short deadlines and versioning clear, while still allowing broad input through comments.</p>
-</section>
-
-<section class="card">
-  <h3>Becoming an essayist / member</h3>
-  <p>DUE is intentionally small and opinionated. New essayists are added gradually so the workflow can remain lightweight and accountable.</p>
-  <p>If you would like to become an essayist:</p>
-  <ol>
-    <li><strong>Read a few essays</strong> to get a sense of scope, tone, and length—Tiny, Minute, and Short.</li>
-    <li><strong>Sketch 1–3 possible essays</strong> you might want to write, each with a tentative length band (Tiny, Minute, or Short) and a few starter keywords.</li>
-    <li><strong>Send a short note</strong> through the repository contact route, including:
-      <ul>
-        <li>your name and affiliation (if relevant);</li>
-        <li>your proposed essays, keywords, and length bands;</li>
-        <li>links to any existing writing you feel is representative.</li>
-      </ul>
-    </li>
-  </ol>
-  <p>
-    {% if site.comments and site.comments.issueFallback %}
-      The simplest way to reach the maintainers is to <a href="{{ site.comments.issueFallback }}">open an issue in the repository</a>.
-    {% elif site.repoUrl %}
-      The simplest way to reach the maintainers is through the <a href="{{ site.repoUrl }}">project repository</a>.
-    {% endif %}
-  </p>
-  <p>Current maintainers review these requests irregularly. When a new essayist is added, they receive access to the backend workflow (Git-based editing, versioning, and release notes) and are expected to:</p>
-  <ul>
-    <li>respect deadlines once a Tiny, Minute, or Short essay is started;</li>
-    <li>treat external comments seriously and reply where appropriate;</li>
-    <li>follow the credit and coauthorship rules described above.</li>
-  </ul>
-  <p>There is no formal membership fee or legal structure. The “member” label is purely functional: it indicates who can start and maintain essays inside the system.</p>
+  <p>Later revisions keep that history visible instead of replacing the original release.</p>
 </section>
 
 <section class="card">
   <h3>Where to go next</h3>
-  <p>Navigation stays simple:</p>
   <ul>
-    <li><strong>Home →</strong> shows the latest publication and any current draft.</li>
-    <li><strong>Essay library →</strong> lists all published essays and drafts, with filters for keywords and length (Tiny, Minute, Short).</li>
-    <li><strong>Draft schedule →</strong> orders in-progress essays by their publish date.</li>
-    <li><strong>Contribute →</strong> explains how comments work and how they are handled.</li>
-    <li><strong>Style guide →</strong> documents the visual system and content patterns for people working on the site.</li>
+    <li><strong>Home</strong> shows the latest publication and the next draft deadline.</li>
+    <li><strong>Essay library</strong> lists all essays with filters for status, length, people, and keywords.</li>
+    <li><strong>Draft schedule</strong> orders drafts by publication date.</li>
+    <li><strong>Contribute</strong> explains comments, credit, and how to become an essayist.</li>
   </ul>
-  <p>The details of how your comments are stored, displayed, and attributed are defined on the Contribute page.</p>
 </section>
