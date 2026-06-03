@@ -572,7 +572,7 @@ module.exports = function(eleventyConfig) {
       data: "_data",
       output: "_site"
     },
-    templateFormats: ["njk", "md"],
+    templateFormats: ["njk", "md", "11ty.js"],
     // Ensure 11ty-generated URLs respect the Pages base path
     pathPrefix: "/DUE/"
   };

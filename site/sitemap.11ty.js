@@ -30,8 +30,12 @@ module.exports = class Sitemap {
         continue;
       }
 
-      const canonical = page.data?.canonical;
-      const loc = canonical || meta.absoluteUrl(page.url, data.site);
+      const loc = meta.buildCanonicalUrl({
+        page,
+        site: data.site,
+        canonical: page.data?.canonical,
+        canonical_url: page.data?.canonical_url,
+      });
       if (!loc || seen.has(loc)) {
         continue;
       }
@@ -55,8 +59,10 @@ module.exports = class Sitemap {
 
     entries.sort((a, b) => a.loc.localeCompare(b.loc));
 
-    const lines = ['<?xml version="1.0" encoding="utf-8"?>',
-      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'];
+    const lines = [
+      '<?xml version="1.0" encoding="utf-8"?>',
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ];
 
     for (const entry of entries) {
       lines.push("  <url>");

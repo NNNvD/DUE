@@ -1,14 +1,14 @@
-# Comment intake function
+# Optional serverless comment intake function
 
-Use `api/submit-comment.js` for post-moderated feedback. The function accepts POSTed form data or JSON, writes a YAML file under `data/comments/<slug>/approved/` on your base branch for moderation follow-up.
+The public GitHub Pages site uses prefilled GitHub issues for feedback. Use `api/submit-comment.js` only for a custom deployment that can run a serverless handler and should write reviewed comment YAML directly. The function accepts POSTed form data or JSON, writes a YAML file under `data/comments/<slug>/approved/` on your base branch for moderation follow-up.
 
 ## Deploying
 - Deploy as a serverless handler (Netlify function, Vercel API route, or any Node server that supports `exports.handler`).
 - Point `site/_data/site.json` → `comments.endpoint` (or set `COMMENTS_ENDPOINT`) at the deployed route (defaults to `/api/submit-comment`).
 - Ensure the runtime provides **Node 18+** so `fetch` and `crypto.randomUUID` are available.
 
-### Recommended for GitHub Pages: Cloudflare Worker
-This repo now includes a Worker scaffold at `workers/comment-intake/` so the comment API can live off-Pages while the site itself stays on GitHub Pages.
+### Optional for GitHub Pages: Cloudflare Worker
+The default GitHub Pages path is the prefilled issue flow. This repo still includes a Worker scaffold at `workers/comment-intake/` if you later want a comment API to live off-Pages while the site itself stays on GitHub Pages.
 
 Typical setup:
 1. Copy `workers/comment-intake/.dev.vars.example` to `workers/comment-intake/.dev.vars` and fill in:

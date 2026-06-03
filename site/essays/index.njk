@@ -12,7 +12,12 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
 <section class="page-header card">
   <p class="eyebrow">Library</p>
   <h2>Browse every essay</h2>
-  <p class="lede">Scan the full catalogue to see what’s shipping next and what has already launched. Length badges use purple squares for Tiny essays (250–500 words), orange triangles for Minute essays (500–1000 words), and teal circles for Short essays (1000–1500 words).</p>
+  <p class="lede">Scan the full catalogue to see what’s shipping next and what has already launched.</p>
+  <div class="length-legend" aria-label="Essay length legend">
+    <span class="legend-badge legend-badge--square magenta">Tiny · 250–500 words</span>
+    <span class="legend-badge legend-badge--triangle orange">Minute · 500–1000 words</span>
+    <span class="legend-badge legend-badge--circle teal">Short · 1000–1500 words</span>
+  </div>
   <div class="stat-grid">
     <div class="stat">
       <div class="stat__number">{{ publishedCount }}</div>
@@ -36,21 +41,36 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
         <div>
           <p class="eyebrow">Search & filter</p>
           <h3 class="card-title">Find an essay by keyword, author, or length</h3>
-          <p class="muted">Search titles, keywords, authors, and coauthors. Then refine by status, length, people, and keywords.</p>
+          <p class="muted">Search titles, keywords, authors, and coauthors. Refine the list with optional filters.</p>
         </div>
-        <div class="filters__grid">
-          <div class="filter-panel filter-panel--wide">
-            <p class="filter-panel__label">Search</p>
-            <p class="muted">Scan titles, keywords, authors, and coauthors.</p>
+        <div class="filters__quick">
+          <div class="filter-control filter-control--wide">
+            <label class="filter-panel__label" for="essay-search-input">Search</label>
             <label class="filter">
               <span class="visually-hidden">Search essays</span>
-              <input type="search" name="q" placeholder="Try 'deadlines' or 'publishing'" data-filter-search>
+              <input id="essay-search-input" type="search" name="q" placeholder="Try 'deadlines' or 'publishing'" data-filter-search>
             </label>
           </div>
 
-          <div class="filter-panel">
-            <p class="filter-panel__label">Length</p>
-            <p class="muted">Pick any length band.</p>
+          <div class="filter-control">
+            <label class="filter-panel__label" for="essay-sort-select">Sort</label>
+            <label class="filter">
+              <span class="visually-hidden">Sort order</span>
+              <select id="essay-sort-select" data-filter-sort>
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <button class="filter-disclosure" type="button" aria-expanded="false" aria-controls="advanced-filters" data-filter-toggle>
+          Filters
+        </button>
+
+        <div class="filters__grid" id="advanced-filters" data-filter-advanced>
+          <details class="filter-group" open>
+            <summary class="filter-panel__label">Length</summary>
             <div class="filter-options" data-filter-length-group>
               <label class="filter-option">
                 <input type="checkbox" value="tiny">
@@ -65,11 +85,10 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
                 <span>Short (1000–1500 words)</span>
               </label>
             </div>
-          </div>
+          </details>
 
-          <div class="filter-panel">
-            <p class="filter-panel__label">Status</p>
-            <p class="muted">Use the three DUE states.</p>
+          <details class="filter-group" open>
+            <summary class="filter-panel__label">Status</summary>
             <div class="filter-options" data-filter-finished-group>
               <label class="filter-option">
                 <input type="checkbox" value="draft">
@@ -84,35 +103,21 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
                 <span>Unfinished on time</span>
               </label>
             </div>
-          </div>
+          </details>
 
-          <div class="filter-panel">
-            <p class="filter-panel__label">Authors & coauthors</p>
-            <p class="muted">Tick handles to include.</p>
+          <details class="filter-group">
+            <summary class="filter-panel__label">Authors & coauthors</summary>
             <div class="filter-options" data-filter-author-group>
               <p class="muted">Loading authors…</p>
             </div>
-          </div>
+          </details>
 
-          <div class="filter-panel">
-            <p class="filter-panel__label">Keywords</p>
-            <p class="muted">Mix and match the tags attached to each essay.</p>
+          <details class="filter-group">
+            <summary class="filter-panel__label">Keywords</summary>
             <div class="filter-options" data-filter-keyword-group>
               <p class="muted">Loading keywords…</p>
             </div>
-          </div>
-
-          <div class="filter-panel">
-            <p class="filter-panel__label">Sort</p>
-            <p class="muted">Adjust the order.</p>
-            <label class="filter">
-              <span class="visually-hidden">Sort order</span>
-              <select data-filter-sort>
-                <option value="newest">Newest first</option>
-                <option value="oldest">Oldest first</option>
-              </select>
-            </label>
-          </div>
+          </details>
         </div>
       </div>
     </aside>
@@ -121,12 +126,66 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
       <div class="section-heading">
         <p class="eyebrow">Interactive browser</p>
         <h3>Filter and search every essay</h3>
-        <p class="muted">Results update instantly as you search. Cards preview up to three keywords, while full keyword lists stay attached to each essay.</p>
+        <p class="muted">Results update instantly as you search. Active filters can be removed one at a time.</p>
+      </div>
+      <div class="results-toolbar" data-results-toolbar hidden>
+        <div class="results-toolbar__summary">
+          <strong data-result-count>{{ totalCount }} essays found</strong>
+          <div class="active-filters" data-active-filters aria-label="Active filters"></div>
+        </div>
+        <button class="clear-filters" type="button" data-clear-filters hidden>Clear filters</button>
       </div>
       <div class="card-list" data-search-results>
         <div class="card"><p>Loading the essay index…</p></div>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="essay-browser-fallback" data-search-fallback>
+  <div class="section-heading">
+    <p class="eyebrow">Essay list</p>
+    <h3>Every essay</h3>
+    <p class="muted">Static list shown when interactive filtering is unavailable.</p>
+  </div>
+  <div class="card-list">
+    {% for entry in essayIndex %}
+      {% set isDraftLike = entry.status == "draft" or entry.status == "proposed" or entry.time_status == "draft" %}
+      {% set length = entry.lengthMeta %}
+      <article class="card list-card{% if entry.url %} list-card--clickable{% endif %}">
+        {% if entry.url %}
+          <a class="list-card__cover" href="{{ entry.url | url }}" aria-label="Read {{ entry.title }}"></a>
+        {% endif %}
+        <header class="list-card__header">
+          <div class="list-card__title-row">
+            {% if entry.word_range and length.icon and length.palette %}
+              <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
+              <span class="length-icon__label">{{ length.label }}</span>
+            {% endif %}
+            <h4 class="card-title {{ length.titleClass }}">
+              {% if entry.url %}<a href="{{ entry.url | url }}">{{ entry.title }}</a>{% else %}<span>{{ entry.title }}</span>{% endif %}
+            </h4>
+          </div>
+        </header>
+        <div class="meta meta--status">
+          {% if not isDraftLike and entry.version %}<span class="badge badge--tone-info">v{{ entry.version }}</span>{% endif %}
+          {% if isDraftLike %}
+            <span class="badge badge--tone-muted">Draft</span>
+          {% elif entry.time_status == "finished-on-time" or entry.initial_status == "complete" %}
+            <span class="badge badge--tone-success">Finished on time</span>
+          {% else %}
+            <span class="badge badge--tone-warn">Unfinished on time</span>
+          {% endif %}
+          {% if entry.published_at %}<span>Published {{ entry.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+          {% if isDraftLike and entry.deadline_at %}<span>Publishes {{ entry.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
+        </div>
+        <div class="meta meta--details">
+          {% if entry.word_count %}<span>{{ entry.word_count }} words</span>{% endif %}
+          {% if entry.author %}<span>By <strong>{{ entry.author | authorName }}</strong></span>{% endif %}
+          {% if entry.browser_keywords and entry.browser_keywords.length %}<span>Keywords: <strong>{{ entry.browser_keywords | join(", ") }}</strong></span>{% endif %}
+        </div>
+      </article>
+    {% endfor %}
   </div>
 </section>
 

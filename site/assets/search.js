@@ -28,6 +28,15 @@ function formatVersion(raw) {
   return parts.slice(0, 3).join(".");
 }
 
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function entryAuthorIdentities(entry) {
   return [entry.author, ...(entry.coauthors || [])]
     .map((value) => authorIdentity(value))
@@ -81,8 +90,8 @@ function formatDate(value) {
 function renderLengthIcon(entry) {
   const meta = entry.lengthMeta || {};
   if (!entry.word_range || !meta.icon || !meta.palette) return "";
-  const iconClass = `length-icon length-icon--${meta.icon} length-icon--${meta.palette}`;
-  const label = meta.label || "Length";
+  const iconClass = `length-icon length-icon--${escapeHtml(meta.icon)} length-icon--${escapeHtml(meta.palette)}`;
+  const label = escapeHtml(meta.label || "Length");
   return `<span class="${iconClass}" aria-hidden="true"></span><span class="length-icon__label">${label}</span>`;
 }
 
@@ -92,18 +101,18 @@ function renderBadges(entry) {
   const isDraftLike = entry.status === "draft" || entry.status === "proposed" || entry.time_status === "draft";
 
   if (!isDraftLike && entry.version) {
-    badges.push(`<span class="badge badge--tone-info">v${formatVersion(entry.version)}</span>`);
+    badges.push(`<span class="badge badge--tone-info">v${escapeHtml(formatVersion(entry.version))}</span>`);
   }
 
-  badges.push(`<span class="badge ${status.tone}">${status.label}</span>`);
+  badges.push(`<span class="badge ${escapeHtml(status.tone)}">${escapeHtml(status.label)}</span>`);
 
   if (!isDraftLike && entry.published_at) {
-    badges.push(`<span>Published ${formatDate(entry.published_at)}</span>`);
+    badges.push(`<span>Published ${escapeHtml(formatDate(entry.published_at))}</span>`);
   }
 
   if (isDraftLike && entry.deadline_at) {
     badges.push(`
-      <span class="badge deadline-badge" data-deadline-badge="${entry.deadline_at}" data-deadline-label="${formatDate(entry.deadline_at)}" title="Publishes on ${formatDate(entry.deadline_at)}"></span>
+      <span class="badge deadline-badge" data-deadline-badge="${escapeHtml(entry.deadline_at)}" data-deadline-label="${escapeHtml(formatDate(entry.deadline_at))}" title="Publishes on ${escapeHtml(formatDate(entry.deadline_at))}"></span>
     `);
   } else if (isDraftLike) {
     badges.push('<span class="badge">Publication date pending</span>');
@@ -120,46 +129,50 @@ function renderMeta(entry) {
     : entryTaxonomyTerms(entry).slice(0, 3);
 
   if (entry.word_count) {
-    parts.push(`<span>${entry.word_count} words</span>`);
+    parts.push(`<span>${escapeHtml(entry.word_count)} words</span>`);
   }
   const authorName = formatAuthorName(entry.author);
   if (authorName) {
-    parts.push(`<span>By <strong>${authorName}</strong></span>`);
+    parts.push(`<span>By <strong>${escapeHtml(authorName)}</strong></span>`);
   }
   if (previewKeywords.length) {
-    parts.push(`<span>Keywords: <strong>${previewKeywords.join(", ")}</strong></span>`);
+    parts.push(`<span>Keywords: <strong>${escapeHtml(previewKeywords.join(", "))}</strong></span>`);
   }
   if (isDraftLike && entry.started_at) {
-    parts.push(`<span>Started ${formatDate(entry.started_at)}</span>`);
+    parts.push(`<span>Started ${escapeHtml(formatDate(entry.started_at))}</span>`);
   }
   if (isDraftLike && entry.deadline_at) {
-    parts.push(`<span>Publishes ${formatDate(entry.deadline_at)}</span>`);
+    parts.push(`<span>Publishes ${escapeHtml(formatDate(entry.deadline_at))}</span>`);
   }
   return parts.join("");
 }
 
 function renderCard(entry, baseUrl) {
-  const lengthClass = entry.lengthMeta?.titleClass || "";
+  const lengthClass = escapeHtml(entry.lengthMeta?.titleClass || "");
   const isDraftLike = entry.status === "draft" || entry.status === "proposed" || entry.time_status === "draft";
   const badges = renderBadges(entry);
   const meta = renderMeta(entry);
   const href = entry.url ? `${baseUrl.replace(/\/$/, "")}${entry.url}` : "";
   const titleMarkup = isDraftLike || !href
-    ? `<span>${entry.title}</span>`
-    : `<a href="${href}">${entry.title}</a>`;
+    ? `<span>${escapeHtml(entry.title)}</span>`
+    : `<a href="${escapeHtml(href)}">${escapeHtml(entry.title)}</a>`;
+  const coverLink = !isDraftLike && href
+    ? `<a class="list-card__cover" href="${escapeHtml(href)}" aria-label="Read ${escapeHtml(entry.title)}"></a>`
+    : "";
   const tracker = isDraftLike && entry.deadline_at
-    ? `<p class="countdown" data-deadline="${entry.deadline_at}"><span data-countdown>Calculating days until publication…</span></p>`
+    ? `<p class="countdown" data-deadline="${escapeHtml(entry.deadline_at)}"><span data-countdown>Calculating days until publication…</span></p>`
     : "";
 
   return `
-    <article class="card list-card" data-essay-id="${entry.id}" data-status="${entry.status}" data-length-bin="${entry.lengthMeta?.bin || "unknown"}" data-time-status="${entry.time_status || (entry.initial_status === "complete" ? "finished-on-time" : "unfinished-on-time")}" data-author="${entry.author}" data-coauthors="${(entry.coauthors || []).join(",")}" data-keywords="${entryTaxonomyTerms(entry).join(",")}" data-date="${entry.dateValue}" ${entry.deadline_at ? `data-deadline="${entry.deadline_at}"` : ""}>
+    <article class="card list-card${coverLink ? " list-card--clickable" : ""}" data-essay-id="${escapeHtml(entry.id)}" data-status="${escapeHtml(entry.status)}" data-length-bin="${escapeHtml(entry.lengthMeta?.bin || "unknown")}" data-time-status="${escapeHtml(entry.time_status || (entry.initial_status === "complete" ? "finished-on-time" : "unfinished-on-time"))}" data-author="${escapeHtml(entry.author)}" data-coauthors="${escapeHtml((entry.coauthors || []).join(","))}" data-keywords="${escapeHtml(entryTaxonomyTerms(entry).join(","))}" data-date="${escapeHtml(entry.dateValue)}" ${entry.deadline_at ? `data-deadline="${escapeHtml(entry.deadline_at)}"` : ""}>
+      ${coverLink}
       <header class="list-card__header">
         <div class="list-card__title-row">
           ${renderLengthIcon(entry)}
           <h4 class="card-title ${lengthClass}">${titleMarkup}</h4>
         </div>
       </header>
-      <div class="meta">${badges}</div>
+      <div class="meta meta--status">${badges}</div>
       ${tracker}
       <div class="meta meta--details">${meta}</div>
     </article>
@@ -246,8 +259,10 @@ function collapseLongFilterOptions(container, visibleCount = 5) {
   toggle.className = "filter-options__toggle";
   toggle.setAttribute("aria-expanded", "false");
   toggle.textContent = `Show ${hiddenCount} more`;
+  container.dataset.visibleCount = String(visibleCount);
 
   const setExpanded = (expanded) => {
+    container.dataset.expanded = expanded ? "true" : "false";
     options.forEach((option, index) => {
       const input = option.querySelector("input[type='checkbox']");
       if (index >= visibleCount) {
@@ -264,6 +279,32 @@ function collapseLongFilterOptions(container, visibleCount = 5) {
 
   container.appendChild(toggle);
   setExpanded(false);
+}
+
+function refreshLongFilterOptions(container) {
+  if (!container || !container.dataset.visibleCount) return;
+
+  const toggle = container.querySelector(".filter-options__toggle");
+  const expanded = toggle?.getAttribute("aria-expanded") === "true";
+  const visibleCount = parseInt(container.dataset.visibleCount, 10);
+  if (!Number.isFinite(visibleCount)) return;
+
+  Array.from(container.querySelectorAll(".filter-option")).forEach((option, index) => {
+    const input = option.querySelector("input[type='checkbox']");
+    if (index >= visibleCount) {
+      option.hidden = !expanded && !input?.checked;
+    }
+  });
+}
+
+function openGroupWhenActive(container) {
+  if (!container) return;
+  const group = container.closest(".filter-group");
+  if (!group) return;
+  const hasCheckedInput = Boolean(container.querySelector("input[type='checkbox']:checked"));
+  if (hasCheckedInput) {
+    group.open = true;
+  }
 }
 
 function getCheckedValues(container) {
@@ -319,6 +360,50 @@ function applyFilters({
   return sorted;
 }
 
+function pluralizeEssay(count) {
+  return count === 1 ? "essay" : "essays";
+}
+
+function filterLabel(type, value) {
+  const labels = {
+    length: {
+      tiny: "Tiny",
+      minute: "Minute",
+      short: "Short",
+    },
+    status: {
+      draft: "Draft",
+      "finished-on-time": "Finished on time",
+      "unfinished-on-time": "Unfinished on time",
+    },
+  };
+
+  return labels[type]?.[value] || value;
+}
+
+function collectActiveFilters({ query, lengthBins, timeStatuses, authors, keywords, authorLabels }) {
+  const active = [];
+  const trimmedQuery = query.trim();
+  if (trimmedQuery) {
+    active.push({ type: "query", value: trimmedQuery, label: `Search: ${trimmedQuery}` });
+  }
+
+  for (const value of lengthBins) {
+    active.push({ type: "length", value, label: filterLabel("length", value) });
+  }
+  for (const value of timeStatuses) {
+    active.push({ type: "status", value, label: filterLabel("status", value) });
+  }
+  for (const value of authors) {
+    active.push({ type: "author", value, label: authorLabels.get(value) || filterLabel("author", value) });
+  }
+  for (const value of keywords) {
+    active.push({ type: "keyword", value, label: filterLabel("keyword", value) });
+  }
+
+  return active;
+}
+
 function renderResults(matches, container, baseUrl) {
   if (!container) return;
   if (!matches.length) {
@@ -331,11 +416,67 @@ function renderResults(matches, container, baseUrl) {
   initializeCountdowns(container);
 }
 
+function renderResultToolbar({
+  matches,
+  activeFilters,
+  toolbar,
+  countNode,
+  activeFiltersNode,
+  clearButton,
+}) {
+  if (toolbar) {
+    toolbar.hidden = false;
+  }
+
+  if (countNode) {
+    countNode.textContent = `${matches.length} ${pluralizeEssay(matches.length)} found`;
+  }
+
+  if (activeFiltersNode) {
+    activeFiltersNode.innerHTML = "";
+    for (const filter of activeFilters) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "active-filter";
+      button.dataset.filterType = filter.type;
+      button.dataset.filterValue = filter.value;
+      button.setAttribute("aria-label", `Remove filter ${filter.label}`);
+      button.textContent = `${filter.label} x`;
+      activeFiltersNode.appendChild(button);
+    }
+  }
+
+  if (clearButton) {
+    clearButton.hidden = activeFilters.length === 0;
+  }
+}
+
+function setupFilterDisclosure() {
+  const toggle = document.querySelector("[data-filter-toggle]");
+  const panel = document.querySelector("[data-filter-advanced]");
+  if (!toggle || !panel) return;
+
+  const setOpen = (open) => {
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    panel.classList.toggle("is-open", open);
+  };
+
+  toggle.addEventListener("click", () => {
+    setOpen(toggle.getAttribute("aria-expanded") !== "true");
+  });
+
+  setOpen(false);
+}
+
 function ready() {
   const data = parseData();
   const interactive = document.querySelector("[data-search-interactive]");
   const fallback = document.querySelector("[data-search-fallback]");
   const resultsContainer = document.querySelector("[data-search-results]");
+  const resultToolbar = document.querySelector("[data-results-toolbar]");
+  const resultCount = document.querySelector("[data-result-count]");
+  const activeFiltersNode = document.querySelector("[data-active-filters]");
+  const clearButton = document.querySelector("[data-clear-filters]");
   const baseUrl = (interactive && interactive.getAttribute("data-base-url")) || "/";
 
   const searchInput = document.querySelector("[data-filter-search]");
@@ -347,6 +488,8 @@ function ready() {
 
   const lengthCheckboxes = lengthGroup ? Array.from(lengthGroup.querySelectorAll("input[type='checkbox']")) : [];
   const finishedCheckboxes = finishedGroup ? Array.from(finishedGroup.querySelectorAll("input[type='checkbox']")) : [];
+  const authorIdentities = collectUniqueAuthorIdentities(data.flatMap((entry) => [entry.author, ...(entry.coauthors || [])]));
+  const authorLabels = new Map(authorIdentities.map((identity) => [identity.key, identity.label]));
   const authorCheckboxes = buildAuthorCheckboxList(
     authorGroup,
     data.flatMap((entry) => [entry.author, ...(entry.coauthors || [])]),
@@ -373,17 +516,79 @@ function ready() {
     return;
   }
 
+  const removeFilter = (type, value) => {
+    if (type === "query" && searchInput) {
+      searchInput.value = "";
+      return;
+    }
+
+    const groupMap = {
+      length: lengthGroup,
+      status: finishedGroup,
+      author: authorGroup,
+      keyword: keywordGroup,
+    };
+    const group = groupMap[type];
+    const input = group?.querySelector(`input[type='checkbox'][value="${CSS.escape(value)}"]`);
+    if (input) {
+      input.checked = false;
+    }
+  };
+
+  const clearFilters = () => {
+    if (searchInput) searchInput.value = "";
+    if (sortSelect) sortSelect.value = "newest";
+    const allCheckboxes = [
+      ...lengthCheckboxes,
+      ...finishedCheckboxes,
+      ...Array.from(authorCheckboxes || []),
+      ...Array.from(keywordCheckboxes || []),
+    ];
+    for (const checkbox of allCheckboxes) {
+      checkbox.checked = false;
+    }
+  };
+
   const run = () => {
+    refreshLongFilterOptions(authorGroup);
+    refreshLongFilterOptions(keywordGroup);
+    openGroupWhenActive(lengthGroup);
+    openGroupWhenActive(finishedGroup);
+    openGroupWhenActive(authorGroup);
+    openGroupWhenActive(keywordGroup);
+
+    const query = searchInput?.value || "";
+    const lengthBins = getCheckedValues(lengthGroup);
+    const timeStatuses = getCheckedValues(finishedGroup);
+    const authors = getCheckedValues(authorGroup);
+    const keywords = getCheckedValues(keywordGroup);
     const matches = applyFilters({
       data,
-      query: searchInput?.value || "",
-      lengthBins: getCheckedValues(lengthGroup),
-      timeStatuses: getCheckedValues(finishedGroup),
-      authors: getCheckedValues(authorGroup),
-      keywords: getCheckedValues(keywordGroup),
+      query,
+      lengthBins,
+      timeStatuses,
+      authors,
+      keywords,
       sort: sortSelect?.value || "newest",
     });
+    const activeFilters = collectActiveFilters({
+      query,
+      lengthBins,
+      timeStatuses,
+      authors,
+      keywords,
+      authorLabels,
+    });
+
     renderResults(matches, resultsContainer, baseUrl);
+    renderResultToolbar({
+      matches,
+      activeFilters,
+      toolbar: resultToolbar,
+      countNode: resultCount,
+      activeFiltersNode,
+      clearButton,
+    });
   };
 
   const filterElements = [
@@ -400,6 +605,20 @@ function ready() {
     element.addEventListener("input", run);
     element.addEventListener("change", run);
   }
+
+  activeFiltersNode?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-filter-type]");
+    if (!button) return;
+    removeFilter(button.dataset.filterType, button.dataset.filterValue);
+    run();
+  });
+
+  clearButton?.addEventListener("click", () => {
+    clearFilters();
+    run();
+  });
+
+  setupFilterDisclosure();
 
   if (interactive) {
     interactive.hidden = false;

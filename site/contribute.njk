@@ -3,22 +3,22 @@ layout: base.njk
 title: "Comment on DUE"
 ---
 <section class="card">
-  <h2 style="margin-top:0">Contribute</h2>
+  <h2 style="margin-top:0">Comments on DUE</h2>
   <h3>Commenting on DUE</h3>
-  <p>DUE is comments-only for the public. Drafting and edits happen in the backend, but anyone can respond to <strong>published</strong> essays.</p>
-  <p>Comments are the main way non-members influence what changes over time.</p>
+  <p>DUE is comments-only for the public. Drafting and edits happen in the backend, but anyone can respond to <strong>published</strong> essays through prefilled GitHub issues.</p>
+  <p>Reviewed comments are the public way to influence what changes over time.</p>
 </section>
 
 <section class="card">
   <h3>Where and how to comment</h3>
   <ul>
-    <li><strong>Where to comment</strong><br>Visit any published Tiny, Minute, or Short essay and scroll to the comments section. Drafts are visible but cannot be commented on.</li>
+    <li><strong>Where to comment</strong><br>Visit any published Tiny, Minute, or Short essay and scroll to the feedback section. Drafts are visible but cannot be commented on.</li>
     <li><strong>What to include</strong><br>Indicate whether your feedback is:
       <ul>
         <li><strong>minor</strong> — typos, phrasing, references, small clarifications; or</li>
         <li><strong>major</strong> — structural suggestions, missing arguments, alternative framing.</li>
       </ul>
-      The form lets you pick minor or major intent before you type. This helps route and credit your comment correctly.
+      The form lets you pick minor or major intent before you type, then opens a prefilled GitHub issue. This helps route and credit your comment correctly.
     </li>
     <li><strong>How specific to be</strong><br>Point to particular sentences or sections when possible. If you propose cuts or additions, state them plainly. You do not have to solve everything; it is enough to identify what feels off.</li>
     <li><strong>Keyword suggestions</strong><br>If an essay is hard to discover, suggest better keywords alongside your textual feedback. Keywords now do the main browsing work in the library.</li>
@@ -28,10 +28,10 @@ title: "Comment on DUE"
 
 <section class="card">
   <h3>What happens to your feedback</h3>
-  <p>Comments are <strong>post-moderated</strong>. New comments appear immediately with an <strong>Unmoderated</strong> status while maintainers review them.</p>
+  <p>Comments are reviewed through GitHub issues before they are promoted onto essay pages. This keeps the GitHub Pages site static while preserving a public review trail.</p>
   <p>Possible statuses:</p>
   <ul>
-    <li><strong>Unmoderated</strong> — the comment is visible and waiting for moderator review;</li>
+    <li><strong>Unmoderated</strong> — the comment has been imported and is waiting for moderator review;</li>
     <li><strong>Not yet implemented</strong> — moderated and kept visible, but not (yet) reflected in the text;</li>
     <li><strong>Implemented</strong> — the text has changed in response to the comment;</li>
     <li><strong>Rejected (with reason)</strong> — the suggestion was not adopted, with a short explanation.</li>
@@ -52,7 +52,7 @@ title: "Comment on DUE"
     <li><strong>Critique ideas, not people</strong><br>No personal attacks, slurs, or discrimination.</li>
     <li><strong>Be clear and grounded</strong><br>When you claim something is wrong or misleading, say what you would replace it with and why. Cite sources where appropriate.</li>
     <li><strong>Protect privacy</strong><br>Do not post phone numbers, addresses, or other personal data about yourself or others.</li>
-    <li><strong>Stay on topic</strong><br>Keep the comment tied to the specific essay—Tiny, Minute, or Short. If you have a broader idea for a new essay, mention it briefly rather than derailing the thread.</li>
+    <li><strong>Stay on topic</strong><br>Keep the comment tied to the specific essay—Tiny, Minute, or Short. Ideas for future essays may be useful context, but the comment should still focus on the essay in front of you.</li>
     <li><strong>One account per person</strong><br>Do not create multiple identities to influence discussion or moderation.</li>
   </ul>
   <p>
@@ -69,15 +69,15 @@ title: "Comment on DUE"
 
 <section class="card">
   <h3>Privacy statement</h3>
-  <p>When you submit a comment, DUE stores:</p>
+  <p>When you open a comment issue, GitHub stores the issue content publicly. If maintainers promote the comment onto DUE, the site stores:</p>
   <ul>
     <li>the comment text;</li>
     <li>the name or handle you provide for display;</li>
-    <li>any optional contact details you choose to share (for example, an email address).</li>
+    <li>any optional public contact details you choose to share.</li>
   </ul>
   <p>This data is used for moderation, follow-up questions, and version tracking.</p>
   <ul>
-    <li><strong>Data use</strong><br>Your comment and chosen display name are visible under the relevant essay right away. Optional contact information is used only for clarifications and is not shared publicly.</li>
+    <li><strong>Data use</strong><br>Your GitHub issue is public immediately. Promoted comments and chosen display names may later appear under the relevant essay.</li>
     <li><strong>Retention</strong><br>Comments and their moderation history remain on record so that release notes and version histories can be audited later.</li>
     <li><strong>Removal and corrections</strong><br>You can request updates or deletion of your comments through the repository contact route linked on this page. Technical and legal limits may apply, but requests will be taken seriously.</li>
     <li><strong>Cookies and analytics</strong><br>No advertising trackers are used. Only essential site cookies are required for basic functionality and aggregate analytics.</li>
@@ -93,7 +93,7 @@ title: "Comment on DUE"
     <li><strong>No professional advice</strong><br>Essays and comments are informational only. They are not medical, legal, financial, or other professional advice.</li>
     <li><strong>Attribution</strong><br>When a comment leads to a change in a Tiny, Minute, or Short essay, credit appears in the acknowledgments or release notes depending on impact. Major, repeated contributions may lead to coauthorship; this is decided together with the essay’s maintainer.</li>
   </ul>
-  <p>If these conditions are not acceptable to you, please do not submit comments.</p>
+  <p>If these conditions are not acceptable to you, please do not open comment issues.</p>
 </section>
 
 <section class="card">
@@ -116,25 +116,6 @@ title: "Comment on DUE"
     <li>Essays published when or after they are finished start at <strong><code>1.0.0</code></strong> (<em>Finished on time</em>).</li>
   </ul>
   <p>Comments that lead to changes are reflected in the appropriate digit: patch, minor, or major. This helps readers see at a glance whether an update was a light polish or a deeper revision.</p>
-</section>
-
-<section class="card">
-  <h3>Becoming an essayist / member</h3>
-  <p>DUE is intentionally small and opinionated. New essayists are added gradually so the workflow can remain lightweight and accountable.</p>
-  <p>If you would like to become an essayist:</p>
-  <ol>
-    <li><strong>Read a few essays</strong> to get a sense of scope, tone, and length.</li>
-    <li><strong>Sketch 1-3 possible essays</strong> you might want to write, each with a tentative length band and a few starter keywords.</li>
-    <li><strong>Send a short note</strong> through the repository contact route, including your name, proposed essays, keywords, length bands, and links to representative writing if you have them.</li>
-  </ol>
-  <p>
-    {% if site.comments and site.comments.issueFallback %}
-      The simplest way to reach the maintainers is to <a href="{{ site.comments.issueFallback }}">open an issue in the repository</a>.
-    {% elif site.repoUrl %}
-      The simplest way to reach the maintainers is through the <a href="{{ site.repoUrl }}">project repository</a>.
-    {% endif %}
-  </p>
-  <p>Essayists can start and maintain essays in the backend. They are expected to respect active deadlines, handle comments seriously, and keep version notes and credits clear.</p>
 </section>
 
 <section class="card">

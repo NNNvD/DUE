@@ -69,7 +69,7 @@ function validate(form) {
     return false;
   }
 
-  setStatus(form, 'Sending feedback…');
+  setStatus(form, 'Preparing a prefilled GitHub issue…');
   return true;
 }
 
@@ -79,26 +79,6 @@ function serializeForm(form) {
     data[key] = value;
   });
   return data;
-}
-
-function toAbsoluteEndpoint(endpoint) {
-  if (!endpoint) return '';
-  try {
-    return new URL(endpoint, window.location.origin).toString();
-  } catch (error) {
-    return endpoint;
-  }
-}
-
-function resolveEndpoints(form) {
-  const raw = form.dataset.commentEndpoints || form.dataset.commentEndpoint || '';
-  const parsed = raw
-    .split(',')
-    .map((value) => value.trim())
-    .filter(Boolean)
-    .map((endpoint) => toAbsoluteEndpoint(endpoint));
-
-  return [...new Set(parsed)];
 }
 
 function buildIssueFallbackUrl(form) {
@@ -113,7 +93,7 @@ function buildIssueFallbackUrl(form) {
     `Essay URL: ${payload.essayUrl || ''}`,
     `Intent: ${payload.intent || ''}`,
     `Name: ${payload.name || ''}`,
-    `Contact: ${payload.contact || ''}`,
+    `Public contact: ${payload.contact || ''}`,
     '',
     'Comment:',
     payload.comment || '',
@@ -129,32 +109,8 @@ function buildIssueFallbackUrl(form) {
   }
 }
 
-function withTimeout(ms = 10000) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), ms);
-  return { controller, clear: () => clearTimeout(timeout) };
-}
-
-async function submitToEndpoint(payload, endpoint) {
-  const { controller, clear } = withTimeout(12000);
-
-  try {
-    return await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
-    });
-  } finally {
-    clear();
-  }
-}
-
-async function submit(form, endpoints) {
+function openIssue(form) {
   const submitButton = form.querySelector('button[type="submit"]');
-  const payload = serializeForm(form);
   const issueFallbackUrl = buildIssueFallbackUrl(form);
 
   if (submitButton) {
@@ -162,57 +118,20 @@ async function submit(form, endpoints) {
   }
 
   try {
-    const attempts = [];
-
-    for (const endpoint of endpoints) {
-      try {
-        const response = await submitToEndpoint(payload, endpoint);
-        const contentType = response.headers.get('content-type') || '';
-        const data = contentType.includes('application/json')
-          ? await response.json().catch(() => ({}))
-          : {};
-        const success = data && data.success;
-
-        if (response.ok && success) {
-          setStatus(form, data.message || 'Thanks for sharing feedback. We will review it soon.');
-          form.reset();
-          return;
-        }
-
-        attempts.push({
-          endpoint,
-          status: response.status,
-          message:
-            (data && data.message) ||
-            (data && data.errors && data.errors.join(' ')) ||
-            `Request failed with status ${response.status}.`,
-        });
-      } catch (error) {
-        attempts.push({
-          endpoint,
-          status: 0,
-          message:
-            error.name === 'AbortError'
-              ? 'Request timed out.'
-              : (error && error.message) || 'Network error.',
-        });
-      }
+    if (!issueFallbackUrl) {
+      setStatus(form, 'GitHub issue comments are not configured yet. Please use the repository contact route.');
+      return;
     }
 
-    const unavailable = attempts.some((attempt) => attempt.status === 404);
-    const details = attempts.length
-      ? attempts.map((attempt) => `${attempt.endpoint} → ${attempt.message}`).join(' ')
-      : '';
+    const opened = window.open(issueFallbackUrl, '_blank', 'noopener,noreferrer');
+    const link = `<a href="${issueFallbackUrl}" target="_blank" rel="noopener noreferrer">Open the prefilled GitHub issue</a>`;
 
-    const fallbackMessage = issueFallbackUrl
-      ? ` Couldn’t reach the submit service. <a href="${issueFallbackUrl}" target="_blank" rel="noopener noreferrer">Open a prefilled GitHub issue instead</a>.`
-      : '';
+    if (opened) {
+      setStatus(form, `A prefilled GitHub issue opened in a new tab. If you do not see it, ${link}.`, true);
+      return;
+    }
 
-    const helpMessage = unavailable
-      ? 'Comment endpoint is unavailable. Configure COMMENTS_ENDPOINT to a deployed serverless route.'
-      : 'Unable to send feedback right now. Please try again later.';
-
-    setStatus(form, `${helpMessage}${fallbackMessage}${details ? ` (${details})` : ''}`, Boolean(issueFallbackUrl));
+    setStatus(form, `Your browser blocked the new tab. ${link}.`, true);
   } finally {
     if (submitButton) {
       submitButton.disabled = false;
@@ -223,43 +142,24 @@ async function submit(form, endpoints) {
 export function initCommentForms(root = document) {
   const forms = root.querySelectorAll('[data-comment-form]');
   forms.forEach((form) => {
-    const endpoints = resolveEndpoints(form);
-
     const intentInputs = form.querySelectorAll('input[name="intent"]');
     intentInputs.forEach((input) => {
       input.addEventListener('change', () => {
         const label = form.querySelector(`label[for="${input.id}"]`);
         if (label) {
-          setStatus(form, `${label.dataset.intentLabel} selected. Add your note below.`);
+          setStatus(form, `${label.dataset.intentLabel} selected. Add your note below, then open a prefilled GitHub issue.`);
         }
       });
     });
 
     form.addEventListener('submit', (event) => {
+      event.preventDefault();
       const isValid = validate(form);
       if (!isValid) {
-        event.preventDefault();
         return;
       }
 
-      if (!endpoints.length) {
-        event.preventDefault();
-        const issueFallbackUrl = buildIssueFallbackUrl(form);
-        if (issueFallbackUrl) {
-          setStatus(
-            form,
-            `Submission endpoint is not configured yet. <a href="${issueFallbackUrl}" target="_blank" rel="noopener noreferrer">Open a prefilled GitHub issue instead</a>.`,
-            true
-          );
-          return;
-        }
-
-        setStatus(form, 'Submission endpoint is not configured yet. Use the discussion thread below to leave your note.');
-        return;
-      }
-
-      event.preventDefault();
-      submit(form, endpoints);
+      openIssue(form);
     });
   });
 }

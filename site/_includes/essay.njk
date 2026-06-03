@@ -1,85 +1,85 @@
 ---
 layout: base.njk
 ---
-<article class="card">
-  {% set length = word_range | wordRangeMeta %}
-  {% set shareUrl = canonical or canonical_url or meta.buildCanonicalUrl({ page: page, site: site, canonical: canonical, canonical_url: canonical_url }) %}
-  {% set shareLabel = (title or site.title) ~ ' — ' ~ site.title %}
-  {% set shareSnippet = shareLabel ~ ' ' ~ shareUrl %}
-  {% set encodedShareUrl = shareUrl | urlencode %}
-  {% set encodedShareText = shareLabel | urlencode %}
-  {% set encodedShareSnippet = shareSnippet | urlencode %}
-  {% set lengthRange %}
-    {% if length.label == 'Tiny' %}
-      250–500 words
-    {% elif length.label == 'Minute' %}
-      500–1000 words
-    {% elif length.label == 'Short' %}
-      1000–1500 words
-    {% else %}
-      {% if word_range %}{{ word_range }} words{% else %}Length unknown{% endif %}
-    {% endif %}
-  {% endset %}
+{% set length = word_range | wordRangeMeta %}
+{% set shareUrl = canonical or canonical_url or meta.buildCanonicalUrl({ page: page, site: site, canonical: canonical, canonical_url: canonical_url }) %}
+{% set shareLabel = (title or site.title) ~ ' — ' ~ site.title %}
+{% set shareSnippet = shareLabel ~ ' ' ~ shareUrl %}
+{% set encodedShareUrl = shareUrl | urlencode %}
+{% set encodedShareText = shareLabel | urlencode %}
+{% set encodedShareSnippet = shareSnippet | urlencode %}
+{% set isPublishedEssay = page.inputPath and '/essays/published/' in page.inputPath %}
+{% set lengthRange %}
+  {% if length.label == 'Tiny' %}
+    250–500 words
+  {% elif length.label == 'Minute' %}
+    500–1000 words
+  {% elif length.label == 'Short' %}
+    1000–1500 words
+  {% else %}
+    {% if word_range %}{{ word_range }} words{% else %}Length unknown{% endif %}
+  {% endif %}
+{% endset %}
+
+<article class="essay-page">
   <header class="essay-header">
-    {% set isPublishedEssay = page.inputPath and '/essays/published/' in page.inputPath %}
-    <div class="essay-header__row">
+    <p class="eyebrow">{% if status == "published" %}Published essay{% else %}Draft essay{% endif %}</p>
+    <h1 class="essay-title {{ length.titleClass }}">{{ title }}</h1>
+
+    {% if display_keywords and display_keywords.length %}
+      <p class="essay-keywords essay-keywords--header">{{ display_keywords | join(", ") }}</p>
+    {% endif %}
+
+    <div class="essay-byline">
+      {% if author %}<span>By <strong>@{{ author }}</strong></span>{% endif %}
+      {% if coauthors and coauthors.length %}
+        <span>with
+          {% for coauthor in coauthors %}
+            {% if coauthor is string %}
+              {% set handle = coauthor %}
+              {% set since = null %}
+            {% else %}
+              {% set handle = coauthor.user | default(coauthor.handle, true) | default(coauthor.github, true) %}
+              {% set since = coauthor.since_version | default(null, true) %}
+            {% endif %}
+            <span class="coauthor"{% if since %} title="Coauthor since v{{ since }}"{% endif %}>@{{ handle }}</span>{% if not loop.last %}, {% endif %}
+          {% endfor %}
+        </span>
+      {% endif %}
+    </div>
+
+    <div class="essay-meta-strip" aria-label="Essay metadata">
+      {% if word_range %}
+        <span class="essay-meta-item">
+          <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
+          {% if length.label != 'Length unknown' %}
+            {{ length.label }} · {{ lengthRange | trim }}
+          {% else %}
+            {{ word_range }} words
+          {% endif %}
+        </span>
+      {% endif %}
+      {% if word_count %}<span class="essay-meta-item">{{ word_count }} words total</span>{% endif %}
+      {% if status == "published" and published_at %}<span class="essay-meta-item">Published {{ published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+      {% if status == 'published' %}
+        {% set timingLabel %}{% if initial_status == 'complete' %}Finished on time{% else %}Unfinished on time{% endif %}{% endset %}
+        <span class="essay-meta-item">{{ timingLabel }}</span>
+      {% else %}
+        <span class="essay-meta-item">Draft</span>
+      {% endif %}
+      {% if version %}<span class="essay-meta-item">v{{ version | formatVersion(initial_status) }}</span>{% endif %}
+    </div>
+  </header>
+
+  <div class="content essay-content">
+    {{ content | safe }}
+  </div>
+
+  {% if isPublishedEssay %}
+    <footer class="essay-afterword">
       <div>
-        <p class="eyebrow">{% if status == "published" %}Published essay{% else %}Draft essay{% endif %}</p>
-        <h1 class="essay-title {{ length.titleClass }}">{{ title }}</h1>
-      </div>
-        <div class="essay-badges">
-        {% if status == 'published' %}
-          {% set timingLabel %}{% if initial_status == 'complete' %}Finished on time{% else %}Unfinished on time{% endif %}{% endset %}
-          {% set timingClass %}{% if initial_status == 'complete' %}badge--tone-success{% else %}badge--tone-warn{% endif %}{% endset %}
-          <span class="badge badge--tone-info">Version {{ version | formatVersion(initial_status) }}</span>
-          <span class="badge {{ timingClass }}">{{ timingLabel }}</span>
-        {% else %}
-          <span class="badge badge--tone-muted">Draft</span>
-        {% endif %}
-        {% if word_range %}
-          <div class="length-chip" aria-label="Length: {{ word_range }} words">
-            <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
-            <span class="length-chip__text">
-              <span>
-                {% if length.label != 'Length unknown' %}
-                  {{ length.label }} ({{ lengthRange | trim }})
-                {% else %}
-                  {{ word_range }} words
-                {% endif %}
-              </span>
-              {% if word_count %}<span aria-hidden="true">•</span><span>{{ word_count }} words total</span>{% endif %}
-            </span>
-          </div>
-        {% endif %}
-        {% if status == "published" and published_at %}<span class="badge badge--tone-muted">Published {{ published_at | date("yyyy-LL-dd") }}</span>{% endif %}
-      </div>
-    </div>
-    <div class="essay-header__row">
-      <div class="essay-contributors">
-        {% if author %}<span>By <strong>@{{ author }}</strong></span>{% endif %}
-        {% if coauthors and coauthors.length %}
-          <span>with
-            {% for coauthor in coauthors %}
-              {% if coauthor is string %}
-                {% set handle = coauthor %}
-                {% set since = null %}
-              {% else %}
-                {% set handle = coauthor.user | default(coauthor.handle, true) | default(coauthor.github, true) %}
-                {% set since = coauthor.since_version | default(null, true) %}
-              {% endif %}
-              <span class="coauthor"{% if since %} title="Coauthor since v{{ since }}"{% endif %}>@{{ handle }}</span>{% if not loop.last %}, {% endif %}
-            {% endfor %}
-          </span>
-        {% endif %}
-      </div>
-      <div class="meta">
-        {% if display_keywords and display_keywords.length %}<span>Keywords: {{ display_keywords | join(", ") }}</span>{% endif %}
-      </div>
-    </div>
-    {% if isPublishedEssay %}
-      <div class="essay-header__row">
-        <div class="share-actions" data-share role="group" aria-label="Share this essay">
-          <span class="share-actions__label">Share</span>
+        <p class="eyebrow">Share</p>
+        <div class="share-actions share-actions--compact" data-share role="group" aria-label="Share this essay">
           <div class="share-actions__buttons">
             <a class="share-button" href="https://mastodon.social/share?text={{ encodedShareSnippet }}" target="_blank" rel="noopener noreferrer">Mastodon</a>
             <a class="share-button" href="https://twitter.com/intent/tweet?text={{ encodedShareText }}&url={{ encodedShareUrl }}" target="_blank" rel="noopener noreferrer">X / Twitter</a>
@@ -89,98 +89,99 @@ layout: base.njk
           <p class="share-actions__status" data-share-status role="status" aria-live="polite"></p>
         </div>
       </div>
-    {% endif %}
-    {% set giscusReady = site.giscus and site.giscus.repo and site.giscus.repoId and site.giscus.category and site.giscus.categoryId %}
-    {% if isPublishedEssay and giscusReady %}
-      <div class="essay-header__row">
-        <a class="jump-to-comments" href="#discussion">Jump to comments ↓</a>
-      </div>
-    {% endif %}
-  </header>
-  <div class="content">
-    {{ content | safe }}
-  </div>
+
+    </footer>
+  {% endif %}
 </article>
 
-<section class="card">
-  <h3>Release notes</h3>
-  {% if release_notes and release_notes.length %}
-    <ul>
-      {% for note in release_notes %}
-        <li>{{ note }}</li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <ul>
-      {% if initial_status == 'complete' %}
-        <li>Initial publication as complete (v1.0.0).</li>
+<section class="essay-details">
+  <details class="essay-detail-panel">
+    <summary>Release notes</summary>
+    <div class="essay-detail-panel__body">
+      {% if release_notes and release_notes.length %}
+        <ul>
+          {% for note in release_notes %}
+            <li>{{ note }}</li>
+          {% endfor %}
+        </ul>
       {% else %}
-        <li>Initial publication as unfinished on time (v0.1.0).</li>
-      {% endif %}
-    </ul>
-  {% endif %}
-</section>
-
-<section class="card">
-  <h3>Acknowledgments</h3>
-  {% if meta.acknowledgments and meta.acknowledgments.length %}
-    <ul>
-      {% for ack in meta.acknowledgments %}
-        <li>
-          @{{ ack.handle or ack.user or ack.name }}
-          {% if ack.note %}— {{ ack.note }}{% endif %}
-          {% if ack.since_version %}<span class="ack-since">(since v{{ ack.since_version }})</span>{% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>Minor improvements (grammar, phrasing, examples, references) are credited here after they are merged.</p>
-  {% endif %}
-</section>
-
-
-<section class="card">
-  <h3>Version history</h3>
-  {% set currentSlug = page.fileSlug %}
-  {% set snapshots = collections.snapshots | snapshotsForSlug(currentSlug) %}
-  {% set hasSnapshots = snapshots | length %}
-  {% if hasSnapshots %}
-    <ul class="history-list">
-      {% for snap in snapshots %}
-        {% set note = null %}
-        {% if snap.data.release_notes and snap.data.release_notes.length %}
-          {% set note = snap.data.release_notes[0] %}
-        {% endif %}
-        {% set historyDate = snap.data.published_at or null %}
-        <li>
-          <div class="history-line">
-            <a class="history-version" href="{{ snap.url | url }}">v{{ snap.data.version | formatVersion(snap.data.initial_status) }}</a>
-            {% if historyDate %}
-              <span class="history-date">{{ historyDate | date("yyyy-LL-dd") }}</span>
-            {% endif %}
-          </div>
-          {% if note %}
-            <p class="history-note">{{ note }}</p>
+        <ul>
+          {% if initial_status == 'complete' %}
+            <li>Initial publication as complete (v1.0.0).</li>
+          {% else %}
+            <li>Initial publication as unfinished on time (v0.1.0).</li>
           {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No earlier versions yet—this essay is at its initial release.</p>
-  {% endif %}
-  {% if currentSlug and currentSlug[0] != '_' %}
-    {% set historyPath = '/essays/published/' ~ currentSlug ~ '/history/' %}
-    <p class="history-linkout"><a href="{{ historyPath | url }}">Browse full history →</a></p>
-  {% endif %}
+        </ul>
+      {% endif %}
+    </div>
+  </details>
+
+  <details class="essay-detail-panel">
+    <summary>Acknowledgments</summary>
+    <div class="essay-detail-panel__body">
+      {% if meta.acknowledgments and meta.acknowledgments.length %}
+        <ul>
+          {% for ack in meta.acknowledgments %}
+            <li>
+              @{{ ack.handle or ack.user or ack.name }}
+              {% if ack.note %}— {{ ack.note }}{% endif %}
+              {% if ack.since_version %}<span class="ack-since">(since v{{ ack.since_version }})</span>{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Minor improvements (grammar, phrasing, examples, references) are credited here after they are merged.</p>
+      {% endif %}
+    </div>
+  </details>
+
+  <details class="essay-detail-panel">
+    <summary>Version history</summary>
+    <div class="essay-detail-panel__body">
+      {% set currentSlug = page.fileSlug %}
+      {% set snapshots = collections.snapshots | snapshotsForSlug(currentSlug) %}
+      {% set hasSnapshots = snapshots | length %}
+      {% if hasSnapshots %}
+        <ul class="history-list">
+          {% for snap in snapshots %}
+            {% set note = null %}
+            {% if snap.data.release_notes and snap.data.release_notes.length %}
+              {% set note = snap.data.release_notes[0] %}
+            {% endif %}
+            {% set historyDate = snap.data.published_at or null %}
+            <li>
+              <div class="history-line">
+                <a class="history-version" href="{{ snap.url | url }}">v{{ snap.data.version | formatVersion(snap.data.initial_status) }}</a>
+                {% if historyDate %}
+                  <span class="history-date">{{ historyDate | date("yyyy-LL-dd") }}</span>
+                {% endif %}
+              </div>
+              {% if note %}
+                <p class="history-note">{{ note }}</p>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No earlier versions yet—this essay is at its initial release.</p>
+      {% endif %}
+      {% if currentSlug and currentSlug[0] != '_' %}
+        {% set historyPath = '/essays/published/' ~ currentSlug ~ '/history/' %}
+        <p class="history-linkout"><a href="{{ historyPath | url }}">Browse full history →</a></p>
+      {% endif %}
+    </div>
+  </details>
 </section>
 
 {% if isPublishedEssay and status == "published" %}
   {% set essayComments = comments.byEssay[page.fileSlug] or [] %}
-  <section class="card" id="comments">
+  <section class="participation-panel" id="comments">
     <div class="section-heading">
-      <h3>Comments</h3>
-      <p class="muted">New comments are visible immediately. Status chips show moderation and implementation progress.</p>
+      <p class="eyebrow">Discuss and improve</p>
+      <h3>Reviewed comments and feedback</h3>
+      <p class="muted">Feedback opens as a public GitHub issue. Maintainers may promote reviewed comments here after review.</p>
     </div>
+
     {% if essayComments.length %}
       <ul class="comment-list" aria-live="polite">
         {% for comment in essayComments %}
@@ -217,82 +218,81 @@ layout: base.njk
         {% endfor %}
       </ul>
     {% else %}
-      <p class="muted">No published comments yet. Share your feedback below.</p>
+      <p class="muted">No reviewed comments yet.</p>
     {% endif %}
+
+    <details class="feedback-disclosure" id="feedback" open>
+      <summary>Leave feedback via GitHub</summary>
+      <div class="feedback-disclosure__body">
+        <p class="muted">Pick an intent and tell us what to improve. The form opens a prefilled public GitHub issue for maintainer review.</p>
+        <form
+          class="comment-form"
+          method="post"
+          action="{{ site.comments.issueFallback | default('') }}"
+          novalidate
+          data-comment-form
+          data-comment-issue-fallback="{{ site.comments.issueFallback | default('') }}"
+        >
+          <input type="hidden" name="slug" value="{{ page.fileSlug }}">
+          <input type="hidden" name="essayTitle" value="{{ title }}">
+          <input type="hidden" name="essayPath" value="{{ page.url | url }}">
+          <input type="hidden" name="essayUrl" value="{{ (page.url | url) | absoluteUrl(site) }}">
+          <fieldset class="intent-buttons" aria-label="Feedback intent">
+            <legend class="visually-hidden">Choose feedback intent</legend>
+            <div class="intent-buttons__controls">
+              <div class="intent-option">
+                <input type="radio" name="intent" id="intent-minor" value="minor" required>
+                <label for="intent-minor" data-intent-label="Minor feedback">
+                  <strong>Minor feedback</strong>
+                  <span class="intent-option__hint">Typos, phrasing, or small references</span>
+                </label>
+              </div>
+              <div class="intent-option">
+                <input type="radio" name="intent" id="intent-major" value="major" required>
+                <label for="intent-major" data-intent-label="Major feedback">
+                  <strong>Major feedback</strong>
+                  <span class="intent-option__hint">Structural shifts or thematic changes</span>
+                </label>
+              </div>
+            </div>
+            <p class="field-error" data-error-for="intent"></p>
+          </fieldset>
+
+          <div class="form-row">
+            <label for="comment-name">Name <span aria-hidden="true">*</span></label>
+            <input id="comment-name" name="name" type="text" autocomplete="name" required>
+            <p class="field-help">Displayed with your comment. Pseudonyms are okay.</p>
+            <p class="field-error" data-error-for="name"></p>
+          </div>
+
+          <div class="form-row">
+            <label for="comment-contact">Public contact (optional)</label>
+            <input id="comment-contact" name="contact" type="text" autocomplete="email">
+            <p class="field-help">Only include a contact method if you are comfortable showing it in a public GitHub issue.</p>
+          </div>
+
+          <div class="form-row">
+            <label for="comment-body">Comment <span aria-hidden="true">*</span></label>
+            <textarea id="comment-body" name="comment" rows="6" required></textarea>
+            <p class="field-help">Share context and citations so we can evaluate your suggestion.</p>
+            <p class="field-error" data-error-for="comment"></p>
+          </div>
+
+          <div class="form-row honeypot" aria-hidden="true">
+            <label for="comment-website">Leave this blank</label>
+            <input id="comment-website" type="text" name="website" tabindex="-1" autocomplete="off" data-honeypot>
+          </div>
+
+          <p class="privacy-note">GitHub issues are public. Do not include private information you do not want published.</p>
+
+          <div class="comment-actions">
+            <p class="comment-status" data-comment-status role="status" aria-live="polite">Select an intent to begin.</p>
+            <button type="submit" class="btn btn-primary">Open prefilled GitHub issue</button>
+          </div>
+        </form>
+      </div>
+    </details>
   </section>
 
-  <section class="card" id="feedback">
-    <div class="comment-form__header">
-      <h3>Share feedback</h3>
-      <p class="muted">Pick an intent and tell us what to improve. Your comment appears immediately and may be moderated afterward.</p>
-    </div>
-    <form
-      class="comment-form"
-      method="post"
-      action="{{ site.comments.endpoint | default('') }}"
-      novalidate
-      data-comment-form
-      data-comment-endpoint="{{ site.comments.endpoint | default('') }}"
-      data-comment-endpoints="{{ site.comments.endpoints | join(',') }}"
-      data-comment-issue-fallback="{{ site.comments.issueFallback | default('') }}"
-    >
-      <input type="hidden" name="slug" value="{{ page.fileSlug }}">
-      <input type="hidden" name="essayTitle" value="{{ title }}">
-      <input type="hidden" name="essayPath" value="{{ page.url | url }}">
-      <input type="hidden" name="essayUrl" value="{{ (page.url | url) | absoluteUrl(site) }}">
-      <fieldset class="intent-buttons" aria-label="Feedback intent">
-        <legend class="visually-hidden">Choose feedback intent</legend>
-        <div class="intent-buttons__controls">
-          <div class="intent-option">
-            <input type="radio" name="intent" id="intent-minor" value="minor" required>
-            <label for="intent-minor" data-intent-label="Minor feedback">
-              <strong>Minor feedback</strong>
-              <span class="intent-option__hint">Typos, phrasing, or small references</span>
-            </label>
-          </div>
-          <div class="intent-option">
-            <input type="radio" name="intent" id="intent-major" value="major" required>
-            <label for="intent-major" data-intent-label="Major feedback">
-              <strong>Major feedback</strong>
-              <span class="intent-option__hint">Structural shifts or thematic changes</span>
-            </label>
-          </div>
-        </div>
-        <p class="field-error" data-error-for="intent"></p>
-      </fieldset>
-
-      <div class="form-row">
-        <label for="comment-name">Name <span aria-hidden="true">*</span></label>
-        <input id="comment-name" name="name" type="text" autocomplete="name" required>
-        <p class="field-help">Displayed with your comment. Pseudonyms are okay.</p>
-        <p class="field-error" data-error-for="name"></p>
-      </div>
-
-      <div class="form-row">
-        <label for="comment-contact">Contact (optional)</label>
-        <input id="comment-contact" name="contact" type="text" autocomplete="email">
-        <p class="field-help">Email, Mastodon handle, or another way to follow up.</p>
-      </div>
-
-      <div class="form-row">
-        <label for="comment-body">Comment <span aria-hidden="true">*</span></label>
-        <textarea id="comment-body" name="comment" rows="6" required></textarea>
-        <p class="field-help">Share context and citations so we can evaluate your suggestion.</p>
-        <p class="field-error" data-error-for="comment"></p>
-      </div>
-
-      <div class="form-row honeypot" aria-hidden="true">
-        <label for="comment-website">Leave this blank</label>
-        <input id="comment-website" type="text" name="website" tabindex="-1" autocomplete="off" data-honeypot>
-      </div>
-
-      <p class="privacy-note">By submitting, you allow us to store your comment and optional contact details for moderation and follow-up.</p>
-
-      <div class="comment-actions">
-        <p class="comment-status" data-comment-status role="status" aria-live="polite">Select an intent to begin.</p>
-        <button type="submit" class="btn btn-primary">Send feedback</button>
-      </div>
-    </form>
-  </section>
   {% include "giscus.njk" %}
 {% endif %}

@@ -105,19 +105,17 @@ The essay browser previews the first three keywords on each card while keeping t
 ## Public participation
 - Drafting and edits now happen in the backend. Public interaction is limited to comments on published essays.
 - Read the [Comments page](./site/contribute.njk) (rendered at <code>/contribute/</code>) for how to leave feedback once essays publish. Issues and PR templates for public content edits have been removed.
-- Comments are visible immediately and then reviewed by moderators; accepted feedback is credited in acknowledgments or release notes as appropriate.
+- Comment forms open prefilled GitHub issues. Maintainers may later promote reviewed feedback onto essay pages; accepted feedback is credited in acknowledgments or release notes as appropriate.
 
 ### Configure giscus for comments
 - Enable **Discussions** on your GitHub repository and create a category (e.g., "General").
 - In `site/_data/site.json`, set `giscus.repo`, `giscus.repoId`, `giscus.category`, and `giscus.categoryId` to match the repository and category you want to host discussions in.
 - Keep `giscus.mapping` as `pathname` so threads align with essay URLs. Once set, published essays will render the discussion widget along with a "Jump to comments" link.
 
-### Configure post-moderated comment intake
-- The feedback form posts to `comments.endpoint` (default empty). Point this at the deployed serverless handler in `api/submit-comment.js`.
-- Set `COMMENTS_REPO`/`COMMENTS_TOKEN` (or `GITHUB_REPOSITORY`/`GITHUB_TOKEN`) so the handler can commit comment YAML under `data/comments/<slug>/approved/` directly on the configured base branch so it is visible after deployment.
-- Optional: tune `COMMENTS_BASE_BRANCH`, `COMMENTS_DIR`, `COMMENTS_SITE_BASE`, and `COMMENTS_MAX_LENGTH` to fit your repo layout. See [`docs/comment-intake.md`](./docs/comment-intake.md) for setup and a sample `curl` request.
-- For GitHub Pages, the recommended production path is the included Cloudflare Worker scaffold under `workers/comment-intake/`. After deploying it, set the Pages build variable or secret `COMMENTS_ENDPOINT` to the Worker URL plus `/api/submit-comment`.
-- For a real deployment check, run `npm run verify:comments-live` with `COMMENTS_VERIFY_ENDPOINT` and `COMMENTS_VERIFY_SITE_URL` set. The helper posts a test comment, validates the response, and tries to fetch the committed YAML back from GitHub.
+### Configure comment intake
+- The public essay form opens `comments.issueFallback` as a prefilled GitHub issue. By default this is derived from the repository URL as `/issues/new`.
+- Set `COMMENTS_ISSUE_FALLBACK` only if the site should open a different issue route.
+- The older serverless handler in `api/submit-comment.js` remains available for private or future deployments that want direct YAML commits. See [`docs/comment-intake.md`](./docs/comment-intake.md) before using it.
 
 ## Notes
 - This starter stores history in front‑matter `release_notes`. For full version snapshots, keep tagged versions or store copies.

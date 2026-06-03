@@ -1,7 +1,11 @@
 {% set giscusReady = site.giscus and site.giscus.repo and site.giscus.repoId and site.giscus.category and site.giscus.categoryId %}
-<section class="card" id="discussion">
-  <h3>Discussion</h3>
-  {% if giscusReady %}
+{% if giscusReady %}
+  <section class="discussion-panel" id="discussion">
+    <div class="section-heading">
+      <p class="eyebrow">Discussion</p>
+      <h3>Community thread</h3>
+      <p class="muted">A GitHub discussion thread can supplement the issue-based feedback flow when giscus is configured.</p>
+    </div>
     <script src="https://giscus.app/client.js"
       data-repo="{{ site.giscus.repo }}"
       data-repo-id="{{ site.giscus.repoId }}"
@@ -17,7 +21,5 @@
       async>
     </script>
     <noscript>Enable JavaScript to view the discussion.</noscript>
-  {% else %}
-    <p>Comments will appear here once giscus is configured. Set <code>giscus.repo</code>, <code>giscus.repoId</code>, <code>giscus.category</code>, and <code>giscus.categoryId</code> in <code>site/_data/site.json</code>.</p>
-  {% endif %}
-</section>
+  </section>
+{% endif %}
