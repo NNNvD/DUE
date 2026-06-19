@@ -489,6 +489,26 @@ module.exports = function(eleventyConfig) {
     return list.filter((item) => accepted.includes((item?.data?.status || "").toLowerCase()));
   });
 
+  eleventyConfig.addFilter("whereDeadline", (items, timing = "upcoming") => {
+    const list = Array.isArray(items) ? items : [];
+    const now = Date.now();
+
+    return list.filter((item) => {
+      const rawDeadline = item?.data?.deadline_at;
+      if (!rawDeadline) return timing === "unscheduled";
+
+      const deadline = new Date(rawDeadline);
+      if (Number.isNaN(deadline.getTime())) {
+        return timing === "unscheduled";
+      }
+
+      if (timing === "unscheduled") return false;
+
+      const isPast = deadline.getTime() <= now;
+      return timing === "past" ? isPast : !isPast;
+    });
+  });
+
   eleventyConfig.addFilter("sortByDate", (items, path = "") => {
     if (!Array.isArray(items)) return [];
 

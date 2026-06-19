@@ -479,7 +479,7 @@ main > .breadcrumbs {
   z-index: 2;
   min-height: clamp(330px, 38vw, 430px);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(22rem, 1fr) minmax(20rem, 28.75rem);
   align-items: end;
   gap: var(--space-lg);
   padding: clamp(1.5rem, 4vw, 3rem);
@@ -487,6 +487,7 @@ main > .breadcrumbs {
 
 .home-hero__copy {
   max-width: 620px;
+  min-width: 0;
   align-self: center;
 }
 
@@ -513,7 +514,8 @@ main > .breadcrumbs {
   display: grid;
   grid-template-columns: repeat(3, minmax(96px, 1fr));
   gap: 1px;
-  min-width: min(460px, 100%);
+  min-width: 0;
+  width: 100%;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
@@ -533,6 +535,7 @@ main > .breadcrumbs {
   font-size: 1.5rem;
   font-weight: 800;
   line-height: 1;
+  overflow-wrap: normal;
 }
 
 .home-hero__stat-label {
