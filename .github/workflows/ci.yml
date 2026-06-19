@@ -29,6 +29,12 @@ jobs:
         run: |
           set -euxo pipefail
           npm test
+
+      - name: Front matter check
+        run: |
+          set -euxo pipefail
+          npm run check:frontmatter
+
       - name: Validate release notes
         if: github.event_name == 'pull_request'
         env:

@@ -4,7 +4,7 @@ const matter = require("gray-matter");
 const fs = require("fs");
 const path = require("path");
 const { runAutopublish } = require("./scripts/autopublish");
-const { resolveTimeStatus } = require("./scripts/lib/essayLifecycle");
+const { resolveDeadlineAt, resolveTimeStatus } = require("./scripts/lib/essayLifecycle");
 const { isEssayHidden } = require("./scripts/lib/essayVisibility");
 
 function formatDateValue(value, format = "yyyy-LL-dd") {
@@ -315,11 +315,15 @@ function loadEssaysByStatus(status = "published") {
       const title = data.title || (data.page && data.page.title) || fallbackTitle;
       const segment = normalizedStatus === "published" ? "published" : "drafts";
       const url = `/essays/${segment}/${slug}/`;
+      const resolvedDeadline = resolveDeadlineAt(data.deadline_at, data.started_at);
+      const resolvedDeadlineIso = resolvedDeadline
+        ? resolvedDeadline.toISOString().slice(0, 10)
+        : data.deadline_at;
       const time_status = resolveTimeStatus({
         status: normalizedStatus,
         initialStatus: data.initial_status,
         publishedAt: data.published_at,
-        deadlineAt: data.deadline_at,
+        deadlineAt: resolvedDeadlineIso,
         startedAt: data.started_at,
       });
 
@@ -331,6 +335,7 @@ function loadEssaysByStatus(status = "published") {
           ...data,
           title,
           status: normalizedStatus,
+          deadline_at: resolvedDeadlineIso,
           time_status,
           page: {
             ...(data.page || {}),
