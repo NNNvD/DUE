@@ -6,8 +6,11 @@ description: "See what is shipping now, browse recent essays, and jump into the 
 {% set drafts = collections.draftEssays %}
 {% set published = collections.publishedEssays %}
 {% set proposals = drafts | whereStatus(['proposed', 'draft']) %}
+{% set upcomingDrafts = proposals | whereDeadline('upcoming') | sortByDate('data.deadline_at') %}
+{% set overdueDrafts = proposals | whereDeadline('past') | sortByDate('data.deadline_at') %}
+{% set unscheduledDrafts = proposals | whereDeadline('unscheduled') %}
 {% set latest = published | first %}
-{% set nextProposed = proposals | sortByDate('data.deadline_at') | first %}
+{% set nextProposed = upcomingDrafts | first %}
 {% set nextDeadline = nextProposed and nextProposed.data.deadline_at %}
 {% set daysUntilNext = nextDeadline | daysUntil %}
 {% set publishedCount = essayStats.published %}
@@ -94,14 +97,14 @@ description: "See what is shipping now, browse recent essays, and jump into the 
     {% endif %}
   </article>
 
-  <aside class="home-card draft-status-card{% if drafts.length %} in-progress{% endif %}">
+  <aside class="home-card draft-status-card{% if proposals.length %} in-progress{% endif %}">
     <div class="section-heading">
       <p class="eyebrow">Now drafting</p>
-      <h3>{% if drafts.length %}Next deadline{% else %}No drafts scheduled{% endif %}</h3>
-      <p>{% if drafts.length %}Drafts show titles and keywords until publication.{% else %}The queue is clear. Browse the published library while the next deadline is being prepared.{% endif %}</p>
+      <h3>{% if upcomingDrafts.length %}Next deadline{% elif overdueDrafts.length %}Queued for publication{% else %}No drafts scheduled{% endif %}</h3>
+      <p>{% if upcomingDrafts.length %}Drafts show titles and keywords until publication.{% elif overdueDrafts.length %}Some drafts have passed their deadline and are waiting for autopublish.{% else %}The queue is clear. Browse the published library while the next deadline is being prepared.{% endif %}</p>
     </div>
-    {% if drafts.length %}
-      {% set active = drafts[0] %}
+    {% if upcomingDrafts.length %}
+      {% set active = upcomingDrafts[0] %}
       <div class="stack">
         <div class="meta">
           {% if active.data.word_range %}<span class="badge {{ active.data.word_range | wordRangeTone }}">{{ active.data.word_range }} words</span>{% endif %}
@@ -112,22 +115,44 @@ description: "See what is shipping now, browse recent essays, and jump into the 
         {% if active.data.browser_keywords and active.data.browser_keywords.length %}<p class="muted"><strong>Keywords:</strong> {{ active.data.browser_keywords | join(", ") }}</p>{% endif %}
         <p class="countdown" {% if active.data.deadline_at %}data-deadline="{{ active.data.deadline_at }}"{% endif %}><span data-countdown>{% if active.data.deadline_at %}Tracking publication date…{% else %}Deadline not yet scheduled.{% endif %}</span></p>
       </div>
-      {% if drafts.length > 1 %}
+      {% set laterDrafts = upcomingDrafts | reject('equalto', active) | list %}
+      {% if laterDrafts.length or overdueDrafts.length or unscheduledDrafts.length %}
         <div class="divider"></div>
         <div class="stack">
           <p class="eyebrow">Also drafting</p>
           <ul class="draft-list">
-            {% for draft in drafts %}
-              {% if not loop.first %}
+            {% for draft in laterDrafts %}
               <li>
                 <span class="draft-title">{{ draft.data.title }}</span>
                 {% if draft.data.deadline_at %}<span class="muted"> — publishing on {{ draft.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
               </li>
-              {% endif %}
+            {% endfor %}
+            {% for draft in overdueDrafts %}
+              <li>
+                <span class="draft-title">{{ draft.data.title }}</span>
+                <span class="muted">Queued for publication</span>
+              </li>
+            {% endfor %}
+            {% for draft in unscheduledDrafts %}
+              <li>
+                <span class="draft-title">{{ draft.data.title }}</span>
+                <span class="muted">Publication date pending</span>
+              </li>
             {% endfor %}
           </ul>
         </div>
       {% endif %}
+    {% elif overdueDrafts.length %}
+      <div class="stack">
+        <ul class="draft-list">
+          {% for draft in overdueDrafts %}
+            <li>
+              <span class="draft-title">{{ draft.data.title }}</span>
+              <span class="muted">Queued for publication</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
     {% else %}
       <a class="inline-link" href="{{ '/essays/' | url }}">Browse the library →</a>
     {% endif %}
