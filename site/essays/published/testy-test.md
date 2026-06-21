@@ -11,16 +11,14 @@ coauthors: []
 acknowledgments: []
 status: published
 initial_status: unfinished
-started_at: 2026-04-21T00:00:00.000Z
-proposed_at: 2026-04-21T00:00:00.000Z
-publication_countdown: ''
-deadline_at: 2026-05-21T00:00:00.000Z
+started_at: 2026-04-21
+proposed_at: 2026-04-21
+deadline_at: 2026-05-21
 version: 0.1.0
-word_range: 500-1000
-word_count: 0
+word_count: 11
 release_notes:
-  - 'Auto-published at deadline (2026-06-19T11:44:32.225Z).'
-published_at: '2026-06-19'
+  - 'Auto-published at deadline after the original draft date.'
+published_at: 2026-05-21
 permalink: /essays/published/testy-test/
 ---
 
