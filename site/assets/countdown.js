@@ -49,7 +49,9 @@ export function initializeCountdowns(root = document) {
       continue;
     }
 
-    const isHeroCounter = display.classList.contains("hero__stat-number");
+    const isHeroCounter =
+      display.classList.contains("hero__stat-number") ||
+      display.classList.contains("home-hero__stat-number");
 
     const update = () => {
       const now = new Date();

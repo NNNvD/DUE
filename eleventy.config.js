@@ -24,6 +24,21 @@ function formatDateValue(value, format = "yyyy-LL-dd") {
   return date.toISOString();
 }
 
+function excerptText(content = "", maxLength = 150) {
+  const text = String(content || "")
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, " ")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[#>*_\-[\]()]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (text.length <= maxLength) return text;
+  const truncated = text.slice(0, maxLength).replace(/\s+\S*$/, "").trim();
+  return `${truncated}...`;
+}
+
 function computeEssayMeta(data = {}) {
   const meta = {
     badges: [],
@@ -336,6 +351,7 @@ function loadEssaysByStatus(status = "published") {
           title,
           status: normalizedStatus,
           deadline_at: resolvedDeadlineIso,
+          excerpt: excerptText(content),
           time_status,
           page: {
             ...(data.page || {}),

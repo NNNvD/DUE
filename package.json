@@ -7,6 +7,7 @@
     "start": "eleventy --serve",
     "serve:built": "node scripts/serveBuiltSite.js",
     "check:frontmatter": "node scripts/validateFrontmatter.js",
+    "check:overdue": "node scripts/checkOverdueDrafts.js",
     "check:words": "node scripts/checkWordRange.js",
     "check:a11y": "node scripts/checkA11y.js",
     "autopublish": "node scripts/autopublish.js",
@@ -19,7 +20,7 @@
     "verify:feeds": "npm run build && npm run validate:feeds",
     "verify:comments-live": "node scripts/verifyCommentIntakeLive.js",
     "promote:comments": "node scripts/promoteComments.js",
-    "qa": "npm run check:frontmatter && npm run check:words && npm run build && npm run check:a11y && npm run validate:feeds"
+    "qa": "npm run check:frontmatter && npm run check:overdue && npm run check:words && npm run build && npm run check:a11y && npm run validate:feeds"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",

@@ -112,6 +112,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
           {% if active.data.deadline_at %}<span>Publishes on {{ active.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
         </div>
         <h4 class="card-title">{{ active.data.title }}</h4>
+        {% if active.data.excerpt %}<p class="draft-preview">{{ active.data.excerpt }}</p>{% endif %}
         {% if active.data.browser_keywords and active.data.browser_keywords.length %}<p class="muted"><strong>Keywords:</strong> {{ active.data.browser_keywords | join(", ") }}</p>{% endif %}
         <p class="countdown" {% if active.data.deadline_at %}data-deadline="{{ active.data.deadline_at }}"{% endif %}><span data-countdown>{% if active.data.deadline_at %}Tracking publication date…{% else %}Deadline not yet scheduled.{% endif %}</span></p>
       </div>

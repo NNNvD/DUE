@@ -35,6 +35,11 @@ jobs:
           set -euxo pipefail
           npm run check:frontmatter
 
+      - name: Overdue draft check
+        run: |
+          set -euxo pipefail
+          npm run check:overdue
+
       - name: Validate release notes
         if: github.event_name == 'pull_request'
         env:

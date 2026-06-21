@@ -563,12 +563,14 @@ main > .breadcrumbs {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
   gap: var(--space-md);
-  align-items: start;
+  align-items: stretch;
   margin: var(--space-lg) 0;
 }
 
 .home-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -628,6 +630,12 @@ main > .breadcrumbs {
 .latest-card__link {
   align-self: flex-start;
   margin-top: var(--space-2xs);
+}
+
+.draft-preview {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
 }
 
 .draft-status-card:not(.in-progress) {
