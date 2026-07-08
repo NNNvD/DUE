@@ -22,156 +22,212 @@ layout: base.njk
 {% endset %}
 
 <article class="essay-page">
-  <header class="essay-header">
-    <p class="eyebrow">{% if status == "published" %}Published essay{% else %}Draft essay{% endif %}</p>
-    <h1 class="essay-title {{ length.titleClass }}">{{ title }}</h1>
+  <div class="essay-layout">
+    <section class="essay-main-card essay-main-card--{{ length.palette or 'muted' }}" aria-labelledby="essay-title">
+      <header class="essay-header">
+        <p class="eyebrow">{% if status == "published" %}Published essay{% else %}Draft essay{% endif %}</p>
+        <h1 class="essay-title {{ length.titleClass }}" id="essay-title">{{ title }}</h1>
+      </header>
 
-    {% if display_keywords and display_keywords.length %}
-      <p class="essay-keywords essay-keywords--header">{{ display_keywords | join(", ") }}</p>
-    {% endif %}
-
-    <div class="essay-byline">
-      {% if author %}<span>By <strong>@{{ author }}</strong></span>{% endif %}
-      {% if coauthors and coauthors.length %}
-        <span>with
-          {% for coauthor in coauthors %}
-            {% if coauthor is string %}
-              {% set handle = coauthor %}
-              {% set since = null %}
-            {% else %}
-              {% set handle = coauthor.user | default(coauthor.handle, true) | default(coauthor.github, true) %}
-              {% set since = coauthor.since_version | default(null, true) %}
-            {% endif %}
-            <span class="coauthor"{% if since %} title="Coauthor since v{{ since }}"{% endif %}>@{{ handle }}</span>{% if not loop.last %}, {% endif %}
-          {% endfor %}
-        </span>
-      {% endif %}
-    </div>
-
-    <div class="essay-meta-strip" aria-label="Essay metadata">
-      {% if word_range %}
-        <span class="essay-meta-item">
-          <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
-          {% if length.label != 'Length unknown' %}
-            {{ length.label }} · {{ lengthRange | trim }}
-          {% else %}
-            {{ word_range }} words
-          {% endif %}
-        </span>
-      {% endif %}
-      {% if word_count %}<span class="essay-meta-item">{{ word_count }} words total</span>{% endif %}
-      {% if status == "published" and published_at %}<span class="essay-meta-item">Published {{ published_at | date("yyyy-LL-dd") }}</span>{% endif %}
-      {% if status == 'published' %}
-        {% set timingLabel %}{% if initial_status == 'complete' %}Finished on time{% else %}Unfinished on time{% endif %}{% endset %}
-        <span class="essay-meta-item">{{ timingLabel }}</span>
-      {% else %}
-        <span class="essay-meta-item">Draft</span>
-      {% endif %}
-      {% if version %}<span class="essay-meta-item">v{{ version | formatVersion(initial_status) }}</span>{% endif %}
-    </div>
-  </header>
-
-  <div class="content essay-content">
-    {{ content | safe }}
-  </div>
-
-  {% if isPublishedEssay %}
-    <footer class="essay-afterword">
-      <div>
-        <p class="eyebrow">Share</p>
-        <div class="share-actions share-actions--compact" data-share role="group" aria-label="Share this essay">
-          <div class="share-actions__buttons">
-            <a class="share-button" href="https://mastodon.social/share?text={{ encodedShareSnippet }}" target="_blank" rel="noopener noreferrer">Mastodon</a>
-            <a class="share-button" href="https://twitter.com/intent/tweet?text={{ encodedShareText }}&url={{ encodedShareUrl }}" target="_blank" rel="noopener noreferrer">X / Twitter</a>
-            <a class="share-button" href="https://www.linkedin.com/sharing/share-offsite/?url={{ encodedShareUrl }}" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <button type="button" class="share-button share-button--copy" data-share-copy data-share-url="{{ shareUrl }}">Copy link</button>
-          </div>
-          <p class="share-actions__status" data-share-status role="status" aria-live="polite"></p>
-        </div>
+      <div class="content essay-content">
+        {{ content | safe }}
       </div>
+    </section>
 
-    </footer>
-  {% endif %}
-</article>
-
-<section class="essay-details">
-  <details class="essay-detail-panel">
-    <summary>Release notes</summary>
-    <div class="essay-detail-panel__body">
-      {% if release_notes and release_notes.length %}
-        <ul>
-          {% for note in release_notes %}
-            <li>{{ note }}</li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <ul>
-          {% if initial_status == 'complete' %}
-            <li>Initial publication as complete (v1.0.0).</li>
-          {% else %}
-            <li>Initial publication as unfinished on time (v0.1.0).</li>
+    <aside class="essay-sidebar" aria-label="Essay details">
+      <section class="essay-sidebar__section">
+        <h2 class="essay-sidebar__heading">Details</h2>
+        <dl class="essay-property-list">
+          {% if author %}
+            <div>
+              <dt>Author</dt>
+              <dd>@{{ author }}</dd>
+            </div>
           {% endif %}
-        </ul>
-      {% endif %}
-    </div>
-  </details>
-
-  <details class="essay-detail-panel">
-    <summary>Acknowledgments</summary>
-    <div class="essay-detail-panel__body">
-      {% if meta.acknowledgments and meta.acknowledgments.length %}
-        <ul>
-          {% for ack in meta.acknowledgments %}
-            <li>
-              @{{ ack.handle or ack.user or ack.name }}
-              {% if ack.note %}— {{ ack.note }}{% endif %}
-              {% if ack.since_version %}<span class="ack-since">(since v{{ ack.since_version }})</span>{% endif %}
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p>Minor improvements (grammar, phrasing, examples, references) are credited here after they are merged.</p>
-      {% endif %}
-    </div>
-  </details>
-
-  <details class="essay-detail-panel">
-    <summary>Version history</summary>
-    <div class="essay-detail-panel__body">
-      {% set currentSlug = page.fileSlug %}
-      {% set snapshots = collections.snapshots | snapshotsForSlug(currentSlug) %}
-      {% set hasSnapshots = snapshots | length %}
-      {% if hasSnapshots %}
-        <ul class="history-list">
-          {% for snap in snapshots %}
-            {% set note = null %}
-            {% if snap.data.release_notes and snap.data.release_notes.length %}
-              {% set note = snap.data.release_notes[0] %}
-            {% endif %}
-            {% set historyDate = snap.data.published_at or null %}
-            <li>
-              <div class="history-line">
-                <a class="history-version" href="{{ snap.url | url }}">v{{ snap.data.version | formatVersion(snap.data.initial_status) }}</a>
-                {% if historyDate %}
-                  <span class="history-date">{{ historyDate | date("yyyy-LL-dd") }}</span>
+          {% if coauthors and coauthors.length %}
+            <div>
+              <dt>Coauthors</dt>
+              <dd>
+                {% for coauthor in coauthors %}
+                  {% if coauthor is string %}
+                    {% set handle = coauthor %}
+                    {% set since = null %}
+                  {% else %}
+                    {% set handle = coauthor.user | default(coauthor.handle, true) | default(coauthor.github, true) %}
+                    {% set since = coauthor.since_version | default(null, true) %}
+                  {% endif %}
+                  <span class="coauthor"{% if since %} title="Coauthor since v{{ since }}"{% endif %}>@{{ handle }}</span>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+              </dd>
+            </div>
+          {% endif %}
+          {% if word_range %}
+            <div>
+              <dt>Length</dt>
+              <dd>
+                <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
+                {% if length.label != 'Length unknown' %}
+                  {{ length.label }} · {{ lengthRange | trim }}
+                {% else %}
+                  {{ word_range }} words
                 {% endif %}
-              </div>
-              {% if note %}
-                <p class="history-note">{{ note }}</p>
+              </dd>
+            </div>
+          {% endif %}
+          {% if word_count %}
+            <div>
+              <dt>Words</dt>
+              <dd>{{ word_count }} total</dd>
+            </div>
+          {% endif %}
+          {% if status == "published" and published_at %}
+            <div>
+              <dt>Published</dt>
+              <dd>{{ published_at | date("yyyy-LL-dd") }}</dd>
+            </div>
+          {% endif %}
+          <div>
+            <dt>Status</dt>
+            <dd>
+              {% if status == 'published' %}
+                {% if initial_status == 'complete' %}Finished on time{% else %}Unfinished on time{% endif %}
+              {% else %}
+                Draft
               {% endif %}
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p>No earlier versions yet—this essay is at its initial release.</p>
+            </dd>
+          </div>
+          {% if version %}
+            <div>
+              <dt>Version</dt>
+              <dd>v{{ version | formatVersion(initial_status) }}</dd>
+            </div>
+          {% endif %}
+        </dl>
+      </section>
+
+      {% if display_keywords and display_keywords.length %}
+        <section class="essay-sidebar__section">
+          <h2 class="essay-sidebar__heading">Keywords</h2>
+          <ul class="essay-keyword-list" aria-label="Essay keywords">
+            {% for keyword in display_keywords %}
+              <li>{{ keyword }}</li>
+            {% endfor %}
+          </ul>
+        </section>
       {% endif %}
-      {% if currentSlug and currentSlug[0] != '_' %}
-        {% set historyPath = '/essays/published/' ~ currentSlug ~ '/history/' %}
-        <p class="history-linkout"><a href="{{ historyPath | url }}">Browse full history →</a></p>
+
+      {% if isPublishedEssay %}
+        <section class="essay-sidebar__section">
+          <h2 class="essay-sidebar__heading">Share</h2>
+          <div class="share-actions share-actions--icon" data-share role="group" aria-label="Share this essay">
+            <div class="share-actions__buttons share-icon-list">
+              <a class="share-icon-button" href="https://mastodon.social/share?text={{ encodedShareSnippet }}" target="_blank" rel="noopener noreferrer" aria-label="Share on Mastodon" title="Share on Mastodon">
+                <svg class="share-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M20.6 7.1c-.3-2.3-2.3-4.1-4.7-4.4-.4-.1-2-.2-4-.2h-.1c-2 0-3.5.1-4 .2-2.4.3-4.4 2.1-4.7 4.4-.2 1.3-.2 2.5-.2 3.8 0 1.7.1 3.3.4 4.6.4 2 2.2 3.6 4.3 4 .9.2 1.9.3 3.1.2v-2.2c-2.8.2-3.4-.6-3.6-1.4l-.1-.6c1.1.3 2.3.5 3.7.5 3.7.1 6.8-.9 7.2-3.8.1-.8.2-1.6.2-2.6 0-1.4-.1-2.5-.2-3.5Zm-3.5 6.1h-2.4V8.4c0-1-.4-1.5-1.2-1.5-.9 0-1.4.6-1.4 1.8v2.6H9.8V8.7c0-1.2-.5-1.8-1.4-1.8-.8 0-1.2.5-1.2 1.5v4.8H4.8V8.3c0-1 .3-1.8.8-2.5.6-.6 1.3-.9 2.2-.9 1 0 1.8.4 2.3 1.2l.5.8.5-.8c.5-.8 1.3-1.2 2.3-1.2.9 0 1.6.3 2.2.9.5.7.8 1.5.8 2.5v4.9Z" />
+                </svg>
+              </a>
+              <a class="share-icon-button" href="https://twitter.com/intent/tweet?text={{ encodedShareText }}&url={{ encodedShareUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Share on X / Twitter" title="Share on X / Twitter">
+                <svg class="share-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M14.1 10.6 21.3 2h-1.7l-6.3 7.4L8.4 2H2.6l7.6 11.1L2.6 22h1.7l6.6-7.7 5.3 7.7H22l-7.9-11.4Zm-2.3 2.7-.8-1.1L4.9 3.3h2.7l4.9 7 .8 1.1 6.4 9.3H17l-5.2-7.4Z" />
+                </svg>
+              </a>
+              <a class="share-icon-button" href="https://www.linkedin.com/sharing/share-offsite/?url={{ encodedShareUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" title="Share on LinkedIn">
+                <svg class="share-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5ZM.35 8h4.3v14H.35V8Zm7 0h4.12v1.9h.06c.57-1.08 1.98-2.22 4.07-2.22 4.35 0 5.15 2.86 5.15 6.58V22h-4.3v-6.85c0-1.63-.03-3.73-2.27-3.73-2.27 0-2.62 1.78-2.62 3.61V22h-4.3V8Z" />
+                </svg>
+              </a>
+              <button type="button" class="share-icon-button share-icon-button--copy" data-share-copy data-share-url="{{ shareUrl }}" aria-label="Copy essay link" title="Copy essay link">
+                <svg class="share-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M10.6 13.4a1 1 0 0 1 0-1.4l3.6-3.6a3 3 0 0 1 4.2 4.2l-2.1 2.1a3 3 0 0 1-3.8.3 1 1 0 1 1 1.1-1.7 1 1 0 0 0 1.3-.1l2.1-2.1a1 1 0 0 0-1.4-1.4L12 13.4a1 1 0 0 1-1.4 0Zm2.8-2.8a1 1 0 0 1 0 1.4l-3.6 3.6a3 3 0 1 1-4.2-4.2l2.1-2.1a3 3 0 0 1 3.8-.3 1 1 0 0 1-1.1 1.7 1 1 0 0 0-1.3.1L7 12.9a1 1 0 0 0 1.4 1.4l3.6-3.6a1 1 0 0 1 1.4-.1Z" />
+                </svg>
+              </button>
+            </div>
+            <p class="share-actions__status" data-share-status role="status" aria-live="polite"></p>
+          </div>
+        </section>
       {% endif %}
-    </div>
-  </details>
-</section>
+
+      <section class="essay-sidebar__section essay-sidebar__section--flush">
+        <details class="essay-detail-panel">
+          <summary>Release notes</summary>
+          <div class="essay-detail-panel__body">
+            {% if release_notes and release_notes.length %}
+              <ul>
+                {% for note in release_notes %}
+                  <li>{{ note }}</li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <ul>
+                {% if initial_status == 'complete' %}
+                  <li>Initial publication as complete (v1.0.0).</li>
+                {% else %}
+                  <li>Initial publication as unfinished on time (v0.1.0).</li>
+                {% endif %}
+              </ul>
+            {% endif %}
+          </div>
+        </details>
+
+        <details class="essay-detail-panel">
+          <summary>Acknowledgments</summary>
+          <div class="essay-detail-panel__body">
+            {% if meta.acknowledgments and meta.acknowledgments.length %}
+              <ul>
+                {% for ack in meta.acknowledgments %}
+                  <li>
+                    @{{ ack.handle or ack.user or ack.name }}
+                    {% if ack.note %}— {{ ack.note }}{% endif %}
+                    {% if ack.since_version %}<span class="ack-since">(since v{{ ack.since_version }})</span>{% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p>Minor improvements (grammar, phrasing, examples, references) are credited here after they are merged.</p>
+            {% endif %}
+          </div>
+        </details>
+
+        <details class="essay-detail-panel">
+          <summary>Version history</summary>
+          <div class="essay-detail-panel__body">
+            {% set currentSlug = page.fileSlug %}
+            {% set snapshots = collections.snapshots | snapshotsForSlug(currentSlug) %}
+            {% set hasSnapshots = snapshots | length %}
+            {% if hasSnapshots %}
+              <ul class="history-list">
+                {% for snap in snapshots %}
+                  {% set note = null %}
+                  {% if snap.data.release_notes and snap.data.release_notes.length %}
+                    {% set note = snap.data.release_notes[0] %}
+                  {% endif %}
+                  {% set historyDate = snap.data.published_at or null %}
+                  <li>
+                    <div class="history-line">
+                      <a class="history-version" href="{{ snap.url | url }}">v{{ snap.data.version | formatVersion(snap.data.initial_status) }}</a>
+                      {% if historyDate %}
+                        <span class="history-date">{{ historyDate | date("yyyy-LL-dd") }}</span>
+                      {% endif %}
+                    </div>
+                    {% if note %}
+                      <p class="history-note">{{ note }}</p>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p>No earlier versions yet—this essay is at its initial release.</p>
+            {% endif %}
+            {% if currentSlug and currentSlug[0] != '_' %}
+              {% set historyPath = '/essays/published/' ~ currentSlug ~ '/history/' %}
+              <p class="history-linkout"><a href="{{ historyPath | url }}">Browse full history →</a></p>
+            {% endif %}
+          </div>
+        </details>
+      </section>
+    </aside>
+  </div>
+</article>
 
 {% if isPublishedEssay and status == "published" %}
   {% set essayComments = comments.byEssay[page.fileSlug] or [] %}

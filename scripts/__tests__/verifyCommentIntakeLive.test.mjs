@@ -16,11 +16,11 @@ describe("verifyCommentIntakeLive", () => {
       "--endpoint",
       "https://example.test/api/submit-comment",
       "--skip-github-check",
-      "--slug=test-3",
+      "--slug=on-deadlines-and-honesty",
     ])).toEqual({
       endpoint: "https://example.test/api/submit-comment",
       "skip-github-check": true,
-      slug: "test-3",
+      slug: "on-deadlines-and-honesty",
     });
   });
 
@@ -29,8 +29,8 @@ describe("verifyCommentIntakeLive", () => {
   });
 
   it("resolves site-relative essay URLs without dropping the Pages path prefix", () => {
-    expect(withSiteBasePath("https://nnnvd.github.io/DUE/", "/essays/published/test-3/")).toBe(
-      "https://nnnvd.github.io/DUE/essays/published/test-3/"
+    expect(withSiteBasePath("https://nnnvd.github.io/DUE/", "/essays/published/on-deadlines-and-honesty/")).toBe(
+      "https://nnnvd.github.io/DUE/essays/published/on-deadlines-and-honesty/"
     );
   });
 
@@ -56,8 +56,8 @@ describe("verifyCommentIntakeLive", () => {
 
     expect(config.endpoint).toBe("https://nnnvd.github.io/api/submit-comment");
     expect(config.repo).toBe("NNNvD/DUE");
-    expect(config.slug).toBe("drafty-draft");
-    expect(config.essayPath).toBe("/DUE/essays/published/drafty-draft/");
-    expect(config.essayUrl).toBe("https://nnnvd.github.io/DUE/essays/published/drafty-draft/");
+    expect(config.slug).toBe("moratorium-on-box");
+    expect(config.essayPath).toBe("/DUE/essays/published/moratorium-on-box/");
+    expect(config.essayUrl).toBe("https://nnnvd.github.io/DUE/essays/published/moratorium-on-box/");
   });
 });
