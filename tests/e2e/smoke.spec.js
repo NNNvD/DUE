@@ -11,7 +11,7 @@ test.describe("frontend smoke", () => {
 
     await expect(page).toHaveTitle(/DUE/);
     await expect(page.getByRole("heading", { name: "Propose. Panic. Publish." })).toBeVisible();
-    await expect(page.locator('link[rel="stylesheet"][href="/DUE/assets/style.css"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="stylesheet"][href^="/DUE/assets/style.css?v="]')).toHaveCount(1);
     await expect(page.getByRole("navigation", { name: "Primary navigation" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Essays", exact: true })).toHaveAttribute("href", "/DUE/essays/");
   });
@@ -27,7 +27,7 @@ test.describe("frontend smoke", () => {
     await page.locator("[data-filter-search]").fill("imperfect publishing");
 
     await expect(results).toHaveCount(1);
-    await expect(page.getByRole("link", { name: "A Short Defense of Imperfect Publishing" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "A Short Defense of Imperfect Publishing", exact: true })).toBeVisible();
   });
 
   test("essay library cards show the correct published timing labels", async ({ page }) => {
@@ -69,10 +69,36 @@ test.describe("frontend smoke", () => {
     });
 
     await page.goto(publishedEssayPath);
-    await page.getByRole("button", { name: "Copy link" }).click();
+    await page.getByRole("button", { name: "Copy essay link" }).click();
 
     await expect(page.locator("[data-share-status]")).toHaveText("Link copied.");
     await expect.poll(() => page.evaluate(() => window.__copiedText)).toBe(publishedEssayUrl);
+  });
+
+  test("published essay renders as a card with a responsive details sidebar", async ({ page }, testInfo) => {
+    await page.goto(publishedEssayPath);
+
+    const layout = page.locator(".essay-layout");
+    const article = page.locator(".essay-main-card");
+    const sidebar = page.locator(".essay-sidebar");
+
+    await expect(layout).toHaveCSS("display", "grid");
+    await expect(article).toHaveCSS("border-left-width", "6px");
+    await expect(page.locator(".share-icon-button")).toHaveCount(4);
+
+    const articleBox = await article.boundingBox();
+    const sidebarBox = await sidebar.boundingBox();
+    expect(articleBox).not.toBeNull();
+    expect(sidebarBox).not.toBeNull();
+    if (testInfo.project.name === "desktop-chromium") {
+      await expect(sidebar).toHaveCSS("position", "sticky");
+      expect(sidebarBox.x).toBeGreaterThan(articleBox.x + articleBox.width);
+      expect(sidebarBox.width).toBeLessThan(articleBox.width);
+    } else {
+      await expect(sidebar).toHaveCSS("position", "static");
+      expect(sidebarBox.y).toBeGreaterThan(articleBox.y + articleBox.height);
+      expect(Math.abs(sidebarBox.width - articleBox.width)).toBeLessThan(2);
+    }
   });
 
   test("published essay comment form validates required fields", async ({ page }) => {
