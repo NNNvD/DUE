@@ -42,7 +42,7 @@
     {{ jsonLd | dump | safe }}
   </script>
   {% endif %}
-  <link rel="stylesheet" href="{{ "/assets/style.css" | url }}">
+  <link rel="stylesheet" href="{{ "/assets/style.css" | url }}?v={{ assetVersion }}">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -106,8 +106,8 @@
       <a href="{{ '/feed.json' | url }}">JSON</a> feeds.
     </footer>
   </div>
-  <script type="module" src="{{ "/assets/countdown.js" | url }}"></script>
-  <script type="module" src="{{ "/assets/comments.js" | url }}"></script>
-  <script type="module" src="{{ "/assets/share.js" | url }}"></script>
+  <script type="module" src="{{ "/assets/countdown.js" | url }}?v={{ assetVersion }}"></script>
+  <script type="module" src="{{ "/assets/comments.js" | url }}?v={{ assetVersion }}"></script>
+  <script type="module" src="{{ "/assets/share.js" | url }}?v={{ assetVersion }}"></script>
 </body>
 </html>

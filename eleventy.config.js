@@ -3,6 +3,7 @@ const fg = require("fast-glob");
 const matter = require("gray-matter");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const { runAutopublish } = require("./scripts/autopublish");
 const { resolveDeadlineAt, resolveTimeStatus } = require("./scripts/lib/essayLifecycle");
 const { isEssayHidden } = require("./scripts/lib/essayVisibility");
@@ -365,7 +366,17 @@ function loadEssaysByStatus(status = "published") {
     });
 }
 
+function assetVersion() {
+  const assetPaths = ["style.css", "countdown.js", "comments.js", "share.js"]
+    .map((file) => path.join(__dirname, "site", "assets", file));
+  const hash = crypto.createHash("sha256");
+
+  assetPaths.forEach((assetPath) => hash.update(fs.readFileSync(assetPath)));
+  return hash.digest("hex").slice(0, 12);
+}
+
 module.exports = function(eleventyConfig) {
+  eleventyConfig.addGlobalData("assetVersion", assetVersion());
   const parseVersion = (value) => {
     const parts = String(value || "0.0.0").split(".");
     const major = parseInt(parts[0], 10);

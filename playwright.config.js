@@ -15,7 +15,7 @@ module.exports = defineConfig({
     video: "retain-on-failure",
   },
   webServer: {
-    command: "node scripts/serveBuiltSite.js",
+    command: `"${process.execPath}" scripts/serveBuiltSite.js`,
     url: "http://127.0.0.1:4173/DUE/",
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",
