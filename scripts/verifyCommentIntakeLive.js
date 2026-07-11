@@ -164,7 +164,7 @@ function buildConfig(args = {}, env = process.env, siteData = site) {
     env.GITHUB_TOKEN ||
     "";
 
-  const slug = args.slug || env.COMMENTS_VERIFY_SLUG || "drafty-draft";
+  const slug = args.slug || env.COMMENTS_VERIFY_SLUG || "moratorium-on-box";
   const essayPath =
     args["essay-path"] ||
     env.COMMENTS_VERIFY_ESSAY_PATH ||
@@ -319,7 +319,7 @@ Options:
   --site-url <url>        Deployed site URL used to build the essay URL.
   --repo <owner/repo>     GitHub repo used to fetch the committed comment file.
   --token <token>         Optional GitHub token for reading the committed file.
-  --slug <slug>           Essay slug to target. Defaults to drafty-draft.
+  --slug <slug>           Essay slug to target. Defaults to moratorium-on-box.
   --essay-path <path>     Essay path stored in the comment payload.
   --essay-url <url>       Full essay URL stored in the comment payload.
   --essay-title <title>   Essay title stored in the comment payload.

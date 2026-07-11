@@ -140,7 +140,7 @@ describe("submit-comment API", () => {
       }
 
       if (String(url).startsWith("https://api.github.com/repos/NNNvD/DUE/contents/")) {
-        return githubResponse(201, { content: { path: "data/comments/lorem-over-500/approved/file.yml" } });
+        return githubResponse(201, { content: { path: "data/comments/a-short-defense-of-imperfect-publishing/approved/file.yml" } });
       }
 
       throw new Error(`Unexpected fetch URL: ${url}`);
@@ -155,14 +155,14 @@ describe("submit-comment API", () => {
         referer: "https://example.test/form",
       },
       body: JSON.stringify({
-        slug: "lorem-over-500",
+        slug: "a-short-defense-of-imperfect-publishing",
         intent: "minor",
         name: "Local Tester",
         commenter_id: "local-tester",
         contact: "tester@example.com",
         comment: "Great piece! One broken link in section two.",
-        essayTitle: "Lorem Ipsum Boundary Test",
-        essayPath: "/essays/published/lorem-over-500/",
+        essayTitle: "A Short Defense of Imperfect Publishing",
+        essayPath: "/essays/published/a-short-defense-of-imperfect-publishing/",
       }),
     });
 
@@ -172,30 +172,30 @@ describe("submit-comment API", () => {
     expect(parsed.success).toBe(true);
     expect(parsed.branch).toBe("main");
     expect(parsed.filePath).toMatch(
-      /^data\/comments\/lorem-over-500\/approved\/2026-04-12T12-00-00-000Z-[a-z0-9]+\.yml$/
+      /^data\/comments\/a-short-defense-of-imperfect-publishing\/approved\/2026-04-12T12-00-00-000Z-[a-z0-9]+\.yml$/
     );
 
     expect(fetchCalls).toHaveLength(2);
     expect(fetchCalls[0].options.headers.Authorization).toBe("Bearer test-token");
 
     const putCall = fetchCalls[1];
-    expect(putCall.url).toContain("/repos/NNNvD/DUE/contents/data/comments/lorem-over-500/approved/");
+    expect(putCall.url).toContain("/repos/NNNvD/DUE/contents/data/comments/a-short-defense-of-imperfect-publishing/approved/");
 
     const commit = JSON.parse(putCall.options.body);
-    expect(commit.message).toBe("Add minor comment for lorem-over-500");
+    expect(commit.message).toBe("Add minor comment for a-short-defense-of-imperfect-publishing");
     expect(commit.branch).toBe("main");
 
     const stored = yaml.load(Buffer.from(commit.content, "base64").toString("utf8"));
     expect(stored).toMatchObject({
-      essay: "lorem-over-500",
+      essay: "a-short-defense-of-imperfect-publishing",
       intent: "minor",
       name: "Local Tester",
       commenter_id: "local-tester",
       contact: "tester@example.com",
       comment: "Great piece! One broken link in section two.",
-      essay_title: "Lorem Ipsum Boundary Test",
-      essay_path: "/essays/published/lorem-over-500/",
-      essay_url: "https://nnnvd.github.io/DUE/essays/published/lorem-over-500/",
+      essay_title: "A Short Defense of Imperfect Publishing",
+      essay_path: "/essays/published/a-short-defense-of-imperfect-publishing/",
+      essay_url: "https://nnnvd.github.io/DUE/essays/published/a-short-defense-of-imperfect-publishing/",
       submitted_at: "2026-04-12T12:00:00.000Z",
       status: "pending",
       moderated_at: null,

@@ -59,12 +59,12 @@ If `COMMENTS_ENDPOINT` is missing during the Pages build, the deployed site now 
 curl -X POST \
   -H "Content-Type: application/json" \
   -d '{
-    "slug": "lorem-over-500",
+    "slug": "moratorium-on-box",
     "intent": "minor",
     "name": "Local Tester",
     "contact": "tester@example.com",
     "comment": "Great piece! One broken link in section two.",
-    "essayPath": "/essays/published/lorem-over-500/"
+    "essayPath": "/essays/published/moratorium-on-box/"
   }' \
   http://localhost:8888/api/submit-comment
 ```
@@ -87,7 +87,7 @@ What this does:
 - prints the follow-up manual checks for comment visibility and moderation.
 
 Defaults and safety notes:
-- The helper targets `drafty-draft` by default so the live check lands on a clearly non-production essay slug unless you override `--slug`.
+- The helper targets `moratorium-on-box` by default. Override `--slug` if you want to verify against another published essay.
 - Override the payload with `--slug`, `--essay-title`, `--comment`, or the matching `COMMENTS_VERIFY_*` env vars.
 - Add `--skip-github-check` if the repo is private and you do not want the helper to fetch the file back for verification.
 - Reject or delete the verification comment after the pipeline has been confirmed.
