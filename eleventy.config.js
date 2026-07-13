@@ -314,8 +314,8 @@ function normalizeStatus(raw, fallback) {
 
 function loadEssaysByStatus(status = "published") {
   const pattern = status === "draft"
-    ? "site/essays/drafts/**/*.{md,njk}"
-    : "site/essays/published/**/*.{md,njk}";
+    ? "site/essays/drafts/**/*.md"
+    : "site/essays/published/**/*.md";
 
   const files = fg.sync(pattern, { dot: true });
 

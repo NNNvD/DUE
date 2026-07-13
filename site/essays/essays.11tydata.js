@@ -80,7 +80,10 @@ module.exports = {
       const constrained = applyTopicKeywordConstraints(data);
       return data.title || data.page?.title || constrained.title || constrained.topic || constrained.site?.title;
     },
-    ogType: () => "article",
+    ogType: (data) => {
+      const inputPath = data?.page?.inputPath || "";
+      return inputPath.endsWith(".md") ? "article" : "website";
+    },
     word_count: (data) => {
       if (typeof data.word_count === "number") return data.word_count;
 
@@ -123,7 +126,8 @@ module.exports = {
       return meta.absoluteUrl(data.social_image, data.site);
     },
     jsonLd: (data) => {
-      const isPublishedEssay = data?.page?.inputPath?.includes("/essays/published/");
+      const inputPath = data?.page?.inputPath || "";
+      const isPublishedEssay = inputPath.includes("/essays/published/") && inputPath.endsWith(".md");
       if (!isPublishedEssay || isEssayHidden(data)) return null;
 
       const constrained = applyTopicKeywordConstraints(data);

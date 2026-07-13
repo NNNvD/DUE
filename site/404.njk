@@ -5,13 +5,13 @@ permalink: 404.html
 breadcrumb: false
 eleventyExcludeFromCollections: true
 ---
-<section class="card">
-  <h1 style="margin-top:0">We lost that page.</h1>
-  <p>The link you followed may be outdated or the page may have moved. Try one of these destinations instead:</p>
-  <ul>
-    <li><a href="{{ site.baseUrl }}">Return to the homepage</a></li>
-    <li><a href="{{ '/contribute/' | url }}">See how to leave a comment on published essays</a></li>
-    <li><a href="{{ '/essays/' | url }}">Browse published essays</a></li>
-  </ul>
-  <p>If you typed the address manually, double-check the spelling. You can also use your browser's back button to continue exploring.</p>
+<section class="card not-found-card">
+  <p class="eyebrow">404</p>
+  <h1>Page not found</h1>
+  <p>The address may be outdated, or a draft may have moved during publication.</p>
+  <div class="not-found-actions" aria-label="Suggested destinations">
+    <a class="button-link button-link--primary" href="{{ '/' | url }}">Home</a>
+    <a class="button-link" href="{{ '/essays/' | url }}">Essay library</a>
+    <a class="button-link" href="{{ '/essays/published/' | url }}">Published essays</a>
+  </div>
 </section>
