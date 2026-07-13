@@ -37,7 +37,12 @@ collections:
         multiple: true
         required: false
         hint: "Optional controlled vocabulary for broader discovery."
-      - { label: Author, name: author, widget: string, required: true }
+      - label: Author
+        name: author
+        widget: select
+        options:
+          - { label: "Noah van Dongen", value: "noahvandongen" }
+        required: true
       - label: Coauthors
         name: coauthors
         widget: list
@@ -116,7 +121,12 @@ collections:
         multiple: true
         required: false
         hint: "Optional controlled vocabulary for broader discovery."
-      - { label: Author, name: author, widget: string, required: true }
+      - label: Author
+        name: author
+        widget: select
+        options:
+          - { label: "Noah van Dongen", value: "noahvandongen" }
+        required: true
       - label: Coauthors
         name: coauthors
         widget: list

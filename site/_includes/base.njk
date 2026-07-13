@@ -99,11 +99,19 @@
       {% endif %}
       {{ content | safe }}
     </main>
-    <footer>
-      Built with Eleventy · Content &copy; 2024–present Noah van Dongen & contributors. Subscribe via
-      <a href="{{ '/feed.xml' | url }}">RSS</a>
-      or
-      <a href="{{ '/feed.json' | url }}">JSON</a> feeds.
+    <footer class="site-footer">
+      <div>
+        <strong>DUE</strong> publishes essays on a deadline, finished or not.
+      </div>
+      <nav aria-label="Footer navigation">
+        <a href="{{ '/essays/' | url }}">Essays</a>
+        <a href="{{ '/essays/published/' | url }}">Published</a>
+        <a href="{{ '/drafts/' | url }}">Drafts</a>
+        <a href="{{ '/contribute/' | url }}">Comments</a>
+        <a href="{{ '/feed.xml' | url }}">RSS</a>
+        <a href="{{ '/feed.json' | url }}">JSON</a>
+      </nav>
+      <div>Content &copy; 2024–present Noah van Dongen & contributors.</div>
     </footer>
   </div>
   <script type="module" src="{{ "/assets/countdown.js" | url }}?v={{ assetVersion }}"></script>

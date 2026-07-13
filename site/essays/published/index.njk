@@ -1,0 +1,47 @@
+---
+layout: base.njk
+title: "Published Essays"
+description: "Browse DUE essays that have reached their publication deadline."
+permalink: /essays/published/
+---
+{% set published = collections.publishedEssays %}
+
+<section class="page-header card">
+  <p class="eyebrow">Published essays</p>
+  <h2>Released on deadline</h2>
+  <p class="lede">Every essay here reached its public deadline and remains open to later versions and reviewed feedback.</p>
+</section>
+
+{% if published.length %}
+  <div class="card-list">
+    {% for essay in published %}
+      {% set length = essay.data.word_range | wordRangeMeta %}
+      <article class="card list-card list-card--clickable">
+        <a class="list-card__cover" href="{{ essay.url | url }}" aria-label="Read {{ essay.data.title }}"></a>
+        <header class="list-card__header">
+          <div class="list-card__title-row">
+            {% if essay.data.word_range %}
+              <span class="length-icon length-icon--{{ length.icon }} length-icon--{{ length.palette }}" aria-hidden="true"></span>
+              <span class="length-icon__label">{{ length.label }}</span>
+            {% endif %}
+            <h3 class="card-title {{ length.titleClass }}"><a href="{{ essay.url | url }}">{{ essay.data.title }}</a></h3>
+          </div>
+        </header>
+        <p class="muted">{{ essay.data.excerpt }}</p>
+        <div class="meta meta--status">
+          <span class="badge badge--tone-info">v{{ essay.data.version | formatVersion(essay.data.initial_status) }}</span>
+          {% if essay.data.initial_status == "complete" %}
+            <span class="badge badge--tone-success">Finished on time</span>
+          {% else %}
+            <span class="badge badge--tone-warn">Unfinished on time</span>
+          {% endif %}
+          {% if essay.data.published_at %}<span>Published {{ essay.data.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <section class="card">
+    <p>No essays have been published yet.</p>
+  </section>
+{% endif %}

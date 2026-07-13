@@ -40,6 +40,12 @@ jobs:
           set -euxo pipefail
           npm run check:overdue
 
+      - name: Started essay deletion guard
+        if: github.event_name == 'pull_request'
+        run: |
+          set -euxo pipefail
+          npm run check:deletions
+
       - name: Validate release notes
         if: github.event_name == 'pull_request'
         env:

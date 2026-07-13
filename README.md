@@ -52,7 +52,7 @@ The script prompts for title, keywords, author, key dates, word range, and slug,
 ### Start a new essay from the frontend
 1. Visit `/admin/` on the deployed site and sign in with your GitHub account through the configured OAuth backend (only repo collaborators are allowed).
 2. In the **Draft essays** collection, click **New Draft essay**.
-3. Fill in the required fields to match the front matter schema (title, keywords, author, status, dates, word range, etc.).
+3. Fill in the visible fields. The CMS sets `started_at`, `deadline_at`, `status`, `initial_status`, `version`, `word_range`, and `word_count` defaults before saving.
 4. Save the entry; Sveltia commits the new Markdown file to `site/essays/drafts/` using the slug you choose.
 5. Run `npm run check:words -- --write` locally (or in CI) to populate `word_count` before publishing.
 
@@ -120,7 +120,9 @@ The essay browser previews the first three keywords on each card while keeping t
 ## Notes
 - This starter stores history in front‑matter `release_notes`. For full version snapshots, keep tagged versions or store copies.
 - GitHub-hosted runners [execute on UTC time](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#scheduled-events).
-- `deadline_at` is interpreted at midnight (00:00) UTC by default. Supply `deadline_at_time` to set a different publish time or timezone (e.g. `23:30`, `23:30:00`, or `23:30-04:00`).
+- Drafts created in `/admin/` store date-only values. The publication deadline is 30 calendar days after `started_at`, interpreted at `00:00` UTC unless `deadline_at_time` is supplied by a maintainer script.
+- DUE does not preserve the exact start time for CMS-created essays at launch. If exact start times become editorially important, add a visible `started_at_time` field and align the lifecycle scripts before changing published rules.
+- Started essays should not be deleted in ordinary PRs. Keep the record and use visibility metadata for exceptional removals; CI blocks deletion of Markdown files under `site/essays/drafts/` or `site/essays/published/` once they have `started_at`.
 
 ---
 

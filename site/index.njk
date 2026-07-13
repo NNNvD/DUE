@@ -90,6 +90,7 @@ description: "See what is shipping now, browse recent essays, and jump into the 
           {% if latest.data.author %}<span>By <strong>{{ latest.data.author | authorName }}</strong></span>{% endif %}
           {% if latest.data.browser_keywords and latest.data.browser_keywords.length %}<span>Keywords: {{ latest.data.browser_keywords | join(", ") }}</span>{% endif %}
         </div>
+        {% if latest.data.excerpt %}<p class="latest-card__excerpt">{{ latest.data.excerpt }}</p>{% endif %}
         <a class="inline-link latest-card__link" href="{{ latest.url | url }}">Read essay →</a>
       </div>
     {% else %}
@@ -101,7 +102,6 @@ description: "See what is shipping now, browse recent essays, and jump into the 
     <div class="section-heading">
       <p class="eyebrow">Now drafting</p>
       <h3>{% if upcomingDrafts.length %}Next deadline{% elif overdueDrafts.length %}Queued for publication{% else %}No drafts scheduled{% endif %}</h3>
-      <p>{% if upcomingDrafts.length %}Drafts show titles and keywords until publication.{% elif overdueDrafts.length %}Some drafts have passed their deadline and are waiting for autopublish.{% else %}The queue is clear. Browse the published library while the next deadline is being prepared.{% endif %}</p>
     </div>
     {% if upcomingDrafts.length %}
       {% set active = upcomingDrafts[0] %}
@@ -109,40 +109,12 @@ description: "See what is shipping now, browse recent essays, and jump into the 
         <div class="meta">
           {% if active.data.word_range %}<span class="badge {{ active.data.word_range | wordRangeTone }}">{{ active.data.word_range }} words</span>{% endif %}
           {% if active.data.started_at %}<span>Started {{ active.data.started_at | date("yyyy-LL-dd") }}</span>{% endif %}
-          {% if active.data.deadline_at %}<span>Publishes on {{ active.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
         </div>
         <h4 class="card-title">{{ active.data.title }}</h4>
         {% if active.data.excerpt %}<p class="draft-preview">{{ active.data.excerpt }}</p>{% endif %}
         {% if active.data.browser_keywords and active.data.browser_keywords.length %}<p class="muted"><strong>Keywords:</strong> {{ active.data.browser_keywords | join(", ") }}</p>{% endif %}
         <p class="countdown" {% if active.data.deadline_at %}data-deadline="{{ active.data.deadline_at }}"{% endif %}><span data-countdown>{% if active.data.deadline_at %}Tracking publication date…{% else %}Deadline not yet scheduled.{% endif %}</span></p>
       </div>
-      {% set laterDrafts = upcomingDrafts | reject('equalto', active) | list %}
-      {% if laterDrafts.length or overdueDrafts.length or unscheduledDrafts.length %}
-        <div class="divider"></div>
-        <div class="stack">
-          <p class="eyebrow">Also drafting</p>
-          <ul class="draft-list">
-            {% for draft in laterDrafts %}
-              <li>
-                <span class="draft-title">{{ draft.data.title }}</span>
-                {% if draft.data.deadline_at %}<span class="muted"> — publishing on {{ draft.data.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
-              </li>
-            {% endfor %}
-            {% for draft in overdueDrafts %}
-              <li>
-                <span class="draft-title">{{ draft.data.title }}</span>
-                <span class="muted">Queued for publication</span>
-              </li>
-            {% endfor %}
-            {% for draft in unscheduledDrafts %}
-              <li>
-                <span class="draft-title">{{ draft.data.title }}</span>
-                <span class="muted">Publication date pending</span>
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-      {% endif %}
     {% elif overdueDrafts.length %}
       <div class="stack">
         <ul class="draft-list">
@@ -169,13 +141,13 @@ description: "See what is shipping now, browse recent essays, and jump into the 
     <a class="explore-link" href="{{ '/essays/' | url }}">
       <p class="eyebrow">Library</p>
       <h4 class="card-title">Browse essays</h4>
-      <p class="muted">See everything, published or unpublished on time, and drafts in one place.</p>
+      <p class="muted">Search published essays and active drafts by status, length, author, and keyword.</p>
       <span class="inline-link">Open the library →</span>
     </a>
     <a class="explore-link" href="{{ '/drafts/' | url }}">
       <p class="eyebrow">Deadlines</p>
       <h4 class="card-title">Draft schedule</h4>
-      <p class="muted">View drafts ordered by set publication date to plan your reading. Drafts only show titles and keywords.</p>
+      <p class="muted">See active commitments ordered by publication date.</p>
       <span class="inline-link">See the queue →</span>
     </a>
     <a class="explore-link" href="{{ '/about/' | url }}">
