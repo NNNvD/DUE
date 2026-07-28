@@ -15,7 +15,7 @@ initial_status: unfinished
 started_at: 2026-07-13
 proposed_at: 2026-07-13
 publication_countdown: ''
-deadline_at: 2026-08-12
+deadline_at: 2026-07-28
 version: 0.1.0
 word_range: 500-1000
 word_count: 0
