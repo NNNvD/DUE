@@ -10,16 +10,19 @@ themes: []
 author: noahvandongen
 coauthors: []
 acknowledgments: []
-status: proposed
-initial_status: unfinished
+status: published
+initial_status: complete
 started_at: 2026-09-02
 proposed_at: 2026-09-02
 publication_countdown: ''
 deadline_at: 2026-10-02
-version: 0.1.0
+published_at: 2026-09-02
+version: 1.0.0
 word_range: 500-1000
-word_count: 0
-release_notes: []
+word_count: 985
+release_notes:
+  - Published manually before the deadline.
+permalink: /essays/published/why-we-academics-should-stop-writing-papers/
 ---
 
 Writing papers disgusts me. I don't mind writing; it even brings me joy, on occasion. I just loathe writing _papers_: creating formulaic academic manuscripts, the tedium of submitting them for publication, the endless revisions forced upon me by vindictive reviewers, until, at the end, when it is finally done and published, the only thing I feel is relief. I do it, because I'm forced to. If I didn't, my career as an academic would soon be over. But I do it reluctantly and need to share why I despise it so.
