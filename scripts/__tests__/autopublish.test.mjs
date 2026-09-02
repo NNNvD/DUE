@@ -240,8 +240,11 @@ Timed test.
 
   it("manually publishes one selected draft before its deadline", () => {
     const root = process.cwd();
+    const draftsDir = path.join(root, "site/essays/drafts");
     const draftPath = path.join(root, "site/essays/drafts/manual-publish-test.md");
     const pubPath = path.join(root, "site/essays/published/manual-publish-test.md");
+    const hadDraftsDir = fs.existsSync(draftsDir);
+    fs.mkdirSync(draftsDir, { recursive: true });
     fs.writeFileSync(draftPath, `---
 title: Manual publish test
 author: Test
@@ -274,6 +277,9 @@ Manual publication test.
     } finally {
       if (fs.existsSync(draftPath)) fs.unlinkSync(draftPath);
       if (fs.existsSync(pubPath)) fs.unlinkSync(pubPath);
+      if (!hadDraftsDir && fs.existsSync(draftsDir) && fs.readdirSync(draftsDir).length === 0) {
+        fs.rmSync(draftsDir, { recursive: true, force: true });
+      }
     }
   });
 
