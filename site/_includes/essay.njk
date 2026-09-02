@@ -41,7 +41,7 @@ layout: base.njk
           {% if author %}
             <div>
               <dt>Author</dt>
-              <dd>{{ author }}</dd>
+              <dd>{{ author | authorName }}</dd>
             </div>
           {% endif %}
           {% if coauthors and coauthors.length %}
@@ -56,7 +56,7 @@ layout: base.njk
                     {% set handle = coauthor.user | default(coauthor.handle, true) | default(coauthor.github, true) %}
                     {% set since = coauthor.since_version | default(null, true) %}
                   {% endif %}
-                  <span class="coauthor"{% if since %} title="Coauthor since v{{ since }}"{% endif %}>{{ handle }}</span>{% if not loop.last %}, {% endif %}
+                  <span class="coauthor"{% if since %} title="Coauthor since v{{ since }}"{% endif %}>{{ handle | authorName }}</span>{% if not loop.last %}, {% endif %}
                 {% endfor %}
               </dd>
             </div>
