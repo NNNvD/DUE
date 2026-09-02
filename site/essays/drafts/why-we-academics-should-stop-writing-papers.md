@@ -1,6 +1,10 @@
 ---
 title: Why we, academics, should stop writing papers
-keywords: []
+keywords:
+  - academic publications
+  - journals
+  - writing papers
+  - death of science
 topic: ''
 themes: []
 author: noahvandongen
