@@ -5,7 +5,7 @@ import path from "node:path";
 import matter from "gray-matter";
 
 const require = createRequire(import.meta.url);
-const { getDeadlineDate, resolveDeadline, runAutopublish } = require("../autopublish.js");
+const { getDeadlineDate, resolveDeadline, runAutopublish, publishDraftNow } = require("../autopublish.js");
 const { createDraft } = require("../newDraft.js");
 
 afterEach(() => {
@@ -235,6 +235,45 @@ Timed test.
       if (!hadDraftsDir && fs.existsSync(draftsDir)) {
         fs.rmSync(draftsDir, { recursive: true, force: true });
       }
+    }
+  });
+
+  it("manually publishes one selected draft before its deadline", () => {
+    const root = process.cwd();
+    const draftPath = path.join(root, "site/essays/drafts/manual-publish-test.md");
+    const pubPath = path.join(root, "site/essays/published/manual-publish-test.md");
+    fs.writeFileSync(draftPath, `---
+title: Manual publish test
+author: Test
+status: proposed
+initial_status: unfinished
+started_at: 2026-09-01
+deadline_at: 2026-10-01
+word_range: 250-500
+release_notes: []
+---
+
+Manual publication test.
+`, "utf8");
+
+    try {
+      const result = publishDraftNow("manual-publish-test", {
+        quiet: true,
+        referenceTime: "2026-09-02T12:00:00.000Z",
+      });
+      expect(result.slug).toBe("manual-publish-test");
+      expect(fs.existsSync(draftPath)).toBe(false);
+      expect(fs.existsSync(pubPath)).toBe(true);
+      expect(matter.read(pubPath).data).toMatchObject({
+        status: "published",
+        published_at: "2026-09-02",
+        permalink: "/essays/published/manual-publish-test/",
+      });
+      expect(matter.read(pubPath).data.deadline_at.toISOString()).toBe("2026-10-01T00:00:00.000Z");
+      expect(String(matter.read(pubPath).data.release_notes[0])).toContain("Published manually before deadline");
+    } finally {
+      if (fs.existsSync(draftPath)) fs.unlinkSync(draftPath);
+      if (fs.existsSync(pubPath)) fs.unlinkSync(pubPath);
     }
   });
 

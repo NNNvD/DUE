@@ -479,9 +479,7 @@ main > .breadcrumbs {
   z-index: 2;
   min-height: clamp(330px, 38vw, 430px);
   display: grid;
-  grid-template-columns: minmax(22rem, 1fr) minmax(20rem, 28.75rem);
-  align-items: end;
-  gap: var(--space-lg);
+  grid-template-columns: minmax(22rem, 1fr);
   padding: clamp(1.5rem, 4vw, 3rem);
 }
 
@@ -511,6 +509,9 @@ main > .breadcrumbs {
 }
 
 .home-hero__meta {
+  position: absolute;
+  right: clamp(1.5rem, 4vw, 3rem);
+  bottom: clamp(1.2rem, 3vw, 2rem);
   display: grid;
   grid-template-columns: repeat(3, minmax(96px, 1fr));
   gap: 1px;
@@ -1540,7 +1541,6 @@ main > .breadcrumbs {
 }
 
 .essay-details,
-.participation-panel,
 .discussion-panel {
   max-width: 860px;
   margin: var(--space-lg) auto 0;
@@ -1606,6 +1606,11 @@ main > .breadcrumbs {
 .essay-sidebar .essay-detail-panel__body ul {
   margin-top: 0;
   padding-left: 1.1rem;
+}
+
+.participation-panel {
+  max-width: 1160px;
+  margin: var(--space-lg) auto 0;
 }
 
 .participation-panel {

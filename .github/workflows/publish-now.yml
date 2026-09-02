@@ -1,0 +1,58 @@
+name: Publish selected draft now
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: Essay slug from site/essays/drafts/<slug>.md
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-now-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Publish selected draft
+        env:
+          ESSAY_SLUG: ${{ inputs.slug }}
+        run: node -e "require('./scripts/autopublish').publishDraftNow(process.env.ESSAY_SLUG)"
+
+      - name: Validate published essay
+        run: |
+          npm run check:frontmatter
+          npm run check:words
+          npm run check:overdue
+
+      - name: Commit and push
+        run: |
+          set -euxo pipefail
+          branch="${{ github.event.repository.default_branch }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/essays/drafts site/essays/published
+          git commit -m "chore: manually publish ${{ inputs.slug }}"
+          git fetch origin "$branch"
+          git rebase "origin/$branch"
+          git push origin "HEAD:$branch"

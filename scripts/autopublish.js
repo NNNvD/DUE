@@ -113,7 +113,7 @@ function resolveDeadline(data) {
 }
 
 function publishFile(fp, now, options = {}) {
-  const { quiet = false } = options;
+  const { quiet = false, releaseNote = `Auto-published at deadline (${now.toISOString()}).` } = options;
   const raw = fs.readFileSync(fp, "utf8");
   const doc = matter(raw);
   const d = doc.data;
@@ -123,7 +123,7 @@ function publishFile(fp, now, options = {}) {
   d.version = d.initial_status === "complete" ? "1.0.0" : "0.1.0";
   d.published_at = now.format("YYYY-MM-DD");
   d.release_notes = Array.isArray(d.release_notes) ? d.release_notes : [];
-  d.release_notes.unshift(`Auto-published at deadline (${now.toISOString()}).`);
+  d.release_notes.unshift(releaseNote);
   d.permalink = `/essays/published/${slug}/`;
 
   const out = matter.stringify(doc.content, d);
@@ -171,6 +171,30 @@ function runAutopublish(options = {}) {
   }, []);
 }
 
+function publishDraftNow(slug, options = {}) {
+  const { quiet = false, referenceTime } = options;
+  const now = referenceTime ? dayjs.utc(referenceTime) : dayjs.utc();
+  if (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(slug)) {
+    throw new Error("A valid lower-kebab-case essay slug is required.");
+  }
+
+  const matches = fg.sync(`${draftsDir}/**/${slug}.md`, { dot: false });
+  if (matches.length === 0) throw new Error(`Draft not found: ${slug}`);
+  if (matches.length > 1) throw new Error(`Multiple drafts found for slug: ${slug}`);
+
+  const fp = matches[0];
+  const doc = matter.read(fp);
+  const status = String(doc.data?.status || "draft").trim().toLowerCase();
+  if (!["proposed", "draft"].includes(status)) {
+    throw new Error(`Cannot manually publish ${slug}: status is "${status}".`);
+  }
+
+  return publishFile(fp, now, {
+    quiet,
+    releaseNote: `Published manually before deadline (${now.toISOString()}).`,
+  });
+}
+
 if (require.main === module) {
   runAutopublish();
 }
@@ -180,5 +204,6 @@ module.exports = {
   getStartDate,
   resolveDeadline,
   runAutopublish,
+  publishDraftNow,
   readAutopublishManifest
 };

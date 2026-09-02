@@ -87,6 +87,7 @@ The essay browser previews the first three keywords on each card while keeping t
 ## Workflows
 - **Deploy Pages**: Builds on push to `main`, and also after the autopublish workflow completes, then deploys to GitHub Pages.
 - **Auto-publish**: Scheduled workflow (every 15 minutes) that moves overdue `site/essays/drafts/*.md` to `site/essays/published/` and sets version per `initial_status`. You can still run it manually via workflow dispatch when needed.
+- **Manual publish**: Run **Publish selected draft now** in GitHub Actions, enter the draft slug, and start the workflow. It moves only that draft, records a manual-publication release note, preserves its original deadline, and deploys through the normal Pages workflow.
 - **Word range + count check**: Runs on PRs; fails if essay content is out of bounds or `word_count` is missing/outdated. Use `npm run check:words -- --write` before opening a PR to sync counts.
 - **Accessibility report**: Ensures pages expose alt text, labels, landmarks, and WCAG-friendly palette contrast. Run `npm run build` then `npm run check:a11y` locally to reproduce CI results.
 - **Feed validation**: Confirms `/feeds/feed.xml` and `/feeds/feed.json` are present and well formed after a build.
