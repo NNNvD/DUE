@@ -1,6 +1,7 @@
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 let countdownWidgetRegistered = false;
 let draftDateDefaultsRegistered = false;
+let publishActionRegistered = false;
 
 function parseDate(value) {
   if (!value) return null;
@@ -80,6 +81,16 @@ function resolveDraftDateDefaults(entry, now = new Date()) {
   return nextEntry;
 }
 
+function resolvePublishedUpdate(entry) {
+  const status = String(readEntryValue(entry, "status") || "").toLowerCase();
+  if (status !== "published") return entry;
+  return writeEntryValue(entry, "update_pending", true);
+}
+
+function resolvePreSave(entry, now = new Date()) {
+  return resolvePublishedUpdate(resolveDraftDateDefaults(entry, now));
+}
+
 function resolvePublicationDate(entry) {
   if (!entry || typeof entry.getIn !== "function") return null;
   const data = entry.getIn(["data"]);
@@ -98,7 +109,7 @@ function resolvePublicationDate(entry) {
   return new Date(started.getTime() + 30 * MS_PER_DAY);
 }
 
-function registerDraftDateDefaults() {
+function registerEntryDefaults() {
   if (draftDateDefaultsRegistered) return true;
 
   const CMS = window.CMS;
@@ -106,7 +117,7 @@ function registerDraftDateDefaults() {
 
   CMS.registerEventListener({
     name: "preSave",
-    handler: ({ entry }) => resolveDraftDateDefaults(entry),
+    handler: ({ entry }) => resolvePreSave(entry),
   });
   draftDateDefaultsRegistered = true;
   return true;
@@ -150,13 +161,152 @@ function registerCountdownWidget() {
   return true;
 }
 
+function findSaveButton() {
+  if (typeof document === "undefined") return null;
+  const buttons = Array.from(document.querySelectorAll("button"));
+  return buttons.find((button) => {
+    const text = String(button.textContent || "").trim().toLowerCase();
+    return text === "save" || text === "save draft";
+  });
+}
+
+function registerPublishActionWidget() {
+  if (publishActionRegistered) return true;
+
+  const CMS = window.CMS;
+  const h = window.h;
+  const createClass = window.createClass;
+
+  if (!CMS || !h || !createClass) return false;
+
+  const PublishActionControl = createClass({
+    getInitialState() {
+      return { queued: false, helpOpen: false };
+    },
+    handlePublish() {
+      if (typeof this.props.onChange === "function") {
+        this.props.onChange(true);
+      }
+      this.setState({ queued: true });
+
+      setTimeout(() => {
+        const saveButton = findSaveButton();
+        if (saveButton && !saveButton.disabled) {
+          saveButton.click();
+        }
+      }, 250);
+    },
+    toggleHelp() {
+      this.setState({ helpOpen: !this.state.helpOpen });
+    },
+    render() {
+      const help = this.state.helpOpen
+        ? h("div", { className: "due-help-panel", role: "note" }, [
+            h("p", {}, "Publishes this draft as a finished essay, records today as the publication date, and starts the published essay at v1.0.0."),
+            h("p", {}, "Use Save draft instead when you only want to update the public draft."),
+          ])
+        : null;
+      const status = this.state.queued
+        ? h("p", { className: "due-publish-status", role: "status", "aria-live": "polite" }, "Publication queued. If saving does not start automatically, click Save draft once.")
+        : null;
+
+      return h("div", { className: "due-publish-action" }, [
+        h("div", { className: "due-action-heading" }, [
+          h("strong", {}, "Ready to publish?"),
+          h("button", {
+            type: "button",
+            className: "due-help-toggle",
+            onClick: () => this.toggleHelp(),
+            "aria-label": "About publishing an essay",
+            "aria-expanded": this.state.helpOpen ? "true" : "false",
+          }, "?"),
+        ]),
+        help,
+        h("button", {
+          type: "button",
+          className: "due-publish-button",
+          onClick: () => this.handlePublish(),
+          disabled: this.state.queued,
+        }, this.state.queued ? "Publishing…" : "Publish essay"),
+        status,
+      ]);
+    },
+  });
+
+  CMS.registerWidget("publish-action", PublishActionControl);
+  publishActionRegistered = true;
+  return true;
+}
+
+function collapseFieldHints() {
+  if (typeof document === "undefined") return;
+  document.querySelectorAll(".nc-widgetHint:not([data-due-help-ready])").forEach((hint) => {
+    const text = String(hint.textContent || "").trim();
+    if (!text || hint.closest(".countdown-widget")) return;
+
+    hint.dataset.dueHelpReady = "true";
+    hint.classList.add("due-help-panel");
+    hint.hidden = true;
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "due-help-toggle";
+    toggle.textContent = "?";
+    toggle.setAttribute("aria-label", "Show field help");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.addEventListener("click", () => {
+      const nextHidden = !hint.hidden;
+      hint.hidden = nextHidden;
+      toggle.setAttribute("aria-expanded", nextHidden ? "false" : "true");
+    });
+
+    hint.parentNode?.insertBefore(toggle, hint);
+  });
+}
+
+function editorModeFromLocation() {
+  const route = `${window.location.hash || ""} ${window.location.pathname || ""}`.toLowerCase();
+  if (route.includes("/published/")) return "published";
+  if (route.includes("/drafts/")) return "draft";
+  return null;
+}
+
+function renameSaveButtons() {
+  if (typeof document === "undefined") return;
+  const mode = editorModeFromLocation();
+  if (!mode) return;
+
+  document.querySelectorAll("button").forEach((button) => {
+    const text = String(button.textContent || "").trim();
+    if (text !== "Save" && text !== "Save draft" && text !== "Save changes") return;
+    button.textContent = mode === "published" ? "Save changes" : "Save draft";
+  });
+}
+
+function enhanceAdminUi() {
+  if (typeof document === "undefined") return;
+  collapseFieldHints();
+  renameSaveButtons();
+}
+
+if (typeof MutationObserver !== "undefined" && typeof document !== "undefined") {
+  const observer = new MutationObserver(enhanceAdminUi);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+}
+if (window && typeof window.addEventListener === "function") {
+  window.addEventListener("hashchange", enhanceAdminUi);
+}
+
 const registerInterval = setInterval(() => {
-  const didRegisterWidget = registerCountdownWidget();
-  const didRegisterDateDefaults = registerDraftDateDefaults();
-  if (didRegisterWidget && didRegisterDateDefaults) {
+  const didRegisterCountdown = registerCountdownWidget();
+  const didRegisterDefaults = registerEntryDefaults();
+  const didRegisterPublishAction = registerPublishActionWidget();
+  if (didRegisterCountdown && didRegisterDefaults && didRegisterPublishAction) {
     clearInterval(registerInterval);
   }
 }, 100);
 
 registerCountdownWidget();
-registerDraftDateDefaults();
+registerEntryDefaults();
+registerPublishActionWidget();
+enhanceAdminUi();

@@ -19,6 +19,85 @@
     .skip-link:focus {
       top: 0;
     }
+
+    .due-help-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.6rem;
+      height: 1.6rem;
+      margin: 0.35rem 0 0.35rem 0.5rem;
+      padding: 0;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      opacity: 0.8;
+    }
+
+    .due-help-toggle:hover,
+    .due-help-toggle:focus-visible {
+      opacity: 1;
+    }
+
+    .due-help-panel {
+      margin: 0.25rem 0 0.75rem;
+      padding: 0.65rem 0.8rem;
+      border-left: 3px solid currentColor;
+      line-height: 1.45;
+      opacity: 0.9;
+    }
+
+    .due-help-panel p {
+      margin: 0 0 0.45rem;
+    }
+
+    .due-help-panel p:last-child {
+      margin-bottom: 0;
+    }
+
+    .due-publish-action {
+      margin: 1.25rem 0;
+      padding: 1rem;
+      border: 1px solid rgba(127, 127, 127, 0.45);
+      border-radius: 0.5rem;
+    }
+
+    .due-action-heading {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .due-action-heading .due-help-toggle {
+      margin: 0;
+    }
+
+    .due-publish-button {
+      padding: 0.65rem 1rem;
+      border: 0;
+      border-radius: 0.35rem;
+      background: #0969da;
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .due-publish-button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
+    .due-publish-status {
+      margin: 0.65rem 0 0;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>

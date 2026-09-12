@@ -134,16 +134,14 @@
       "default": []
     },
     "canonical_url": {
-      "type": "string",
-      "minLength": 1
+      "type": "string"
     },
     "word_count": {
       "type": "number",
       "minimum": 0
     },
     "social_image": {
-      "type": "string",
-      "minLength": 1
+      "type": "string"
     },
     "permalink": {
       "type": ["string", "boolean"],

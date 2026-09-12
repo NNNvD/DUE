@@ -113,18 +113,32 @@ function resolveDeadline(data) {
 }
 
 function publishFile(fp, now, options = {}) {
-  const { quiet = false, releaseNote = `Auto-published at deadline (${now.toISOString()}).` } = options;
+  const {
+    quiet = false,
+    markComplete = false,
+    releaseNote = markComplete
+      ? "Initial publication."
+      : `Auto-published at deadline (${now.toISOString()}).`,
+  } = options;
   const raw = fs.readFileSync(fp, "utf8");
   const doc = matter(raw);
   const d = doc.data;
   const slug = path.basename(fp, path.extname(fp));
 
   d.status = "published";
-  d.version = d.initial_status === "complete" ? "1.0.0" : "0.1.0";
+  if (markComplete) {
+    d.initial_status = "complete";
+    d.version = "1.0.0";
+  } else {
+    d.version = d.initial_status === "complete" ? "1.0.0" : "0.1.0";
+  }
   d.published_at = now.format("YYYY-MM-DD");
   d.release_notes = Array.isArray(d.release_notes) ? d.release_notes : [];
   d.release_notes.unshift(releaseNote);
   d.permalink = `/essays/published/${slug}/`;
+  delete d.publish_now;
+  delete d.update_pending;
+  delete d.update_note;
 
   const out = matter.stringify(doc.content, d);
   const dest = path.join(pubDir, path.basename(fp));
@@ -136,7 +150,7 @@ function publishFile(fp, now, options = {}) {
   fs.removeSync(fp);
 
   if (!quiet) {
-    console.log(`Published overdue draft: ${slug}`);
+    console.log(`Published draft: ${slug}`);
   }
 
   return { slug, source: fp, dest };
@@ -163,7 +177,7 @@ function runAutopublish(options = {}) {
     if (!deadline) return list;
 
     if (!now.isBefore(deadline)) {
-      const result = publishFile(fp, now, { quiet, deadline });
+      const result = publishFile(fp, now, { quiet });
       list.push(result);
     }
 
@@ -191,7 +205,8 @@ function publishDraftNow(slug, options = {}) {
 
   return publishFile(fp, now, {
     quiet,
-    releaseNote: `Published manually before deadline (${now.toISOString()}).`,
+    markComplete: true,
+    releaseNote: "Initial publication.",
   });
 }
 
@@ -203,6 +218,7 @@ module.exports = {
   getDeadlineDate,
   getStartDate,
   resolveDeadline,
+  publishFile,
   runAutopublish,
   publishDraftNow,
   readAutopublishManifest
