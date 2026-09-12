@@ -22,7 +22,7 @@ published_at: 2026-09-02T00:00:00.000Z
 update_intent: minor_update
 version: 1.0.1
 word_range: 500-1000
-word_count: 985
+word_count: 992
 release_notes:
   - Contribution by @NNNvD (minor_update).
   - Published manually before the deadline.

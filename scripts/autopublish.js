@@ -206,7 +206,7 @@ function publishDraftNow(slug, options = {}) {
   return publishFile(fp, now, {
     quiet,
     markComplete: true,
-    releaseNote: "Initial publication.",
+    releaseNote: "Initial publication. Published manually before deadline.",
   });
 }
 
