@@ -162,6 +162,7 @@ function registerCountdownWidget() {
 }
 
 function findSaveButton() {
+  if (typeof document === "undefined") return null;
   const buttons = Array.from(document.querySelectorAll("button"));
   return buttons.find((button) => {
     const text = String(button.textContent || "").trim().toLowerCase();
@@ -238,6 +239,7 @@ function registerPublishActionWidget() {
 }
 
 function collapseFieldHints() {
+  if (typeof document === "undefined") return;
   document.querySelectorAll(".nc-widgetHint:not([data-due-help-ready])").forEach((hint) => {
     const text = String(hint.textContent || "").trim();
     if (!text || hint.closest(".countdown-widget")) return;
@@ -270,6 +272,7 @@ function editorModeFromLocation() {
 }
 
 function renameSaveButtons() {
+  if (typeof document === "undefined") return;
   const mode = editorModeFromLocation();
   if (!mode) return;
 
@@ -281,13 +284,18 @@ function renameSaveButtons() {
 }
 
 function enhanceAdminUi() {
+  if (typeof document === "undefined") return;
   collapseFieldHints();
   renameSaveButtons();
 }
 
-const observer = new MutationObserver(enhanceAdminUi);
-observer.observe(document.documentElement, { childList: true, subtree: true });
-window.addEventListener("hashchange", enhanceAdminUi);
+if (typeof MutationObserver !== "undefined" && typeof document !== "undefined") {
+  const observer = new MutationObserver(enhanceAdminUi);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+}
+if (window && typeof window.addEventListener === "function") {
+  window.addEventListener("hashchange", enhanceAdminUi);
+}
 
 const registerInterval = setInterval(() => {
   const didRegisterCountdown = registerCountdownWidget();
