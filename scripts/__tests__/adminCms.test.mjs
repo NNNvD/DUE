@@ -8,12 +8,13 @@ function loadAdminCmsHelpers() {
     window: {},
     setInterval: () => 1,
     clearInterval: () => {},
+    setTimeout: () => 1,
     __helpers: null,
   };
 
   vm.createContext(context);
   vm.runInContext(
-    `${source}\n__helpers = { resolveDraftDateDefaults, resolvePublicationDate };`,
+    `${source}\n__helpers = { resolveDraftDateDefaults, resolvePublicationDate, resolvePreSave };`,
     context
   );
   return context.__helpers;
@@ -36,7 +37,7 @@ class Entry {
   }
 }
 
-describe("admin CMS draft dates", () => {
+describe("admin CMS essay saves", () => {
   it("fills blank draft dates before saving", () => {
     const { resolveDraftDateDefaults } = loadAdminCmsHelpers();
     const entry = new Entry({
@@ -69,16 +70,32 @@ describe("admin CMS draft dates", () => {
     expect(result.getIn(["data", "deadline_at"])).toBe("2026-06-09");
   });
 
-  it("does not alter published entries", () => {
-    const { resolveDraftDateDefaults } = loadAdminCmsHelpers();
+  it("marks published CMS saves for version processing", () => {
+    const { resolvePreSave } = loadAdminCmsHelpers();
     const entry = new Entry({
       status: "published",
-      started_at: "",
-      deadline_at: "",
+      version: "1.0.0",
+      update_pending: false,
     });
 
-    const result = resolveDraftDateDefaults(entry, new Date("2026-06-19T12:00:00Z"));
+    const result = resolvePreSave(entry, new Date("2026-06-19T12:00:00Z"));
 
-    expect(result).toBe(entry);
+    expect(result.getIn(["data", "update_pending"])).toBe(true);
+    expect(result.getIn(["data", "version"])).toBe("1.0.0");
+  });
+
+  it("does not mark draft saves as published updates", () => {
+    const { resolvePreSave } = loadAdminCmsHelpers();
+    const entry = new Entry({
+      status: "draft",
+      started_at: "2026-05-10",
+      proposed_at: "2026-05-10",
+      deadline_at: "2026-06-09",
+      update_pending: false,
+    });
+
+    const result = resolvePreSave(entry, new Date("2026-06-19T12:00:00Z"));
+
+    expect(result.getIn(["data", "update_pending"])).toBe(false);
   });
 });
