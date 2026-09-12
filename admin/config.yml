@@ -42,6 +42,8 @@ collections:
         widget: select
         options:
           - { label: "Noah van Dongen", value: "noahvandongen" }
+          - { label: "Floor Bevaart", value: "Floor Bevaart" }
+          - { label: "Josjan Zijlmans", value: "Josjan Zijlmans" }
         required: true
       - label: Coauthors
         name: coauthors
@@ -126,6 +128,8 @@ collections:
         widget: select
         options:
           - { label: "Noah van Dongen", value: "noahvandongen" }
+          - { label: "Floor Bevaart", value: "Floor Bevaart" }
+          - { label: "Josjan Zijlmans", value: "Josjan Zijlmans" }
         required: true
       - label: Coauthors
         name: coauthors
