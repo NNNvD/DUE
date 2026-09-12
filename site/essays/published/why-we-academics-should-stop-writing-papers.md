@@ -1,5 +1,5 @@
 ---
-title: 'Why we, academics, should stop writing papers'
+title: Why we, academics, should stop writing papers
 keywords:
   - academic publications
   - journals
@@ -32,7 +32,7 @@ permalink: /essays/published/why-we-academics-should-stop-writing-papers/
 publication_countdown: ''
 ---
 
-Scientists write papers. I am a scientist. riting papers disgusts me. I don't mind writing; it even brings me joy, on occasion. I just loathe writing _papers_: creating formulaic academic manuscripts, the tedium of submitting them for publication, the endless revisions forced upon me by vindictive reviewers, until, at the end, when it is finally done and published, the only thing I feel is relief. I do it, because I'm forced to. If I didn't, my career as an academic would soon be over. But I do it reluctantly and need to share why I despise it so.
+Writing papers disgusts me. I don't mind writing; it even brings me joy, on occasion. I just loathe writing _papers_: creating formulaic academic manuscripts, the tedium of submitting them for publication, the endless revisions forced upon me by vindictive reviewers, until, at the end, when it is finally done and published, the only thing I feel is relief. I do it, because I'm forced to. If I didn't, my career as an academic would soon be over. But I do it reluctantly and need to share why I despise it so.
 
 We are scientists and researchers. What we do is research. We try to figure stuff out: we explore, experiment, test predictions, and formulate explanations and theories. A paper is not the research. It is not what we thought, tried, and figured out. A paper is nothing more than a report: the report of the work that was done and the knowledge that was gained. As a report, the academic paper most resembles an autopsy report. The research is finished, the methods and data have been put to rest, and the researchers have moved on. In the autopsy report, the writers reconstruct events, establish means and circumstances, and speculate on the causes and implications. Of course, autopsy reports are invaluable. In forensics, however, they typically don't mistake what's what: it's about the body, and the report is just a medium to communicate a message.
 
