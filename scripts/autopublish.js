@@ -203,10 +203,12 @@ function publishDraftNow(slug, options = {}) {
     throw new Error(`Cannot manually publish ${slug}: status is "${status}".`);
   }
 
+  const publishedAt = now.format("YYYY-MM-DD");
+
   return publishFile(fp, now, {
     quiet,
     markComplete: true,
-    releaseNote: "Initial publication.",
+    releaseNote: `Published manually before deadline on ${publishedAt}.`,
   });
 }
 
