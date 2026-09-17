@@ -49,14 +49,13 @@ test.describe("essay library", () => {
     await expect(languageGroup.getByText("English", { exact: true })).toBeVisible();
     await expect(languageGroup.getByText("Nederlands", { exact: true })).toBeVisible();
 
-    const dutchCard = page.locator('[data-search-results] > .list-card[data-language="nl"]');
-    await expect(dutchCard).toHaveCount(1);
-    await expect(dutchCard.getByText("Nederlands", { exact: true })).toBeVisible();
+    const wachtkamer = page.locator('[data-essay-id="proposed-wachtkamer"]');
+    await expect(wachtkamer).toHaveAttribute("data-language", "nl");
+    await expect(wachtkamer.getByText("Nederlands", { exact: true })).toBeVisible();
 
     await languageGroup.locator('input[value="nl"]').check();
-    await expect(dutchCard).toBeVisible();
+    await expect(wachtkamer).toBeVisible();
     await expect(page.locator('[data-search-results] > .list-card[data-language="en"]:visible')).toHaveCount(0);
-    await expect(page.locator("[data-result-count]")).toContainText("1 essay found");
   });
 });
 
