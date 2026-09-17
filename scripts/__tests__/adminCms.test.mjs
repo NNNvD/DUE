@@ -123,7 +123,7 @@ describe("admin CMS essay saves", () => {
         addEventListener: () => {},
       },
       document: {
-        querySelectorAll: () => [button],
+        querySelectorAll: (selector) => (selector === "button" ? [button] : []),
       },
     });
 
@@ -157,7 +157,7 @@ describe("admin CMS essay saves", () => {
         addEventListener: () => {},
       },
       document: {
-        querySelectorAll: () => [button],
+        querySelectorAll: (selector) => (selector === "button" ? [button] : []),
       },
     });
 
