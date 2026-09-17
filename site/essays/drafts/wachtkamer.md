@@ -1,5 +1,6 @@
 ---
 title: Wachtkamer
+language: nl
 keywords:
   - Wachten
   - Bureaucratie
