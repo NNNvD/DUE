@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import vm from "node:vm";
 
-function loadAdminCmsHelpers() {
+function loadAdminCmsHelpers(overrides = {}) {
   const source = fs.readFileSync("admin/cms.js", "utf8");
   const context = {
     window: {},
@@ -10,11 +10,12 @@ function loadAdminCmsHelpers() {
     clearInterval: () => {},
     setTimeout: () => 1,
     __helpers: null,
+    ...overrides,
   };
 
   vm.createContext(context);
   vm.runInContext(
-    `${source}\n__helpers = { resolveDraftDateDefaults, resolvePublicationDate, resolvePreSave };`,
+    `${source}\n__helpers = { resolveDraftDateDefaults, resolvePublicationDate, resolvePreSave, renameSaveButtons };`,
     context
   );
   return context.__helpers;
@@ -97,5 +98,72 @@ describe("admin CMS essay saves", () => {
     const result = resolvePreSave(entry, new Date("2026-06-19T12:00:00Z"));
 
     expect(result.getIn(["data", "update_pending"])).toBe(false);
+  });
+
+  it("renames a generic draft save button once", () => {
+    let writes = 0;
+    let value = "Save";
+    const button = {};
+    Object.defineProperty(button, "textContent", {
+      get() {
+        return value;
+      },
+      set(next) {
+        writes += 1;
+        value = next;
+      },
+    });
+
+    const { renameSaveButtons } = loadAdminCmsHelpers({
+      window: {
+        location: {
+          hash: "#/collections/drafts/entries/example",
+          pathname: "/DUE/admin/",
+        },
+        addEventListener: () => {},
+      },
+      document: {
+        querySelectorAll: () => [button],
+      },
+    });
+
+    renameSaveButtons();
+    renameSaveButtons();
+
+    expect(value).toBe("Save draft");
+    expect(writes).toBe(1);
+  });
+
+  it("does not rewrite a save button when it already has the correct label", () => {
+    let writes = 0;
+    let value = "Save changes";
+    const button = {};
+    Object.defineProperty(button, "textContent", {
+      get() {
+        return value;
+      },
+      set(next) {
+        writes += 1;
+        value = next;
+      },
+    });
+
+    const { renameSaveButtons } = loadAdminCmsHelpers({
+      window: {
+        location: {
+          hash: "#/collections/published/entries/example",
+          pathname: "/DUE/admin/",
+        },
+        addEventListener: () => {},
+      },
+      document: {
+        querySelectorAll: () => [button],
+      },
+    });
+
+    renameSaveButtons();
+
+    expect(value).toBe("Save changes");
+    expect(writes).toBe(0);
   });
 });
