@@ -43,6 +43,11 @@
   </script>
   {% endif %}
   <link rel="stylesheet" href="{{ "/assets/style.css" | url }}?v={{ assetVersion }}">
+  {% if pageStylesheets %}
+    {% for stylesheet in pageStylesheets %}
+  <link rel="stylesheet" href="{{ stylesheet | url }}">
+    {% endfor %}
+  {% endif %}
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
