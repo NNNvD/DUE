@@ -108,6 +108,11 @@ function normalizeStatus(raw, fallback) {
   return fallback;
 }
 
+function normalizeLanguage(raw) {
+  const normalized = typeof raw === "string" ? raw.trim().toLowerCase() : "";
+  return normalized || "en";
+}
+
 function normalizeContributors(contributors = []) {
   if (!Array.isArray(contributors)) return [];
   return contributors
@@ -150,6 +155,7 @@ function loadEssays(status = "published") {
       const url = normalizedStatus === "published" ? `/essays/published/${slug}/` : null;
       const keywords = Array.isArray(constrained.keywords) ? constrained.keywords : [];
       const themes = Array.isArray(constrained.themes) ? constrained.themes : [];
+      const language = normalizeLanguage(constrained.language);
       const description = meta.buildMetaDescription({
         ...constrained,
         page: { ...(data.page || {}), inputPath: file },
@@ -184,6 +190,7 @@ function loadEssays(status = "published") {
         status: normalizedStatus,
         title: constrained.title || slug,
         topic: constrained.topic || "",
+        language,
         author: constrained.author || "",
         coauthors: contributors,
         keywords,
@@ -220,6 +227,7 @@ function loadEssays(status = "published") {
           topic: constrained.topic || "",
           keywords,
           themes,
+          language,
           length_bucket: lengthMeta.bin,
         },
         metrics: {
