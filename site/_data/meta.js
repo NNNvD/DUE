@@ -217,7 +217,7 @@ function buildArticleJsonLd(data = {}) {
     description,
     mainEntityOfPage: canonicalUrl,
     url: canonicalUrl,
-    inLanguage: "en",
+    inLanguage: data.language || "en",
     version: data.version,
     datePublished,
     dateModified,
