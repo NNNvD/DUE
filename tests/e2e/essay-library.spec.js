@@ -43,4 +43,28 @@ test.describe("essay library", () => {
     await expect(draftCard.locator(".deadline-badge")).toBeVisible();
     await expect(draftCard.locator(".countdown")).toHaveCount(0);
   });
+
+  test("filters by language and labels Dutch essays as Nederlands", async ({ page }) => {
+    const languageGroup = page.locator("[data-filter-language-group]");
+    await expect(languageGroup.getByText("English", { exact: true })).toBeVisible();
+    await expect(languageGroup.getByText("Nederlands", { exact: true })).toBeVisible();
+
+    const dutchCard = page.locator('[data-search-results] > .list-card[data-language="nl"]');
+    await expect(dutchCard).toHaveCount(1);
+    await expect(dutchCard.getByText("Nederlands", { exact: true })).toBeVisible();
+
+    await languageGroup.locator('input[value="nl"]').check();
+    await expect(dutchCard).toBeVisible();
+    await expect(page.locator('[data-search-results] > .list-card[data-language="en"]:visible')).toHaveCount(0);
+    await expect(page.locator("[data-result-count]")).toContainText("1 essay found");
+  });
+});
+
+test.describe("essay language details", () => {
+  test("shows language in an essay details sidebar", async ({ page }) => {
+    await page.goto("/DUE/essays/published/why-we-academics-should-stop-writing-papers/");
+    await expect(page.locator(".essay-sidebar .essay-property-list")).toContainText("Language");
+    await expect(page.locator(".essay-sidebar .essay-property-list")).toContainText("English");
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  });
 });
