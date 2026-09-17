@@ -19,6 +19,15 @@ collections:
       preview: false
     fields:
       - { label: Title, name: title, widget: string, required: true }
+      - label: Language
+        name: language
+        widget: select
+        options:
+          - { label: "English", value: "en" }
+          - { label: "Nederlands", value: "nl" }
+        default: en
+        required: true
+        hint: "Language in which the essay is written."
       - label: Keywords
         name: keywords
         widget: list
@@ -28,13 +37,7 @@ collections:
         required: false
         hint: "Use specific terms someone might search for. Usually 3–6 keywords are enough."
       - { label: Legacy topic, name: topic, widget: hidden, required: false, default: "" }
-      - label: Themes
-        name: themes
-        widget: select
-        options: [deadlines, iteration, publishing, collaboration, quality, process, scope, authorship, feedback, revision]
-        multiple: true
-        required: false
-        hint: "Themes are broad DUE categories used for browsing; keywords are specific searchable terms."
+      - { label: Themes, name: themes, widget: hidden, required: false, default: [] }
       - label: Author
         name: author
         widget: select
@@ -87,6 +90,15 @@ collections:
       preview: false
     fields:
       - { label: Title, name: title, widget: string, required: true }
+      - label: Language
+        name: language
+        widget: select
+        options:
+          - { label: "English", value: "en" }
+          - { label: "Nederlands", value: "nl" }
+        default: en
+        required: true
+        hint: "Language in which the essay is written."
       - label: Keywords
         name: keywords
         widget: list
@@ -96,13 +108,7 @@ collections:
         required: false
         hint: "Use specific terms someone might search for. Usually 3–6 keywords are enough."
       - { label: Legacy topic, name: topic, widget: hidden, required: false, default: "" }
-      - label: Themes
-        name: themes
-        widget: select
-        options: [deadlines, iteration, publishing, collaboration, quality, process, scope, authorship, feedback, revision]
-        multiple: true
-        required: false
-        hint: "Themes are broad DUE categories used for browsing; keywords are specific searchable terms."
+      - { label: Themes, name: themes, widget: hidden, required: false, default: [] }
       - label: Author
         name: author
         widget: select
