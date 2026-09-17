@@ -1,15 +1,35 @@
 const VIEW_STORAGE_KEY = "dueEssayLibraryView";
 const DEFAULT_VIEW = "compact";
+const LANGUAGE_LABELS = {
+  en: "English",
+  nl: "Nederlands",
+};
 
-function parsePreviews() {
-  const node = document.querySelector("[data-essay-previews]");
-  if (!node) return {};
+function parseJson(selector, fallback) {
+  const node = document.querySelector(selector);
+  if (!node) return fallback;
 
   try {
-    return JSON.parse(node.textContent || "{}");
+    return JSON.parse(node.textContent || "");
   } catch (error) {
-    return {};
+    return fallback;
   }
+}
+
+function parsePreviews() {
+  return parseJson("[data-essay-previews]", {});
+}
+
+function parseEssayData() {
+  return parseJson("[data-essay-search]", []);
+}
+
+function languageCode(entry) {
+  return String(entry?.language || "en").trim().toLowerCase() || "en";
+}
+
+function languageLabel(code) {
+  return LANGUAGE_LABELS[code] || code;
 }
 
 function isDraftCard(card) {
@@ -55,13 +75,118 @@ function addPreview(card, previews) {
   }
 }
 
-function normalizeCards(container, previews, observer) {
+function addLanguageBadge(card, entry) {
+  const code = languageCode(entry);
+  card.dataset.language = code;
+
+  if (code === "en" || card.querySelector("[data-language-badge]")) return;
+  const statusMeta = card.querySelector(".meta--status");
+  if (!statusMeta) return;
+
+  const badge = document.createElement("span");
+  badge.className = "badge badge--tone-muted";
+  badge.dataset.languageBadge = "";
+  badge.textContent = languageLabel(code);
+  statusMeta.appendChild(badge);
+}
+
+function selectedLanguages(group) {
+  if (!group) return [];
+  return Array.from(group.querySelectorAll("input[type='checkbox']:checked")).map((input) => input.value);
+}
+
+function buildLanguageFilter(group, data) {
+  if (!group) return;
+
+  const languages = Array.from(new Set(data.map(languageCode))).sort((a, b) => {
+    return languageLabel(a).localeCompare(languageLabel(b));
+  });
+
+  group.innerHTML = "";
+  for (const code of languages) {
+    const label = document.createElement("label");
+    label.className = "filter-option";
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = code;
+
+    const text = document.createElement("span");
+    text.textContent = languageLabel(code);
+
+    label.append(input, text);
+    group.appendChild(label);
+  }
+}
+
+function addLanguageFilterPills(activeFiltersNode, languages) {
+  if (!activeFiltersNode) return;
+
+  activeFiltersNode.querySelectorAll('[data-filter-type="language"]').forEach((node) => node.remove());
+  for (const code of languages) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "active-filter";
+    button.dataset.filterType = "language";
+    button.dataset.filterValue = code;
+    button.setAttribute("aria-label", `Remove filter ${languageLabel(code)}`);
+    button.textContent = `${languageLabel(code)} x`;
+    activeFiltersNode.appendChild(button);
+  }
+}
+
+function applyLanguageFilter(container, group, entryMap, countNode, activeFiltersNode, clearButton) {
+  if (!container) return;
+
+  const languages = selectedLanguages(group);
+  const cards = Array.from(container.querySelectorAll(":scope > .list-card"));
+  let visibleCount = 0;
+
+  cards.forEach((card) => {
+    const entry = entryMap.get(card.dataset.essayId);
+    const code = languageCode(entry);
+    addLanguageBadge(card, entry);
+    const visible = !languages.length || languages.includes(code);
+    card.hidden = !visible;
+    if (visible) visibleCount += 1;
+  });
+
+  let empty = container.querySelector("[data-language-empty]");
+  if (cards.length && visibleCount === 0) {
+    if (!empty) {
+      empty = document.createElement("div");
+      empty.className = "card";
+      empty.dataset.languageEmpty = "";
+      empty.innerHTML = "<p>No essays match these language filters.</p>";
+      container.appendChild(empty);
+    }
+    empty.hidden = false;
+  } else if (empty) {
+    empty.hidden = true;
+  }
+
+  if (countNode && cards.length) {
+    countNode.textContent = `${visibleCount} ${visibleCount === 1 ? "essay" : "essays"} found`;
+  }
+
+  addLanguageFilterPills(activeFiltersNode, languages);
+
+  if (clearButton) {
+    const hasOtherFilters = Boolean(activeFiltersNode?.querySelector('[data-filter-type]:not([data-filter-type="language"])'));
+    clearButton.hidden = languages.length === 0 && !hasOtherFilters;
+  }
+}
+
+function normalizeCards(container, previews, observer, entryMap, languageGroup, countNode, activeFiltersNode, clearButton) {
   if (!container) return;
 
   container.querySelectorAll(".list-card .countdown").forEach((countdown) => countdown.remove());
 
   const cards = Array.from(container.querySelectorAll(":scope > .list-card"));
-  cards.forEach((card) => addPreview(card, previews));
+  cards.forEach((card) => {
+    addPreview(card, previews);
+    addLanguageBadge(card, entryMap.get(card.dataset.essayId));
+  });
 
   const sorted = [...cards].sort((a, b) => Number(isDraftCard(a)) - Number(isDraftCard(b)));
   const orderChanged = sorted.some((card, index) => card !== cards[index]);
@@ -71,6 +196,8 @@ function normalizeCards(container, previews, observer) {
     sorted.forEach((card) => container.appendChild(card));
     observer?.observe(container, { childList: true });
   }
+
+  applyLanguageFilter(container, languageGroup, entryMap, countNode, activeFiltersNode, clearButton);
 }
 
 function setupViewToggle(container, toolbar) {
@@ -127,12 +254,30 @@ function ready() {
   if (!container) return;
 
   const previews = parsePreviews();
+  const data = parseEssayData();
+  const entryMap = new Map(data.map((entry) => [entry.id, entry]));
+  const languageGroup = document.querySelector("[data-filter-language-group]");
+  const countNode = document.querySelector("[data-result-count]");
+  const activeFiltersNode = document.querySelector("[data-active-filters]");
+  const clearButton = document.querySelector("[data-clear-filters]");
+
+  buildLanguageFilter(languageGroup, data);
+
   let scheduled = false;
   let observer;
 
   const normalize = () => {
     scheduled = false;
-    normalizeCards(container, previews, observer);
+    normalizeCards(
+      container,
+      previews,
+      observer,
+      entryMap,
+      languageGroup,
+      countNode,
+      activeFiltersNode,
+      clearButton
+    );
   };
 
   observer = new MutationObserver(() => {
@@ -143,6 +288,26 @@ function ready() {
 
   observer.observe(container, { childList: true });
   setupViewToggle(container, toolbar);
+
+  languageGroup?.addEventListener("change", normalize);
+
+  activeFiltersNode?.addEventListener("click", (event) => {
+    const button = event.target.closest('[data-filter-type="language"]');
+    if (!button) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const input = languageGroup?.querySelector(`input[value="${CSS.escape(button.dataset.filterValue)}"]`);
+    if (input) input.checked = false;
+    normalize();
+  }, true);
+
+  clearButton?.addEventListener("click", () => {
+    languageGroup?.querySelectorAll("input[type='checkbox']").forEach((input) => {
+      input.checked = false;
+    });
+    queueMicrotask(normalize);
+  });
+
   normalize();
 }
 
