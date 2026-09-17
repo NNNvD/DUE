@@ -276,10 +276,13 @@ function renameSaveButtons() {
   const mode = editorModeFromLocation();
   if (!mode) return;
 
+  const desiredText = mode === "published" ? "Save changes" : "Save draft";
+
   document.querySelectorAll("button").forEach((button) => {
     const text = String(button.textContent || "").trim();
     if (text !== "Save" && text !== "Save draft" && text !== "Save changes") return;
-    button.textContent = mode === "published" ? "Save changes" : "Save draft";
+    if (text === desiredText) return;
+    button.textContent = desiredText;
   });
 }
 
