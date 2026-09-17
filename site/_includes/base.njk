@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="en">
+<html lang="{{ language or 'en' }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -122,5 +122,6 @@
   <script type="module" src="{{ "/assets/countdown.js" | url }}?v={{ assetVersion }}"></script>
   <script type="module" src="{{ "/assets/comments.js" | url }}?v={{ assetVersion }}"></script>
   <script type="module" src="{{ "/assets/share.js" | url }}?v={{ assetVersion }}"></script>
+  <script type="module" src="{{ "/assets/essay-language.js" | url }}?v=1"></script>
 </body>
 </html>
