@@ -1,7 +1,7 @@
 ---
 layout: base.njk
 title: "Essay library"
-description: "Browse DUE essays and drafts by publication status, author, topic, keyword, and length."
+description: "Browse DUE essays and drafts by publication status, author, language, keyword, and length."
 pageStylesheets:
   - /assets/essay-library.css?v=1
 ---
@@ -107,6 +107,13 @@ pageStylesheets:
             </div>
           </details>
 
+          <details class="filter-group" open>
+            <summary class="filter-panel__label">Language</summary>
+            <div class="filter-options" data-filter-language-group>
+              <p class="muted">Loading languages…</p>
+            </div>
+          </details>
+
           <details class="filter-group">
             <summary class="filter-panel__label">Authors & coauthors</summary>
             <div class="filter-options" data-filter-author-group>
@@ -178,6 +185,7 @@ pageStylesheets:
           {% else %}
             <span class="badge badge--tone-warn">Unfinished on time</span>
           {% endif %}
+          {% if entry.language == "nl" %}<span class="badge badge--tone-muted">Nederlands</span>{% endif %}
           {% if entry.published_at %}<span>Published {{ entry.published_at | date("yyyy-LL-dd") }}</span>{% endif %}
           {% if isDraftLike and entry.deadline_at %}<span>Publishes {{ entry.deadline_at | date("yyyy-LL-dd") }}</span>{% endif %}
         </div>
@@ -199,4 +207,4 @@ pageStylesheets:
 </script>
 
 <script type="module" src="{{ '/assets/search.js' | url }}"></script>
-<script type="module" src="{{ '/assets/essay-library.js' | url }}?v=1"></script>
+<script type="module" src="{{ '/assets/essay-library.js' | url }}?v=2"></script>
