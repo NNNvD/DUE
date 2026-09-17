@@ -1,7 +1,9 @@
 ---
 layout: base.njk
 title: "Essay library"
-description: "Browse every DUE essay, whether it's live or still in draft, with color-coded length badges."
+description: "Browse DUE essays and drafts by publication status, author, topic, keyword, and length."
+pageStylesheets:
+  - /assets/essay-library.css?v=1
 ---
 {% set published = collections.publishedEssays %}
 {% set drafts = collections.draftEssays %}
@@ -11,8 +13,8 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
 
 <section class="page-header card">
   <p class="eyebrow">Library</p>
-  <h2>Browse every essay</h2>
-  <p class="lede">Scan the full catalogue to see what’s shipping next and what has already launched.</p>
+  <h2>Essay library</h2>
+  <p class="lede">Explore published essays and works in progress, including their publication status, authors, and topics.</p>
   <div class="length-legend" aria-label="Essay length legend">
     <span class="legend-badge legend-badge--square magenta">Tiny · 250–500 words</span>
     <span class="legend-badge legend-badge--triangle orange">Minute · 500–1000 words</span>
@@ -125,7 +127,7 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
     <div class="essay-browser__results stack">
       <div class="section-heading">
         <p class="eyebrow">Interactive browser</p>
-        <h3>Filter and search every essay</h3>
+        <h3>Filter and search essays and drafts</h3>
         <p class="muted">Results update instantly as you search. Active filters can be removed one at a time.</p>
       </div>
       <div class="results-toolbar" data-results-toolbar hidden>
@@ -135,7 +137,7 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
         </div>
         <button class="clear-filters" type="button" data-clear-filters hidden>Clear filters</button>
       </div>
-      <div class="card-list" data-search-results>
+      <div class="card-list" data-search-results data-view="compact">
         <div class="card"><p>Loading the essay index…</p></div>
       </div>
     </div>
@@ -145,7 +147,7 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
 <section class="essay-browser-fallback" data-search-fallback>
   <div class="section-heading">
     <p class="eyebrow">Essay list</p>
-    <h3>Every essay</h3>
+    <h3>Essays and drafts</h3>
     <p class="muted">Static list shown when interactive filtering is unavailable.</p>
   </div>
   <div class="card-list">
@@ -192,5 +194,9 @@ description: "Browse every DUE essay, whether it's live or still in draft, with 
 <script type="application/json" data-essay-search>
   {{ essayIndex | dump | safe }}
 </script>
+<script type="application/json" data-essay-previews>
+  {{ essayPreviews | dump | safe }}
+</script>
 
 <script type="module" src="{{ '/assets/search.js' | url }}"></script>
+<script type="module" src="{{ '/assets/essay-library.js' | url }}?v=1"></script>
