@@ -12,10 +12,10 @@ coauthors: []
 acknowledgments: []
 status: proposed
 initial_status: unfinished
-started_at: 2026-09-02
-proposed_at: 2026-09-02
+started_at: 2026-09-07
+proposed_at: 2026-09-07
 publication_countdown: ''
-deadline_at: 2026-10-02
+deadline_at: 2026-10-07
 version: 0.1.0
 word_range: 500-1000
 word_count: 0
