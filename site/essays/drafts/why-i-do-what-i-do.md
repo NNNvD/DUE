@@ -21,7 +21,7 @@ version: 0.1.0
 word_range: 500-1000
 word_count: 0
 release_notes: []
-publish_now: ''
+publish_now: true
 ---
 
 I don't want to die. I would very much like to live forever. At least, and at the moment, I would like to live a lot longer than the +40 years I expect to have left, and in better health than I can expect towards the end. One avenue I see towards reaching that goal is understanding how human consciousness works. This might allow us to (re)create, fix, preserve, and possibly transfer people's consciousnesses. At the moment, it does not seem that OpenAI, Anthropic, or other AI labs are brute-forcing their way to AGI. And if they do succeed, it's not at all clear that this intelligence will resemble ours, inform us how our consciousness works, and/or offer us what is needed for me to survive, and others, of course.
