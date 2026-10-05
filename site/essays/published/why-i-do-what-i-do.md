@@ -11,17 +11,19 @@ themes: []
 author: noahvandongen
 coauthors: []
 acknowledgments: []
-status: proposed
-initial_status: unfinished
-started_at: 2026-09-07
-proposed_at: 2026-09-07
+status: published
+initial_status: complete
+started_at: 2026-09-07T00:00:00.000Z
+proposed_at: 2026-09-07T00:00:00.000Z
 publication_countdown: ''
-deadline_at: 2026-10-07
-version: 0.1.0
-word_range: 500-1000
-word_count: 0
-release_notes: []
-publish_now: true
+deadline_at: 2026-10-07T00:00:00.000Z
+version: 1.0.0
+word_range: 250-500
+word_count: 422
+release_notes:
+  - Published manually before deadline on 2026-10-05.
+published_at: 2026-10-05
+permalink: /essays/published/why-i-do-what-i-do/
 ---
 
 I don't want to die. I would very much like to live forever. At least, and at the moment, I would like to live a lot longer than the +40 years I expect to have left, and in better health than I can expect towards the end. One avenue I see towards reaching that goal is understanding how human consciousness works. This might allow us to (re)create, fix, preserve, and possibly transfer people's consciousnesses. At the moment, it does not seem that OpenAI, Anthropic, or other AI labs are brute-forcing their way to AGI. And if they do succeed, it's not at all clear that this intelligence will resemble ours, inform us how our consciousness works, and/or offer us what is needed for me to survive, and others, of course.
