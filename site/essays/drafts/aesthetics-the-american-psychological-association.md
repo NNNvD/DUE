@@ -1,5 +1,5 @@
 ---
-title: Aesthetics the American Psychological Association
+title: Aesthetics of the American Psychological Association
 language: en
 keywords:
   - APA
