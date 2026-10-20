@@ -13,17 +13,17 @@ initial_status: unfinished
 started_at: 2026-09-20T00:00:00.000Z
 proposed_at: 2026-09-20T00:00:00.000Z
 deadline_at: 2026-10-20T00:00:00.000Z
-published_at: 2026-10-20
+published_at: 2026-10-20T00:00:00.000Z
 update_intent: minor_update
-update_note: ''
-version: 0.1.0
+version: 0.1.1
 word_range: 500-1000
-word_count: 0
+word_count: 604
 release_notes:
+  - Small correction.
   - Auto-published at deadline (2026-10-20T01:46:10.438Z).
 permalink: /essays/published/biopsychosocial-trouble/
-update_pending: true
 publication_countdown: ''
+last_modified_at: 2026-10-20
 ---
 
 The biopsychosocial model remains one of the most influential models of disease. Proposed in 1977, the original paper has been cited over 25000 times, of which about 5000 citations in the last two years. It is a critique on the biomedical view that disease is, or can be, sufficiently explained by biological abnormalities and argues that social, psychological, and behavioral dimensions are integral to our assessment and understanding of illness and health. An extensive literature exists around the foundations of the model, contemporary revisions have been suggested, and criticisms range from philosophically inconsistent to too vague to be practical. Yet, its core message is retained in any textbook and (way too) many conference presentations.
