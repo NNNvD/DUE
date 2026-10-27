@@ -18,11 +18,11 @@ proposed_at: 2026-09-21T00:00:00.000Z
 publication_countdown: ''
 deadline_at: 2026-10-21T00:00:00.000Z
 version: 0.1.0
-word_range: 500-1000
-word_count: 0
+word_range: 250-500
+word_count: 268
 release_notes:
-  - 'Auto-published at deadline (2026-10-21T01:44:03.401Z).'
-published_at: '2026-10-21'
+  - Auto-published at deadline (2026-10-21T01:44:03.401Z).
+published_at: 2026-10-21
 permalink: /essays/published/wachtkamer/
 ---
 
