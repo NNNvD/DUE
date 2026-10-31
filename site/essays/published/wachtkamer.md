@@ -15,15 +15,18 @@ status: published
 initial_status: unfinished
 started_at: 2026-09-21T00:00:00.000Z
 proposed_at: 2026-09-21T00:00:00.000Z
-publication_countdown: ''
 deadline_at: 2026-10-21T00:00:00.000Z
+published_at: 2026-10-21
+update_intent: minor_update
+update_note: ''
 version: 0.1.0
 word_range: 250-500
 word_count: 268
 release_notes:
   - Auto-published at deadline (2026-10-21T01:44:03.401Z).
-published_at: 2026-10-21
 permalink: /essays/published/wachtkamer/
+update_pending: true
+publication_countdown: ''
 ---
 
 **1.       Wachten deert niet**
@@ -39,3 +42,15 @@ Hoor ik mensen praten, papieren ritselen, een telefoon rinkelen? Ik houd mijn oo
 Eindelijk, we gaan van start.
 
 <266 woorden>
+
+**1b. Passende hulp**
+
+De dikke casusbeschrijving had me veel tijd gekost. Maar begint passende hulp niet altijd met begrijpen wat er aan de hand is? De tijdlijn, mijlpalen, anekdotes: álles lijkt nu betekenisvoller dan toen het gebeurde. Een bevriend psycholoog riep verheugd uit: ‘Ik wou dat mijn cliënten dit deden!’ En, vergis je niet, ik vind het óók leuk om te doen: organiseren, analyseren en helder schriftelijk uiteenzetten.
+
+Dankzij de kennis die ik heb, dacht ik vanaf het begin dat ik snel passende hulp zou vinden. Ik studeerde af als psycholoog, promoveerde in de kinder- en jeugdpsychiatrie en verdien mijn geld met schrijven over opgroeien en opvoeden. Maar eigenlijk weet ik niets over de praktijk. De huisarts leek me de beste plek voor een doorverwijzing. Binnen een kwartier stond ik buiten met ‘Verwijsbrief specialistische JGZ’ op zak en een tip voor een kinderpraktijk in de buurt.
+
+AANMELDSTOP, groot en rood op mijn beeldscherm, meteen toen ik de website van de getipte kinderpraktijk bezocht. Al een jaar. Ook bij de tien andere praktijken op fietsafstand. En ook bij degenen die dan godbetert op OV-afstand zitten, zo hoor ik telkens van antwoordapparaten of assistenten aan de telefoon. Mijn laatste hoop is dan gevestigd op mijn plek op de wachtlijst bij een particuliere aanbieder. Steeds meer kleine en grote voorvallen thuis. Stapelen tot de toren omvalt. En nu hier.
+
+Spoedwachtkamer.
+
+<495 woorden>
